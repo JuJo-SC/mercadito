@@ -79,10 +79,12 @@ function formatPrice(value: string) {
 
 export function ListingForm({
   universityName,
+  studentId,
   demo = false,
   listing,
 }: {
   universityName: string;
+  studentId?: string;
   demo?: boolean;
   listing?: EditableListing;
 }) {
@@ -105,7 +107,9 @@ export function ListingForm({
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [removePhoto, setRemovePhoto] = useState(false);
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
+  const [publishedPhotoUrl, setPublishedPhotoUrl] = useState<string | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const submissionIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!photoFile) {
@@ -118,7 +122,7 @@ export function ListingForm({
   }, [photoFile]);
 
   const currentPhotoUrl = photoPreviewUrl ??
-    (removePhoto ? null : listing?.imageUrl ?? null);
+    (removePhoto ? null : listing?.imageUrl ?? publishedPhotoUrl);
 
   function updateDraft(field: keyof ListingDraft, value: string) {
     setDraft((current) => ({ ...current, [field]: value }));
@@ -176,6 +180,27 @@ export function ListingForm({
       formData.set("category", draft.category);
       formData.set("condition", draft.condition);
       formData.set("publish", "true");
+      if (!editing && studentId) {
+        const storageKey = "mercadito:publish-attempt:" + studentId;
+        let submissionId = submissionIdRef.current;
+        if (!submissionId) {
+          try {
+            submissionId = sessionStorage.getItem(storageKey);
+          } catch {
+            submissionId = null;
+          }
+        }
+        if (!submissionId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(submissionId)) {
+          submissionId = crypto.randomUUID();
+        }
+        submissionIdRef.current = submissionId;
+        formData.set("submissionId", submissionId);
+        try {
+          sessionStorage.setItem(storageKey, submissionId);
+        } catch {
+          // Keep the key in memory so a retry in this form remains idempotent.
+        }
+      }
       if (photoFile) formData.set("photo", photoFile);
       if (removePhoto) formData.set("removePhoto", "true");
 
@@ -187,12 +212,20 @@ export function ListingForm({
         },
       );
       const result = (await response.json().catch(() => null)) as
-        | { error?: string }
+        | { error?: string; listing?: { imageUrl?: string | null } }
         | null;
       if (!response.ok) {
         throw new Error(
           result?.error ?? "No pudimos publicar el aviso. Revisa tus datos.",
         );
+      }
+      if (result?.listing?.imageUrl) setPublishedPhotoUrl(result.listing.imageUrl);
+      if (!editing && studentId) {
+        try {
+          sessionStorage.removeItem("mercadito:publish-attempt:" + studentId);
+        } catch {
+          // The completed flow is still usable when browser storage is unavailable.
+        }
       }
       setSent(true);
     } catch (cause) {

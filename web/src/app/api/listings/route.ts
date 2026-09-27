@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { z } from "zod";
 import { ListingCategory } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -19,6 +20,7 @@ const createListingSchema = z.object({
   category: z.enum(ListingCategory),
   condition: z.enum(["NEW", "LIKE_NEW", "GOOD", "FAIR"]),
   publish: z.boolean().default(true),
+  submissionId: z.string().uuid().optional(),
 });
 
 export async function GET(request: Request) {
@@ -134,6 +136,7 @@ export async function POST(request: Request) {
   try {
     formData = await parseListingMultipart(request);
     const rawPrice = formData.get("price");
+    const rawSubmissionId = formData.get("submissionId");
     const parsed = createListingSchema.safeParse({
       title: formData.get("title"),
       description: formData.get("description"),
@@ -141,6 +144,7 @@ export async function POST(request: Request) {
       category: formData.get("category"),
       condition: formData.get("condition"),
       publish: formData.get("publish") !== "false",
+      submissionId: typeof rawSubmissionId === "string" ? rawSubmissionId : undefined,
     });
     if (!parsed.success) {
       return Response.json(
@@ -150,46 +154,92 @@ export async function POST(request: Request) {
     }
     photo = await parseListingPhoto(formData);
 
-    const { publish, ...content } = parsed.data;
-    const listing = await prisma.$transaction(async (transaction) => {
-      const created = await transaction.listing.create({
-        data: {
-          ...content,
-          imageUrl: null,
-          status: publish ? "PUBLISHED" : "DRAFT",
-          universityId: student.universityId,
-          sellerId: student.id,
-        },
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          price: true,
-          currency: true,
-          category: true,
-          condition: true,
-          status: true,
-          isDemo: true,
-          createdAt: true,
-        },
-      });
+    const { publish, submissionId, ...content } = parsed.data;
+    const submissionHash = createHash("sha256")
+      .update(JSON.stringify({ ...content, publish }))
+      .update("\0")
+      .update(photo?.data ?? new Uint8Array())
+      .digest("hex");
+
+    const result = await prisma.$transaction(async (transaction) => {
+      const createData = {
+        ...content,
+        imageUrl: null,
+        status: publish ? ("PUBLISHED" as const) : ("DRAFT" as const),
+        universityId: student.universityId,
+        sellerId: student.id,
+      };
+      const select = {
+        id: true,
+        title: true,
+        description: true,
+        price: true,
+        currency: true,
+        category: true,
+        condition: true,
+        status: true,
+        isDemo: true,
+        createdAt: true,
+      } as const;
+
+      if (submissionId) {
+        const inserted = await transaction.listing.createMany({
+          data: [{ ...createData, submissionId, submissionHash }],
+          skipDuplicates: true,
+        });
+        const stored = await transaction.listing.findUnique({
+          where: {
+            sellerId_submissionId: {
+              sellerId: student.id,
+              submissionId,
+            },
+          },
+          select: { ...select, submissionHash: true, photo: { select: { listingId: true } } },
+        });
+        if (!stored) throw new Error("The listing submission could not be retrieved.");
+
+        const { submissionHash: storedHash, photo: storedPhoto, ...listing } = stored;
+        if (storedHash !== submissionHash) return { kind: "conflict" as const };
+        if (inserted.count === 0) return { kind: "replayed" as const, listing, hasPhoto: Boolean(storedPhoto) };
+
+        if (photo) {
+          await transaction.listingPhoto.create({
+            data: { listingId: listing.id, ...photo },
+          });
+        }
+        return { kind: "created" as const, listing, hasPhoto: Boolean(photo) };
+      }
+
+      const created = await transaction.listing.create({ data: createData, select });
       if (photo) {
         await transaction.listingPhoto.create({
           data: { listingId: created.id, ...photo },
         });
       }
-      return created;
+      return { kind: "created" as const, listing: created, hasPhoto: Boolean(photo) };
     });
+
+    if (result.kind === "conflict") {
+      return Response.json(
+        { error: "Este intento ya tiene un aviso con otros datos. Revisa Mis avisos antes de volver a publicar." },
+        { status: 409, headers: privateNoStore },
+      );
+    }
 
     return Response.json(
       {
         listing: {
-          ...listing,
-          price: listing.price.toNumber(),
-          imageUrl: photo ? `/api/listings/${encodeURIComponent(listing.id)}/photo` : null,
+          ...result.listing,
+          price: result.listing.price.toNumber(),
+          imageUrl: result.hasPhoto
+            ? "/api/listings/" + encodeURIComponent(result.listing.id) + "/photo"
+            : null,
         },
       },
-      { status: 201, headers: privateNoStore },
+      {
+        status: result.kind === "created" ? 201 : 200,
+        headers: privateNoStore,
+      },
     );
   } catch (error) {
     if (error instanceof ListingPhotoInputError) {

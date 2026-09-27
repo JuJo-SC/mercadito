@@ -147,7 +147,7 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
             </div>
           </section>
         ) : student && university ? (
-          <ListingForm key="new" universityName={university.name} />
+          <ListingForm key="new" universityName={university.name} studentId={student.id} />
         ) : (
           <section className="auth-notice">
             <div className="auth-panel-heading">

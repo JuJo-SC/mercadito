@@ -167,6 +167,8 @@ model Listing {
   status       ListingStatus   @default(DRAFT)
   imageUrl     String?
   isDemo       Boolean         @default(false)
+  submissionId String          @default(dbgenerated("gen_random_uuid()::text"))
+  submissionHash String?        @db.VarChar(64)
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
   university   University      @relation(fields: [universityId], references: [id], onDelete: Restrict)
@@ -175,6 +177,7 @@ model Listing {
   conversations Conversation[]
   photo         ListingPhoto?
 
+  @@unique([sellerId, submissionId])
   @@index([universityId, status, createdAt])
   @@index([universityId, category, status])
   @@index([sellerId, status])
