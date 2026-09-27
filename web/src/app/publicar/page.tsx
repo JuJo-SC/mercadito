@@ -18,7 +18,7 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
   const university = student
     ? await prisma.university.findFirst({
         where: { id: student.universityId, status: "ACTIVE", isDemo: false },
-        select: { name: true },
+        select: { name: true, isTest: true },
       })
     : null;
   const loginAvailable = demoMode
@@ -45,6 +45,14 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
               : "Describe el artículo con claridad. Solo estudiantes activos de tu universidad podrán ver esta publicación."}
           </p>
         </div>
+
+        {student && university?.isTest ? (
+          <p className="demo-banner publish-demo-note" role="note">
+            <span className="demo-mark" aria-hidden="true">P</span>
+            Estás en el campus de prueba UMAN. Usa datos ficticios; las cuentas
+            activas de UMAN podrán ver el aviso.
+          </p>
+        ) : null}
 
         {demoMode ? (
           <>

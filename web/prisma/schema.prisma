@@ -63,6 +63,7 @@ model University {
   websiteUrl           String?
   status               UniversityStatus @default(PENDING_REVIEW)
   isDemo               Boolean          @default(false)
+  isTest               Boolean          @default(false)
   identityKey          String?          @unique
   studentStatusClaim   String?
   studentStatusValue   String?

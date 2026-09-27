@@ -15,6 +15,7 @@ export async function GET() {
       name: true,
       slug: true,
       isDemo: true,
+      isTest: true,
     },
   });
 

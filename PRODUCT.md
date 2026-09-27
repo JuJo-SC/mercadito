@@ -42,7 +42,7 @@ La pertenencia a una universidad define el acceso al mercadito de esa comunidad.
 
 ## Evidence on Hand
 
-El brief de producto proviene de la persona usuaria. Aún no hay proveedor institucional, logotipo, fotografías, catálogo real ni datos de campus. Cualquier artículo de muestra deberá identificarse como contenido de demostración.
+El brief de producto proviene de la persona usuaria. Aún no hay proveedor institucional conectado, logotipo, fotografías ni catálogo real. El servidor tiene UMAN como campus de prueba (isTest) y cuentas locales sintéticas de Keycloak para recorrer la publicación; no verifican matrícula. Cualquier artículo de muestra debe identificarse como contenido ficticio y las credenciales no deben guardarse en Git.
 
 ## Pendiente antes de recibir solicitudes reales
 

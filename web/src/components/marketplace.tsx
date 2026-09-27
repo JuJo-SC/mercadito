@@ -16,6 +16,7 @@ type University = {
   name: string;
   slug: string;
   isDemo: boolean;
+  isTest: boolean;
 };
 
 type ListingNotice = {
@@ -209,9 +210,11 @@ export function Marketplace({
             <p className="campus-access">
               {university?.isDemo
                 ? "Edición de demostración"
-                : university
-                  ? "Comunidad universitaria"
-                  : "Aún no hay comunidades activas"}
+                : university?.isTest
+                  ? "Campus de prueba"
+                  : university
+                    ? "Comunidad universitaria"
+                    : "Aún no hay comunidades activas"}
             </p>
           </div>
           {canSignIn ? (
@@ -227,6 +230,12 @@ export function Marketplace({
             <span className="demo-mark" aria-hidden="true">D</span>
             Estos avisos son ejemplos ficticios para mostrar cómo funciona el
             mercadito.
+          </p>
+        ) : university?.isTest ? (
+          <p className="demo-banner" role="note">
+            <span className="demo-mark" aria-hidden="true">P</span>
+            UMAN es un campus de prueba. Usa artículos ficticios; los avisos
+            serán visibles para otras cuentas activas de esta comunidad.
           </p>
         ) : null}
 

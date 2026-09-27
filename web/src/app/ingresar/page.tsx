@@ -19,6 +19,13 @@ export default async function SignInPage() {
     : (await prisma.university.count({
         where: { status: "ACTIVE", isDemo: false },
       })) > 0;
+  const testUniversity = student
+    ? null
+    : await prisma.university.findFirst({
+        where: { status: "ACTIVE", isDemo: false, isTest: true },
+        orderBy: { name: "asc" },
+        select: { name: true },
+      });
 
   return (
     <>
@@ -35,6 +42,14 @@ export default async function SignInPage() {
             una sola comunidad universitaria.
           </p>
         </div>
+
+        {testUniversity ? (
+          <p className="demo-banner auth-test-note" role="note">
+            <span className="demo-mark" aria-hidden="true">P</span>
+            {testUniversity.name} es un campus de prueba. Usa una cuenta de
+            prueba y datos ficticios; no hay un proveedor institucional conectado.
+          </p>
+        ) : null}
 
         {student ? (
           <section className="auth-notice" role="status">

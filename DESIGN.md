@@ -189,7 +189,7 @@ La geometría es cuadrada y de bordes precisos: la mayoría de botones, avisos, 
 ### Cards / Containers
 - **Classified entry:** fila de índice con número, título, categoría, condición, vendedor, precio y disclosure; una regla inferior separa las filas. Al abrirla, descripción, vendedor y fecha aparecen debajo de una regla superior.
 - **Preview:** la vista previa de publicación usa regla carbón superior de 2px e inferior fina, con nombre y precio en primer plano.
-- **Demo banner:** franja de lima con texto carbón para que el carácter ficticio del contenido permanezca visible.
+- **Demo / campus de prueba:** franja de lima con texto carbón y etiqueta explícita para distinguir ejemplos ficticios y campus de prueba de comunidades reales; en UMAN recuerda usar datos ficticios.
 
 ### Inputs / Fields
 - **Search:** campo sobre papel con borde tenue, alto de 52px y foco coral alrededor del contenedor.

@@ -12,7 +12,7 @@ export default async function Home() {
       ? { id: student.universityId, status: "ACTIVE", isDemo: false }
       : { status: "ACTIVE", isDemo: true },
     orderBy: { name: "asc" },
-    select: { id: true, name: true, slug: true, isDemo: true },
+    select: { id: true, name: true, slug: true, isDemo: true, isTest: true },
     take: 1,
   });
   const university = universities[0] ?? null;

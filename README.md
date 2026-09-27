@@ -24,7 +24,7 @@ El MVP no procesa pagos. La comunidad coordina el intercambio directamente y las
 
 El inicio de sesión requiere que una universidad esté activada y que su proveedor OIDC o SAML se configure en Keycloak. Cada institución debe proporcionar sus metadatos y un claim verificable que identifique el estado activo del alumno. Mercadito verifica el identificador de universidad y ese claim; no considera suficiente el dominio del correo.
 
-El realm inicial es mercadito y el cliente web es mercadito-web. La URI de retorno configurada es https://mercadito.291006.xyz/api/auth/callback/keycloak. No se ha configurado un proveedor de identidad institucional real, por lo que el acceso de alumnos permanece deshabilitado hasta recibir los datos y claims de una universidad.
+El realm inicial es mercadito y el cliente web es mercadito-web. La URI de retorno configurada es https://mercadito.291006.xyz/api/auth/callback/keycloak. No hay un proveedor de identidad institucional real conectado. En el servidor existe un campus de prueba UMAN con cinco cuentas locales sintéticas en Keycloak para recorrer la publicación; no equivalen a una validación institucional. El acceso de alumnos de campus reales permanece deshabilitado hasta configurar el proveedor y sus claims. Las credenciales de prueba se entregaron directamente al operador y no deben subirse a Git.
 
 Keycloak expone los metadatos del realm desplegado en estos endpoints públicos:
 
@@ -59,7 +59,7 @@ Antes de habilitar un campus real, registrar en Keycloak su proveedor institucio
 
 ## Datos de demostración
 
-La base de datos inicial contiene una universidad, una cuenta vendedora y publicaciones sintéticas de demostración. Los modelos incluyen isDemo para distinguirlas de los datos reales. Mantener las etiquetas de demostración visibles en la interfaz.
+La base inicial contiene una comunidad y publicaciones sintéticas de demostración. En el servidor UMAN está registrada por separado como campus de prueba, con cuentas locales de Keycloak para revisar el flujo de publicación. isDemo distingue los ejemplos públicos e isTest identifica campus de prueba; la interfaz debe etiquetar ambos. No guardar las credenciales de prueba en este repositorio.
 
 ## Desarrollo y cambios
 
