@@ -197,7 +197,7 @@ La geometría es cuadrada y de bordes precisos: la mayoría de botones, avisos, 
 - **Price:** símbolo monetario y campo comparten una sola caja para mantener moneda y cantidad alineadas.
 
 ### Navigation
-La navegación de escritorio usa enlaces sans serif en tinta secundaria. Hover y foco suben el contraste y subrayan en coral. En vista móvil la cabecera se compacta y la navegación principal se sustituye por una banda de tres enlaces.
+La navegación de escritorio usa enlaces sans serif en tinta secundaria. Hover y foco suben el contraste y subrayan en coral. En vista móvil la cabecera se compacta; visitantes ven tres accesos y estudiantes autenticados cuatro, incluido Mensajes.
 
 ### Publication flow
 El progreso muestra tres etapas. La etapa activa se marca con tinta carbón, las completadas con lima y las futuras con papel quieto. La revisión final conserva título, categoría, condición, precio y descripción antes de confirmar.

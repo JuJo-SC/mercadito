@@ -39,6 +39,7 @@ La pertenencia a una universidad define el acceso al mercadito de esa comunidad.
 - Dato pendiente: cada universidad debe facilitar los datos de su proveedor de identidad y aclarar qué información permite verificar que alguien es alumno activo.
 - Alcance confirmado para el MVP: publicar y explorar artículos, conversar por chat para coordinar el interés, sin procesar pagos.
 - Los estudiantes pueden consultar y editar sus propios avisos, cambiar su disponibilidad (publicado, apartado, vendido o archivado) dentro de su campus, y conversar con interesados.
+- El chat del MVP permite mensajes de texto entre estudiantes del mismo campus; no admite adjuntos.
 
 - Inferencia provisional a partir de «mercadito interno»: sin sesión solo se muestra el campus ficticio de demostración; una cuenta estudiantil activa solo accede al mercadito de su universidad.
 
