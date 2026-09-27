@@ -212,6 +212,28 @@ select {
   transition: color 160ms ease, text-decoration-color 160ms ease;
 }
 
+.primary-navigation .messages-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+  white-space: nowrap;
+}
+
+.messages-unread-count {
+  display: inline-flex;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.24rem;
+  background: var(--signal);
+  color: var(--ink);
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .primary-navigation a:hover,
 .primary-navigation a:focus-visible {
   color: var(--ink);
@@ -1844,6 +1866,15 @@ select {
     text-decoration: none;
   }
 
+  .mobile-navigation .messages-nav-link {
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    white-space: nowrap;
+  }
+
   .mobile-navigation a:hover {
     color: var(--ink);
     text-decoration: underline;
@@ -3191,6 +3222,17 @@ select {
 @media (max-width: 380px) {
   .mobile-navigation.has-messages a {
     font-size: 0.68rem;
+  }
+
+  .mobile-navigation.has-messages .messages-nav-link {
+    gap: 0.12rem;
+  }
+
+  .mobile-navigation.has-messages .messages-unread-count {
+    min-width: 1rem;
+    height: 1rem;
+    padding-inline: 0.17rem;
+    font-size: 0.62rem;
   }
 
   .thread-composer-foot {

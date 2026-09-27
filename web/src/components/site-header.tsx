@@ -6,14 +6,36 @@ import { InstallButton } from "@/components/install-button";
 type SiteHeaderProps = {
   signedIn?: boolean;
   userName?: string | null;
+  unreadMessageCount?: number;
 };
+
+function MessagesNavLink({ unreadMessageCount }: { unreadMessageCount: number }) {
+  const label = unreadMessageCount > 0
+    ? `Mensajes, ${unreadMessageCount} sin leer`
+    : "Mensajes";
+
+  return (
+    <Link className="messages-nav-link" href="/mensajes" aria-label={label}>
+      <span>Mensajes</span>
+      {unreadMessageCount > 0 ? (
+        <span className="messages-unread-count" aria-hidden="true">
+          {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
+        </span>
+      ) : null}
+    </Link>
+  );
+}
 
 async function leaveAccount() {
   "use server";
   await signOut({ redirectTo: "/" });
 }
 
-export function SiteHeader({ signedIn = false, userName }: SiteHeaderProps) {
+export function SiteHeader({
+  signedIn = false,
+  userName,
+  unreadMessageCount = 0,
+}: SiteHeaderProps) {
   return (
     <header className="site-header">
       <div className="site-header-inner page-width">
@@ -34,7 +56,7 @@ export function SiteHeader({ signedIn = false, userName }: SiteHeaderProps) {
           <Link href="/#avisos">Explorar</Link>
           <Link href="/publicar">Publicar</Link>
           {signedIn ? <Link href="/mis-avisos">Mis avisos</Link> : null}
-          {signedIn ? <Link href="/mensajes">Mensajes</Link> : null}
+          {signedIn ? <MessagesNavLink unreadMessageCount={unreadMessageCount} /> : null}
           <Link href="/universidades">Universidades</Link>
         </nav>
 
@@ -71,7 +93,7 @@ export function SiteHeader({ signedIn = false, userName }: SiteHeaderProps) {
         aria-label="Accesos rápidos"
       >
         <Link href="/#avisos">Explorar</Link>
-        {signedIn ? <Link href="/mensajes">Mensajes</Link> : null}
+        {signedIn ? <MessagesNavLink unreadMessageCount={unreadMessageCount} /> : null}
         {signedIn ? (
           <Link href="/mis-avisos">Mis avisos</Link>
         ) : (

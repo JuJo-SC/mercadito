@@ -3,6 +3,7 @@ import { ArrowRight, LockKeyhole } from "lucide-react";
 import { signIn } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getActiveStudent } from "@/lib/require-student";
+import { countUnreadMessagesForStudent } from "@/lib/conversations";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +35,9 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   const params = await searchParams;
   const returnTo = safeReturnTo(params.returnTo);
   const student = await getActiveStudent();
+  const unreadMessageCountPromise = student
+    ? countUnreadMessagesForStudent(student.id, student.universityId)
+    : Promise.resolve(0);
   const availableUniversity = student
     ? true
     : (await prisma.university.count({
@@ -47,9 +51,11 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
         select: { name: true },
       });
 
+  const unreadMessageCount = await unreadMessageCountPromise;
+
   return (
     <>
-      <SiteHeader signedIn={Boolean(student)} userName={student?.name} />
+      <SiteHeader signedIn={Boolean(student)} userName={student?.name} unreadMessageCount={unreadMessageCount} />
       <main className="form-page page-width">
         <Link className="back-link" href="/">
           <ArrowRight aria-hidden="true" size={16} />

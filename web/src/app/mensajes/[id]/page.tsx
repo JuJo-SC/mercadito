@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { findConversationForStudent } from "@/lib/conversation-access";
 import { getActiveStudent } from "@/lib/require-student";
+import { countUnreadMessagesForStudent } from "@/lib/conversations";
 import { MessageThread } from "@/components/message-thread";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
@@ -23,7 +24,7 @@ export default async function ConversationPage({ params }: MessagePageProps) {
   );
   if (!conversation) notFound();
 
-  const [latest, university] = await Promise.all([
+  const [latest, university, unreadMessageCount] = await Promise.all([
     prisma.message.findMany({
       where: { conversationId: conversation.id },
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
@@ -34,6 +35,7 @@ export default async function ConversationPage({ params }: MessagePageProps) {
       where: { id: student.universityId },
       select: { name: true, isTest: true },
     }),
+    countUnreadMessagesForStudent(student.id, student.universityId, conversation.id),
   ]);
   const otherStudentName =
     conversation.buyerId === student.id
@@ -48,7 +50,7 @@ export default async function ConversationPage({ params }: MessagePageProps) {
 
   return (
     <>
-      <SiteHeader signedIn userName={student.name} />
+      <SiteHeader signedIn userName={student.name} unreadMessageCount={unreadMessageCount} />
       {university?.isTest ? (
         <p className="demo-banner page-width thread-test-note" role="note">
           <span className="demo-mark" aria-hidden="true">P</span>

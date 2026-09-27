@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getActiveStudent } from "@/lib/require-student";
+import { countUnreadMessagesForStudent } from "@/lib/conversations";
 import { ManageListings } from "@/components/manage-listings";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
@@ -9,6 +10,9 @@ export const dynamic = "force-dynamic";
 
 export default async function MyListingsPage() {
   const student = await getActiveStudent();
+  const unreadMessageCountPromise = student
+    ? countUnreadMessagesForStudent(student.id, student.universityId)
+    : Promise.resolve(0);
   const university = student
     ? await prisma.university.findUnique({
         where: { id: student.universityId },
@@ -36,6 +40,7 @@ export default async function MyListingsPage() {
       })
     : [];
 
+  const unreadMessageCount = await unreadMessageCountPromise;
   const serializedListings = listings.map((listing) => ({
     ...listing,
     price: listing.price.toNumber(),
@@ -44,7 +49,7 @@ export default async function MyListingsPage() {
 
   return (
     <>
-      <SiteHeader signedIn={Boolean(student)} userName={student?.name} />
+      <SiteHeader signedIn={Boolean(student)} userName={student?.name} unreadMessageCount={unreadMessageCount} />
       <main className="form-page page-width seller-page">
         <Link className="back-link" href="/">
           <ArrowRight aria-hidden="true" size={16} />

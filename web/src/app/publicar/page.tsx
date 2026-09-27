@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, LockKeyhole } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getActiveStudent } from "@/lib/require-student";
+import { countUnreadMessagesForStudent } from "@/lib/conversations";
 import { ListingForm } from "@/components/listing-form";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
@@ -17,6 +18,9 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
   const editId = typeof params.editar === "string" ? params.editar.trim() : "";
   const demoMode = params.demo === "1" && !editRequested;
   const student = demoMode ? null : await getActiveStudent();
+  const unreadMessageCountPromise = student
+    ? countUnreadMessagesForStudent(student.id, student.universityId)
+    : Promise.resolve(0);
   const university = student
     ? await prisma.university.findFirst({
         where: { id: student.universityId, status: "ACTIVE", isDemo: false },
@@ -54,9 +58,11 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
           where: { status: "ACTIVE", isDemo: false },
         })) > 0;
 
+  const unreadMessageCount = await unreadMessageCountPromise;
+
   return (
     <>
-      <SiteHeader signedIn={Boolean(student)} userName={student?.name} />
+      <SiteHeader signedIn={Boolean(student)} userName={student?.name} unreadMessageCount={unreadMessageCount} />
       <main className="form-page page-width publish-page">
         <Link className="back-link" href={editRequested ? "/mis-avisos" : demoMode ? "/publicar" : "/"}>
           <ArrowRight aria-hidden="true" size={16} />

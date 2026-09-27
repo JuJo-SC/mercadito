@@ -1,5 +1,27 @@
 import { prisma } from "@/lib/prisma";
 
+export async function countUnreadMessagesForStudent(
+  studentId: string,
+  universityId: string,
+  excludeConversationId?: string,
+) {
+  return prisma.message.count({
+    where: {
+      senderId: { not: studentId },
+      readAt: null,
+      conversation: {
+        ...(excludeConversationId ? { id: { not: excludeConversationId } } : {}),
+        universityId,
+        OR: [{ buyerId: studentId }, { sellerId: studentId }],
+        university: { status: "ACTIVE", isDemo: false },
+        listing: { isDemo: false },
+        buyer: { role: "STUDENT", status: "ACTIVE", isDemo: false },
+        seller: { role: "STUDENT", status: "ACTIVE", isDemo: false },
+      },
+    },
+  });
+}
+
 export async function listConversationsForStudent(
   studentId: string,
   universityId: string,

@@ -21,9 +21,14 @@ export default async function MessagesPage() {
     listConversationsForStudent(student.id, student.universityId),
   ]);
 
+  const unreadMessageCount = conversations.reduce(
+    (total, conversation) => total + conversation.unreadCount,
+    0,
+  );
+
   return (
     <>
-      <SiteHeader signedIn userName={student.name} />
+      <SiteHeader signedIn userName={student.name} unreadMessageCount={unreadMessageCount} />
       <main className="messages-page page-width">
         <Link className="back-link" href="/">
           <ArrowRight aria-hidden="true" size={16} />

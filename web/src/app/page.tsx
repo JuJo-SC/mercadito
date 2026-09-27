@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getActiveStudent } from "@/lib/require-student";
+import { countUnreadMessagesForStudent } from "@/lib/conversations";
 import { Marketplace } from "@/components/marketplace";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
@@ -7,6 +8,9 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const student = await getActiveStudent();
+  const unreadMessageCountPromise = student
+    ? countUnreadMessagesForStudent(student.id, student.universityId)
+    : Promise.resolve(0);
   const universities = await prisma.university.findMany({
     where: student
       ? { id: student.universityId, status: "ACTIVE", isDemo: false }
@@ -16,6 +20,7 @@ export default async function Home() {
     take: 1,
   });
   const university = universities[0] ?? null;
+  const unreadMessageCount = await unreadMessageCountPromise;
   const initialListings = university
     ? await prisma.listing.findMany({
         where: { universityId: university.id, status: "PUBLISHED" },
@@ -44,7 +49,7 @@ export default async function Home() {
 
   return (
     <>
-      <SiteHeader signedIn={Boolean(student)} userName={student?.name} />
+      <SiteHeader signedIn={Boolean(student)} userName={student?.name} unreadMessageCount={unreadMessageCount} />
       <main>
         <Marketplace
           university={university}
