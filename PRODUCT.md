@@ -37,6 +37,7 @@ La pertenencia a una universidad define el acceso al mercadito de esa comunidad.
 - Elección de stack: Keycloak aceptará proveedores institucionales OIDC o SAML y ofrecerá OIDC a la aplicación.
 - Dato pendiente: cada universidad debe facilitar los datos de su proveedor de identidad y aclarar qué información permite verificar que alguien es alumno activo.
 - Suposición para el primer MVP, pendiente de confirmación: publicar y explorar artículos, sin procesar pagos.
+- Los estudiantes pueden consultar sus propios avisos y cambiar su disponibilidad (publicado, apartado, vendido o archivado) dentro de su campus.
 
 - Inferencia provisional a partir de «mercadito interno»: sin sesión solo se muestra el campus ficticio de demostración; una cuenta estudiantil activa solo accede al mercadito de su universidad.
 

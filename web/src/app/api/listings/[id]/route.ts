@@ -1,5 +1,19 @@
+import { z } from "zod";
+import type { ListingStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getActiveStudent } from "@/lib/require-student";
+
+const updateListingSchema = z.object({
+  status: z.enum(["DRAFT", "PUBLISHED", "RESERVED", "SOLD", "ARCHIVED"]),
+});
+
+const allowedTransitions: Record<ListingStatus, readonly ListingStatus[]> = {
+  DRAFT: ["PUBLISHED", "ARCHIVED"],
+  PUBLISHED: ["RESERVED", "SOLD", "ARCHIVED"],
+  RESERVED: ["PUBLISHED", "SOLD", "ARCHIVED"],
+  SOLD: ["PUBLISHED", "ARCHIVED"],
+  ARCHIVED: ["PUBLISHED"],
+};
 
 export const runtime = "nodejs";
 
@@ -44,5 +58,89 @@ export async function GET(
 
   return Response.json({
     listing: { ...listing, price: listing.price.toNumber() },
+  });
+}
+
+
+export async function PATCH(
+  request: Request,
+  context: RouteContext<"/api/listings/[id]">,
+) {
+  const student = await getActiveStudent();
+  if (!student) {
+    return Response.json({ error: "Inicia sesión con tu cuenta institucional." }, { status: 401 });
+  }
+
+  const { id } = await context.params;
+  const body: unknown = await request.json().catch(() => null);
+  const parsed = updateListingSchema.safeParse(body);
+  if (!parsed.success) {
+    return Response.json({ error: "Elige un estado válido para el aviso." }, { status: 400 });
+  }
+
+  const listing = await prisma.listing.findFirst({
+    where: {
+      id,
+      sellerId: student.id,
+      universityId: student.universityId,
+      isDemo: false,
+      university: { status: "ACTIVE", isDemo: false },
+    },
+    select: { status: true },
+  });
+
+  if (!listing) {
+    return Response.json({ error: "No encontramos ese aviso." }, { status: 404 });
+  }
+
+  const nextStatus = parsed.data.status;
+  if (!allowedTransitions[listing.status].includes(nextStatus)) {
+    return Response.json(
+      { error: "Ese cambio ya no está disponible. Recarga tus avisos e inténtalo de nuevo." },
+      { status: 409 },
+    );
+  }
+
+  const changed = await prisma.listing.updateMany({
+    where: {
+      id,
+      sellerId: student.id,
+      universityId: student.universityId,
+      isDemo: false,
+      status: listing.status,
+      university: { status: "ACTIVE", isDemo: false },
+    },
+    data: { status: nextStatus },
+  });
+
+  if (changed.count !== 1) {
+    return Response.json(
+      { error: "El estado cambió en otra pestaña. Recarga tus avisos e inténtalo de nuevo." },
+      { status: 409 },
+    );
+  }
+
+  const updatedListing = await prisma.listing.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      price: true,
+      currency: true,
+      category: true,
+      condition: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  if (!updatedListing) {
+    return Response.json({ error: "No encontramos ese aviso." }, { status: 404 });
+  }
+
+  return Response.json({
+    listing: { ...updatedListing, price: updatedListing.price.toNumber() },
   });
 }

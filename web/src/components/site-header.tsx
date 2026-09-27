@@ -33,6 +33,7 @@ export function SiteHeader({ signedIn = false, userName }: SiteHeaderProps) {
         <nav className="primary-navigation" aria-label="Navegación principal">
           <Link href="/#avisos">Explorar</Link>
           <Link href="/publicar">Publicar</Link>
+          {signedIn ? <Link href="/mis-avisos">Mis avisos</Link> : null}
           <Link href="/universidades">Universidades</Link>
         </nav>
 
@@ -64,11 +65,15 @@ export function SiteHeader({ signedIn = false, userName }: SiteHeaderProps) {
           )}
         </div>
       </div>
-      <div className="mobile-navigation page-width" aria-label="Accesos rápidos">
-        <Link href="/#avisos">Explorar avisos</Link>
-        <Link href="/publicar">Publicar un artículo</Link>
-        <Link href="/universidades">Registrar universidad</Link>
-      </div>
+      <nav className="mobile-navigation page-width" aria-label="Accesos rápidos">
+        <Link href="/#avisos">Explorar</Link>
+        {signedIn ? (
+          <Link href="/mis-avisos">Mis avisos</Link>
+        ) : (
+          <Link href="/universidades">Universidades</Link>
+        )}
+        <Link href="/publicar">Publicar</Link>
+      </nav>
     </header>
   );
 }

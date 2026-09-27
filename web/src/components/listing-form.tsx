@@ -198,7 +198,7 @@ export function ListingForm({
           <p>
             {demo
               ? "Este recorrido es una demostración: el aviso no se publicó, no se guardó y no se envió a ningún servicio."
-              : `El aviso aparece en el mercadito privado de ${universityName}. Puedes consultarlo en la portada de tu comunidad.`}
+              : `El aviso aparece en el mercadito privado de ${universityName}. Puedes revisar su estado desde Mis avisos.`}
           </p>
           {preview}
           <div className="publish-success-actions">
@@ -207,9 +207,14 @@ export function ListingForm({
                 Empezar otro aviso
                 <ArrowRight aria-hidden="true" size={16} />
               </button>
-            ) : null}
+            ) : (
+              <Link className="text-action" href="/mis-avisos">
+                Gestionar mis avisos
+                <ArrowRight aria-hidden="true" size={16} />
+              </Link>
+            )}
             <Link className="text-action" href="/">
-              Volver a los avisos
+              {demo ? "Volver a los avisos" : "Explorar el mercadito"}
               <ArrowRight aria-hidden="true" size={16} />
             </Link>
           </div>
