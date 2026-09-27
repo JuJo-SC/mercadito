@@ -199,6 +199,10 @@ La geometría es cuadrada y de bordes precisos: la mayoría de botones, avisos, 
 ### Navigation
 La navegación de escritorio usa enlaces sans serif en tinta secundaria. Hover y foco suben el contraste y subrayan en coral. En vista móvil la cabecera se compacta; visitantes ven tres accesos y estudiantes autenticados cuatro, incluido Mensajes.
 
+### Messaging
+- **Inbox:** ordena conversaciones por actividad más reciente. Cada fila plana mantiene juntos el artículo, la contraparte, el último mensaje y el estado de mensajes pendientes; una regla fina separa filas sin convertirlas en tarjetas.
+- **Thread:** deja fija arriba la ficha del aviso relacionado y desplaza solo el historial cronológico. El aviso de pagos fuera de Mercadito queda visible junto a esa referencia. El MVP usa mensajes de texto sin adjuntos ni controles de pago.
+
 ### Publication flow
 El progreso muestra tres etapas. La etapa activa se marca con tinta carbón, las completadas con lima y las futuras con papel quieto. La revisión final conserva título, categoría, condición, precio y descripción antes de confirmar.
 
