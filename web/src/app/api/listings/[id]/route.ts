@@ -25,6 +25,8 @@ const allowedTransitions: Record<ListingStatus, readonly ListingStatus[]> = {
 
 export const runtime = "nodejs";
 
+const privateNoStore = { "Cache-Control": "private, no-store" };
+
 export async function GET(
   _request: Request,
   context: RouteContext<"/api/listings/[id]">,
@@ -54,19 +56,25 @@ export async function GET(
   });
 
   if (!listing) {
-    return Response.json({ error: "No encontramos este artículo." }, { status: 404 });
+    return Response.json(
+      { error: "No encontramos este artículo." },
+      { status: 404, headers: privateNoStore },
+    );
   }
 
   if (!listing.university.isDemo) {
     const student = await getActiveStudent();
     if (!student || student.universityId !== listing.universityId) {
-      return Response.json({ error: "No encontramos este artículo." }, { status: 404 });
+      return Response.json(
+        { error: "No encontramos este artículo." },
+        { status: 404, headers: privateNoStore },
+      );
     }
   }
 
   return Response.json({
     listing: { ...listing, price: listing.price.toNumber() },
-  });
+  }, { headers: privateNoStore });
 }
 
 

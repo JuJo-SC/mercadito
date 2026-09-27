@@ -5,6 +5,8 @@ import { getActiveStudent } from "@/lib/require-student";
 
 export const runtime = "nodejs";
 
+const privateNoStore = { "Cache-Control": "private, no-store" };
+
 const createListingSchema = z.object({
   title: z.string().trim().min(4).max(90),
   description: z.string().trim().min(10).max(2000),
@@ -21,7 +23,7 @@ export async function GET(request: Request) {
   if (!slug) {
     return Response.json(
       { error: "Indica la universidad que quieres explorar." },
-      { status: 400 },
+      { status: 400, headers: privateNoStore },
     );
   }
 
@@ -31,13 +33,19 @@ export async function GET(request: Request) {
   });
 
   if (!university) {
-    return Response.json({ error: "No encontramos esa comunidad." }, { status: 404 });
+    return Response.json(
+      { error: "No encontramos esa comunidad." },
+      { status: 404, headers: privateNoStore },
+    );
   }
 
   if (!university.isDemo) {
     const student = await getActiveStudent();
     if (!student || student.universityId !== university.id) {
-      return Response.json({ error: "No encontramos esa comunidad." }, { status: 404 });
+      return Response.json(
+        { error: "No encontramos esa comunidad." },
+        { status: 404, headers: privateNoStore },
+      );
     }
   }
 
@@ -95,7 +103,7 @@ export async function GET(request: Request) {
       ...listing,
       price: listing.price.toNumber(),
     })),
-  });
+  }, { headers: privateNoStore });
 }
 
 export async function POST(request: Request) {
