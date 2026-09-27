@@ -3372,6 +3372,11 @@ select {
 }
 
 @media (max-width: 380px) {
+  .messages-intro h1 {
+    max-width: none;
+    font-size: clamp(1.95rem, 8.75vw, 2.15rem);
+  }
+
   .mobile-navigation.has-messages a {
     font-size: 0.68rem;
   }
