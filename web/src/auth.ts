@@ -58,14 +58,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: { signIn: "/ingresar" },
   trustHost: process.env.AUTH_TRUST_HOST === "true",
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       if (
         account?.provider !== "keycloak" ||
         !account.providerAccountId ||
-        !user.id
+        !user.id ||
+        !profile ||
+        typeof profile !== "object"
       ) {
         return false;
       }
+
+      const identityProfile = profile as Record<string, unknown>;
+      if (identityProfile.sub !== account.providerAccountId) return false;
+
+      const currentUniversity = await resolveActiveStudent(identityProfile);
+      if (!currentUniversity) return false;
 
       const localUser = await prisma.user.findUnique({
         where: { id: user.id },
@@ -74,6 +82,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       return Boolean(
         localUser &&
+          localUser.universityId === currentUniversity.id &&
           !localUser.isDemo &&
           localUser.status === "ACTIVE" &&
           localUser.role === "STUDENT" &&
