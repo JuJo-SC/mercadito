@@ -26,6 +26,13 @@ El inicio de sesión requiere que una universidad esté activada y que su provee
 
 El realm inicial es mercadito y el cliente web es mercadito-web. La URI de retorno configurada es https://mercadito.291006.xyz/api/auth/callback/keycloak. No se ha configurado un proveedor de identidad institucional real, por lo que el acceso de alumnos permanece deshabilitado hasta recibir los datos y claims de una universidad.
 
+Keycloak expone los metadatos del realm desplegado en estos endpoints públicos:
+
+- OIDC discovery: https://auth.291006.xyz/realms/mercadito/.well-known/openid-configuration
+- Descriptor SAML: https://auth.291006.xyz/realms/mercadito/protocol/saml/descriptor
+
+Estos describen el realm de Keycloak de Mercadito; no sustituyen la URL de metadatos OIDC/SAML ni los claims que debe proporcionar cada universidad. Ambos endpoints se verificaron por HTTPS y devuelven metadatos válidos.
+
 La recepción de solicitudes universitarias está deshabilitada hasta publicar el aviso de privacidad aprobado y el canal de atención. La página no envía ni almacena datos mientras está cerrada; la API devuelve 503 y solo se habilita con ENABLE_UNIVERSITY_APPLICATIONS=true en /srv/secrets/mercadito/app.env. Una solicitud habilitada pasaría a revisión y no activaría automáticamente una universidad ni sus cuentas. La vista pública muestra únicamente datos ficticios de demostración; una sesión estudiantil activa solo puede consultar las publicaciones de su propia universidad.
 
 ## Despliegue en el servidor
