@@ -132,7 +132,7 @@ export async function GET(request: Request) {
 
   const pageListings = listings.slice(0, 24);
   const hasMore = pageListings.length > 0 && (cursorAnchor ? listings.length > 24 : page * 24 < total);
-  const nextCursor = pageListings.at(-1)?.id ?? null;
+  const nextCursor = hasMore ? pageListings.at(-1)?.id ?? null : null;
 
   return Response.json({
     university: { id: university.id, name: university.name, slug: university.slug },
