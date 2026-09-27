@@ -133,6 +133,11 @@ export function ConversationInbox({
       <ol className="conversation-index">
         {conversations.map((conversation) => {
           const lastMessage = conversation.lastMessage;
+          const turnState = lastMessage
+            ? lastMessage.senderId === currentUserId
+              ? { label: "Esperas respuesta", className: "is-waiting" }
+              : { label: "Te toca responder", className: "is-action" }
+            : null;
           const preview = lastMessage
             ? `${lastMessage.senderId === currentUserId ? "Tú: " : ""}${lastMessage.body}`
             : "Abre el hilo para continuar.";
@@ -146,8 +151,15 @@ export function ConversationInbox({
                   {lastMessage ? formatActivity(lastMessage.createdAt) : formatActivity(conversation.updatedAt)}
                 </time>
                 <span className="conversation-index-main">
-                  <span className="conversation-direction">
-                    {conversation.direction === "received" ? "Te preguntaron" : "Preguntaste tú"}
+                  <span className="conversation-index-kicker">
+                    <span className="conversation-direction">
+                      {conversation.direction === "received" ? "Te preguntaron" : "Preguntaste tú"}
+                    </span>
+                    {turnState ? (
+                      <span className={`conversation-turn ${turnState.className}`}>
+                        {turnState.label}
+                      </span>
+                    ) : null}
                   </span>
                   <span className="conversation-counterpart">{conversation.otherStudentName}</span>
                   <span className="conversation-listing-title">{conversation.listing.title}</span>
