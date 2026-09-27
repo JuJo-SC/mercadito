@@ -152,6 +152,12 @@ export function ManageListings({ initialListings }: { initialListings: ManagedLi
               <span>{conditionLabels[listing.condition] ?? "Condición no especificada"}</span>
             </p>
             <div className="seller-listing-actions" role="group" aria-label={"Acciones para " + listing.title}>
+              <Link
+                href={`/publicar?editar=${encodeURIComponent(listing.id)}`}
+                aria-label={"Editar contenido: " + listing.title}
+              >
+                Editar
+              </Link>
               {statusActions[listing.status].map((action) => (
                 <button
                   key={action.status}

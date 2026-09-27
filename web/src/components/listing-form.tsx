@@ -38,6 +38,24 @@ type ListingDraft = {
   description: string;
 };
 
+type EditableListing = {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  category: string;
+  condition: string;
+  status: "DRAFT" | "PUBLISHED" | "RESERVED" | "SOLD" | "ARCHIVED";
+};
+
+const listingStatusLabels = {
+  DRAFT: "Borrador",
+  PUBLISHED: "Publicado",
+  RESERVED: "Apartado",
+  SOLD: "Vendido",
+  ARCHIVED: "Archivado",
+} as const;
+
 const emptyDraft: ListingDraft = {
   title: "",
   category: "",
@@ -61,11 +79,24 @@ function formatPrice(value: string) {
 export function ListingForm({
   universityName,
   demo = false,
+  listing,
 }: {
   universityName: string;
   demo?: boolean;
+  listing?: EditableListing;
 }) {
-  const [draft, setDraft] = useState<ListingDraft>(emptyDraft);
+  const editing = Boolean(listing);
+  const [draft, setDraft] = useState<ListingDraft>(() =>
+    listing
+      ? {
+          title: listing.title,
+          category: listing.category,
+          condition: listing.condition,
+          price: String(listing.price),
+          description: listing.description,
+        }
+      : emptyDraft,
+  );
   const [step, setStep] = useState(0);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -121,19 +152,23 @@ export function ListingForm({
     }
 
     try {
-      const response = await fetch("/api/listings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: draft.title,
-          description: draft.description,
-          price: Number(draft.price),
-          category: draft.category,
-          condition: draft.condition,
-          imageUrl: "",
-          publish: true,
-        }),
-      });
+      const content = {
+        title: draft.title,
+        description: draft.description,
+        price: Number(draft.price),
+        category: draft.category,
+        condition: draft.condition,
+      };
+      const response = await fetch(
+        listing ? `/api/listings/${encodeURIComponent(listing.id)}` : "/api/listings",
+        {
+          method: listing ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(
+            listing ? content : { ...content, imageUrl: "", publish: true },
+          ),
+        },
+      );
       const result = (await response.json().catch(() => null)) as
         | { error?: string }
         | null;
@@ -194,11 +229,19 @@ export function ListingForm({
           <CircleCheck size={19} strokeWidth={1.8} />
         </span>
         <div>
-          <h2>{demo ? "Tu vista previa está lista." : "Tu aviso ya está publicado."}</h2>
+          <h2>
+            {demo
+              ? "Tu vista previa está lista."
+              : editing
+                ? "Tu aviso quedó actualizado."
+                : "Tu aviso ya está publicado."}
+          </h2>
           <p>
             {demo
               ? "Este recorrido es una demostración: el aviso no se publicó, no se guardó y no se envió a ningún servicio."
-              : `El aviso aparece en el mercadito privado de ${universityName}. Puedes revisar su estado desde Mis avisos.`}
+              : editing
+                ? `Guardamos los cambios en ${universityName}. El aviso conserva su estado: ${listing ? listingStatusLabels[listing.status].toLowerCase() : "sin cambios"}.`
+                : `El aviso aparece en el mercadito privado de ${universityName}. Puedes revisar su estado desde Mis avisos.`}
           </p>
           {preview}
           <div className="publish-success-actions">
@@ -261,17 +304,29 @@ export function ListingForm({
         <div className="form-section-heading publish-step-heading">
           <h2 id="listing-step-title" ref={headingRef} tabIndex={-1}>
             {step === 0
-              ? "¿Qué artículo quieres vender?"
+              ? editing
+                ? "¿Qué artículo quieres actualizar?"
+                : "¿Qué artículo quieres vender?"
               : step === 1
-                ? "Ponle precio y contexto."
-                : "Revisa tu clasificado."}
+                ? editing
+                  ? "Ajusta el precio y el contexto."
+                  : "Ponle precio y contexto."
+                : editing
+                  ? "Revisa los cambios antes de guardar."
+                  : "Revisa tu clasificado."}
           </h2>
           <p>
             {step === 0
-              ? "Empieza por lo que alguien necesitaría para reconocerlo."
+              ? editing
+                ? "Corrige el título, la categoría o la condición del artículo."
+                : "Empieza por lo que alguien necesitaría para reconocerlo."
               : step === 1
-                ? "Una condición clara y una buena descripción evitan dudas."
-                : `Así lo verán los estudiantes activos de ${universityName}.`}
+                ? editing
+                  ? "Ajusta el precio o añade el contexto que haga falta."
+                  : "Una condición clara y una buena descripción evitan dudas."
+                : editing
+                  ? "Así quedará el aviso. Su disponibilidad no cambiará."
+                  : `Así lo verán los estudiantes activos de ${universityName}.`}
           </p>
         </div>
 
@@ -414,7 +469,9 @@ export function ListingForm({
             <p className="publish-review-note">
               {demo
                 ? "Al terminar verás la vista previa. No se enviará ni guardará el aviso."
-                : "Al publicar, el aviso será visible para estudiantes activos de tu universidad."}
+                : editing && listing
+                  ? `Disponibilidad actual: ${listingStatusLabels[listing.status]}. Al guardar, se conserva este estado.`
+                  : "Al publicar, el aviso será visible para estudiantes activos de tu universidad."}
             </p>
           </div>
         ) : null}
@@ -457,10 +514,14 @@ export function ListingForm({
                 <LoaderCircle className="publish-loading-icon" aria-hidden="true" size={17} />
               ) : null}
               {pending
-                ? "Publicando…"
+                ? editing
+                  ? "Guardando cambios…"
+                  : "Publicando…"
                 : demo
                   ? "Terminar demostración"
-                  : "Publicar aviso"}
+                  : editing
+                    ? "Guardar cambios"
+                    : "Publicar aviso"}
               {!pending ? <ArrowRight aria-hidden="true" size={17} /> : null}
             </button>
           )}

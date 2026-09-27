@@ -2462,7 +2462,8 @@ select {
   margin-top: 0.7rem;
 }
 
-.seller-listing-actions button {
+.seller-listing-actions button,
+.seller-listing-actions a {
   min-height: 44px;
   padding: 0.35rem 0;
   border: 0;
@@ -2475,7 +2476,8 @@ select {
   text-underline-offset: 0.25em;
 }
 
-.seller-listing-actions button:hover:not(:disabled) {
+.seller-listing-actions button:hover:not(:disabled),
+.seller-listing-actions a:hover {
   border-color: var(--coral);
   color: var(--error);
 }
@@ -2546,7 +2548,8 @@ select {
     gap: 0.25rem 0.8rem;
   }
 
-  .seller-listing-actions button {
+  .seller-listing-actions button,
+  .seller-listing-actions a {
     font-size: 0.81rem;
   }
 }

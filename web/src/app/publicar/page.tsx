@@ -6,14 +6,16 @@ import { ListingForm } from "@/components/listing-form";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 type PublishPageProps = {
-  searchParams: Promise<{ demo?: string | string[] }>;
+  searchParams: Promise<{ demo?: string | string[]; editar?: string | string[] }>;
 };
 
 export const dynamic = "force-dynamic";
 
 export default async function PublishPage({ searchParams }: PublishPageProps) {
   const params = await searchParams;
-  const demoMode = params.demo === "1";
+  const editRequested = params.editar !== undefined;
+  const editId = typeof params.editar === "string" ? params.editar.trim() : "";
+  const demoMode = params.demo === "1" && !editRequested;
   const student = demoMode ? null : await getActiveStudent();
   const university = student
     ? await prisma.university.findFirst({
@@ -21,6 +23,29 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
         select: { name: true, isTest: true },
       })
     : null;
+  const editableListing = editRequested && editId && student
+    ? await prisma.listing.findFirst({
+        where: {
+          id: editId,
+          sellerId: student.id,
+          universityId: student.universityId,
+          isDemo: false,
+          university: { status: "ACTIVE", isDemo: false },
+        },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          price: true,
+          category: true,
+          condition: true,
+          status: true,
+        },
+      })
+    : null;
+  const editLoginHref = editRequested && editId
+    ? `/ingresar?returnTo=${encodeURIComponent(`/publicar?editar=${encodeURIComponent(editId)}`)}`
+    : "/ingresar";
   const loginAvailable = demoMode
     ? false
     : university
@@ -33,16 +58,24 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
     <>
       <SiteHeader signedIn={Boolean(student)} userName={student?.name} />
       <main className="form-page page-width publish-page">
-        <Link className="back-link" href={demoMode ? "/publicar" : "/"}>
+        <Link className="back-link" href={editRequested ? "/mis-avisos" : demoMode ? "/publicar" : "/"}>
           <ArrowRight aria-hidden="true" size={16} />
-          {demoMode ? "Salir del recorrido" : "Volver a los avisos"}
+          {editRequested ? "Volver a Mis avisos" : demoMode ? "Salir del recorrido" : "Volver a los avisos"}
         </Link>
         <div className="form-intro">
-          <h1>{demoMode ? "Arma un clasificado para tu campus." : "Prepara un aviso para tu campus."}</h1>
+          <h1>
+            {demoMode
+              ? "Arma un clasificado para tu campus."
+              : editRequested
+                ? "Ajusta el aviso de tu campus."
+                : "Prepara un aviso para tu campus."}
+          </h1>
           <p>
             {demoMode
               ? "Recorre los pasos de publicación y revisa cómo se verá tu artículo en la gaceta."
-              : "Describe el artículo con claridad. Solo estudiantes activos de tu universidad podrán ver esta publicación."}
+              : editRequested
+                ? "Corrige los datos del artículo. Guardar conserva su disponibilidad actual."
+                : "Describe el artículo con claridad. Solo estudiantes activos de tu universidad podrán ver esta publicación."}
           </p>
         </div>
 
@@ -62,8 +95,44 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
             </p>
             <ListingForm universityName="Comunidad de demostración" demo />
           </>
+        ) : editRequested && student && university && editableListing ? (
+          <ListingForm
+            key={editableListing.id}
+            universityName={university.name}
+            listing={{
+              ...editableListing,
+              price: editableListing.price.toNumber(),
+            }}
+          />
+        ) : editRequested && student ? (
+          <section className="auth-notice">
+            <div className="auth-panel-heading">
+              <h2>No encontramos ese aviso en tu campus.</h2>
+            </div>
+            <p>Revisa tus avisos y vuelve a intentarlo desde la cuenta con la que lo publicaste.</p>
+            <div className="form-actions">
+              <Link className="button-ink" href="/mis-avisos">
+                Ir a Mis avisos
+                <ArrowRight aria-hidden="true" size={17} />
+              </Link>
+            </div>
+          </section>
+        ) : editRequested ? (
+          <section className="auth-notice">
+            <div className="auth-panel-heading">
+              <LockKeyhole aria-hidden="true" size={22} strokeWidth={1.7} />
+              <h2>Inicia sesión para revisar este aviso.</h2>
+            </div>
+            <p>Usa la cuenta institucional con la que publicaste el artículo para editarlo.</p>
+            <div className="form-actions">
+              <Link className="button-ink" href={editLoginHref}>
+                Acceso institucional
+                <ArrowRight aria-hidden="true" size={17} />
+              </Link>
+            </div>
+          </section>
         ) : student && university ? (
-          <ListingForm universityName={university.name} />
+          <ListingForm key="new" universityName={university.name} />
         ) : (
           <section className="auth-notice">
             <div className="auth-panel-heading">

@@ -7,12 +7,32 @@ import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";
 
-async function startInstitutionalLogin() {
-  "use server";
-  await signIn("keycloak", { redirectTo: "/" });
+type SignInPageProps = {
+  searchParams: Promise<{ returnTo?: string | string[] }>;
+};
+
+function safeReturnTo(value: string | string[] | undefined) {
+  if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//") || value.includes("\\")) {
+    return "/";
+  }
+
+  try {
+    const destination = new URL(value, "https://mercadito.invalid");
+    if (destination.origin !== "https://mercadito.invalid") return "/";
+    return `${destination.pathname}${destination.search}${destination.hash}`;
+  } catch {
+    return "/";
+  }
 }
 
-export default async function SignInPage() {
+async function startInstitutionalLogin(formData: FormData) {
+  "use server";
+  await signIn("keycloak", { redirectTo: safeReturnTo(formData.get("returnTo")?.toString()) });
+}
+
+export default async function SignInPage({ searchParams }: SignInPageProps) {
+  const params = await searchParams;
+  const returnTo = safeReturnTo(params.returnTo);
   const student = await getActiveStudent();
   const availableUniversity = student
     ? true
@@ -71,6 +91,7 @@ export default async function SignInPage() {
               universidad. Mercadito no recibe tu contraseña.
             </p>
             <form action={startInstitutionalLogin}>
+              <input type="hidden" name="returnTo" value={returnTo} />
               <button className="button-ink form-submit" type="submit">
                 Continuar con mi universidad
                 <ArrowRight aria-hidden="true" size={17} />

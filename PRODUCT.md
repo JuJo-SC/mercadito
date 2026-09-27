@@ -29,15 +29,16 @@ La pertenencia a una universidad define el acceso al mercadito de esa comunidad.
 - Confirmado: los alumnos usan sus credenciales institucionales para iniciar sesión.
 - Confirmado: una universidad puede solicitar su registro.
 - Inferencia provisional: descubrimiento y publicación de artículos ocurren principalmente desde el teléfono y dentro de la comunidad universitaria.
-- Abierto: si el intercambio será presencial en campus, mediante mensajería, o incluirá pagos.
+- Confirmado: el comprador y el vendedor podrán iniciar la coordinación mediante chat dentro de Mercadito; si ambos lo deciden, podrán continuar por otro medio.
+- Confirmado: Mercadito será intermediario y no procesará, recibirá ni resguardará pagos; cualquier pago se acordará fuera de la plataforma.
 
 ## Capabilities and Constraints
 
 - Requerido: registro de universidades, acceso institucional de alumnos y experiencia web instalable en dispositivos móviles.
 - Elección de stack: Keycloak aceptará proveedores institucionales OIDC o SAML y ofrecerá OIDC a la aplicación.
 - Dato pendiente: cada universidad debe facilitar los datos de su proveedor de identidad y aclarar qué información permite verificar que alguien es alumno activo.
-- Suposición para el primer MVP, pendiente de confirmación: publicar y explorar artículos, sin procesar pagos.
-- Los estudiantes pueden consultar sus propios avisos y cambiar su disponibilidad (publicado, apartado, vendido o archivado) dentro de su campus.
+- Alcance confirmado para el MVP: publicar y explorar artículos, conversar por chat para coordinar el interés, sin procesar pagos.
+- Los estudiantes pueden consultar y editar sus propios avisos, cambiar su disponibilidad (publicado, apartado, vendido o archivado) dentro de su campus, y conversar con interesados.
 
 - Inferencia provisional a partir de «mercadito interno»: sin sesión solo se muestra el campus ficticio de demostración; una cuenta estudiantil activa solo accede al mercadito de su universidad.
 
