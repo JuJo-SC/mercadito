@@ -187,7 +187,7 @@ La geometría es cuadrada y de bordes precisos: la mayoría de botones, avisos, 
 - **Condition options:** opciones rectangulares de al menos 48px, con fondo de papel secundario al seleccionarse y acento de foco coral.
 
 ### Cards / Containers
-- **Classified entry:** fila de índice con número, título, categoría, condición, vendedor, precio y disclosure; una regla inferior separa las filas. Al abrirla, descripción, vendedor y fecha aparecen debajo de una regla superior.
+- **Classified entry:** fila de índice con número, título, categoría, condición, vendedor, precio y disclosure; una regla inferior separa las filas. Al abrirla, descripción, vendedor y fecha aparecen debajo de una regla superior. Si existe, una foto opcional se muestra dentro del despliegue, nunca como miniatura repetida en cada fila.
 - **Preview:** la vista previa de publicación usa regla carbón superior de 2px e inferior fina, con nombre y precio en primer plano.
 - **Demo / campus de prueba:** franja de lima con texto carbón y etiqueta explícita para distinguir ejemplos ficticios y campus de prueba de comunidades reales; en UMAN recuerda usar datos ficticios.
 
@@ -208,7 +208,7 @@ La navegación de escritorio usa enlaces sans serif en tinta secundaria. Hover y
 - **Thread:** deja fija arriba la ficha del aviso relacionado y desplaza solo el historial cronológico. El aviso de pagos fuera de Mercadito queda visible junto a esa referencia. El MVP usa mensajes de texto sin adjuntos ni controles de pago.
 
 ### Publication flow
-El progreso muestra tres etapas. La etapa activa se marca con tinta carbón, las completadas con lima y las futuras con papel quieto. La revisión final conserva título, categoría, condición, precio y descripción antes de confirmar.
+El progreso muestra tres etapas. La etapa activa se marca con tinta carbón, las completadas con lima y las futuras con papel quieto. En Artículo se puede adjuntar una foto opcional, única y de hasta 8 MB; el campo usa controles de archivo nativos para abrir cámara o galería móvil. La revisión final conserva título, categoría, condición, precio, descripción y la foto seleccionada antes de confirmar. La vista previa muestra la foto contenida completa sobre papel secundario, sin recortarla.
 
 ## Do's and Don'ts
 

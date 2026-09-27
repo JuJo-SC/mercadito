@@ -2,6 +2,11 @@ import { z } from "zod";
 import { ListingCategory, type ListingStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getActiveStudent } from "@/lib/require-student";
+import {
+  ListingPhotoInputError,
+  parseListingMultipart,
+  parseListingPhoto,
+} from "@/lib/listing-photo";
 
 const updateListingSchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED", "RESERVED", "SOLD", "ARCHIVED"]),
@@ -48,6 +53,7 @@ export async function GET(
       category: true,
       condition: true,
       imageUrl: true,
+      photo: { select: { listingId: true } },
       isDemo: true,
       createdAt: true,
       university: { select: { name: true, slug: true, isDemo: true } },
@@ -72,8 +78,13 @@ export async function GET(
     }
   }
 
+  const { photo, ...listingData } = listing;
   return Response.json({
-    listing: { ...listing, price: listing.price.toNumber() },
+    listing: {
+      ...listingData,
+      imageUrl: photo ? `/api/listings/${encodeURIComponent(listing.id)}/photo` : null,
+      price: listing.price.toNumber(),
+    },
   }, { headers: privateNoStore });
 }
 
@@ -84,16 +95,51 @@ export async function PUT(
 ) {
   const student = await getActiveStudent();
   if (!student) {
-    return Response.json({ error: "Inicia sesión con tu cuenta institucional." }, { status: 401 });
+    return Response.json(
+      { error: "Inicia sesión con tu cuenta institucional." },
+      { status: 401, headers: privateNoStore },
+    );
   }
 
   const { id } = await context.params;
-  const body: unknown = await request.json().catch(() => null);
-  const parsed = editListingSchema.safeParse(body);
-  if (!parsed.success) {
+  let content: z.infer<typeof editListingSchema>;
+  let photo: Awaited<ReturnType<typeof parseListingPhoto>> = null;
+  let removePhoto = false;
+  try {
+    const formData = await parseListingMultipart(request);
+    const rawPrice = formData.get("price");
+    const parsed = editListingSchema.safeParse({
+      title: formData.get("title"),
+      description: formData.get("description"),
+      price: typeof rawPrice === "string" && rawPrice.trim() ? Number(rawPrice) : Number.NaN,
+      category: formData.get("category"),
+      condition: formData.get("condition"),
+    });
+    if (!parsed.success) {
+      return Response.json(
+        { error: "Revisa el título, la descripción, el precio y la categoría." },
+        { status: 400, headers: privateNoStore },
+      );
+    }
+    content = parsed.data;
+    photo = await parseListingPhoto(formData);
+    removePhoto = formData.get("removePhoto") === "true";
+    if (photo && removePhoto) {
+      return Response.json(
+        { error: "Elige entre reemplazar la foto o quitarla." },
+        { status: 400, headers: privateNoStore },
+      );
+    }
+  } catch (error) {
+    if (error instanceof ListingPhotoInputError) {
+      return Response.json(
+        { error: error.message },
+        { status: error.status, headers: privateNoStore },
+      );
+    }
     return Response.json(
-      { error: "Revisa el título, la descripción, el precio y la categoría." },
-      { status: 400 },
+      { error: "No pudimos leer el formulario. Intenta de nuevo." },
+      { status: 400, headers: privateNoStore },
     );
   }
 
@@ -109,25 +155,42 @@ export async function PUT(
   });
 
   if (!listing) {
-    return Response.json({ error: "No encontramos ese aviso." }, { status: 404 });
+    return Response.json(
+      { error: "No encontramos ese aviso." },
+      { status: 404, headers: privateNoStore },
+    );
   }
 
-  const changed = await prisma.listing.updateMany({
-    where: {
-      id,
-      sellerId: student.id,
-      universityId: student.universityId,
-      isDemo: false,
-      updatedAt: listing.updatedAt,
-      university: { status: "ACTIVE", isDemo: false },
-    },
-    data: parsed.data,
+  const changed = await prisma.$transaction(async (transaction) => {
+    const result = await transaction.listing.updateMany({
+      where: {
+        id,
+        sellerId: student.id,
+        universityId: student.universityId,
+        isDemo: false,
+        updatedAt: listing.updatedAt,
+        university: { status: "ACTIVE", isDemo: false },
+      },
+      data: content,
+    });
+    if (result.count !== 1) return result;
+
+    if (photo) {
+      await transaction.listingPhoto.upsert({
+        where: { listingId: id },
+        create: { listingId: id, ...photo },
+        update: photo,
+      });
+    } else if (removePhoto) {
+      await transaction.listingPhoto.deleteMany({ where: { listingId: id } });
+    }
+    return result;
   });
 
   if (changed.count !== 1) {
     return Response.json(
       { error: "El aviso cambió mientras lo editabas. Recarga y vuelve a intentar." },
-      { status: 409 },
+      { status: 409, headers: privateNoStore },
     );
   }
 
@@ -150,16 +213,25 @@ export async function PUT(
       status: true,
       createdAt: true,
       updatedAt: true,
+      photo: { select: { listingId: true } },
     },
   });
 
   if (!updatedListing) {
-    return Response.json({ error: "No encontramos ese aviso." }, { status: 404 });
+    return Response.json(
+      { error: "No encontramos ese aviso." },
+      { status: 404, headers: privateNoStore },
+    );
   }
 
+  const { photo: updatedPhoto, ...updatedListingData } = updatedListing;
   return Response.json({
-    listing: { ...updatedListing, price: updatedListing.price.toNumber() },
-  });
+    listing: {
+      ...updatedListingData,
+      imageUrl: updatedPhoto ? `/api/listings/${encodeURIComponent(id)}/photo` : null,
+      price: updatedListing.price.toNumber(),
+    },
+  }, { headers: privateNoStore });
 }
 
 export async function PATCH(

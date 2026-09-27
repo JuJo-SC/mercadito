@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import Link from "next/link";
 import {
@@ -46,6 +46,7 @@ type EditableListing = {
   category: string;
   condition: string;
   status: "DRAFT" | "PUBLISHED" | "RESERVED" | "SOLD" | "ARCHIVED";
+  imageUrl: string | null;
 };
 
 const listingStatusLabels = {
@@ -101,7 +102,23 @@ export function ListingForm({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [removePhoto, setRemovePhoto] = useState(false);
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    if (!photoFile) {
+      setPhotoPreviewUrl(null);
+      return;
+    }
+    const previewUrl = URL.createObjectURL(photoFile);
+    setPhotoPreviewUrl(previewUrl);
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [photoFile]);
+
+  const currentPhotoUrl = photoPreviewUrl ??
+    (removePhoto ? null : listing?.imageUrl ?? null);
 
   function updateDraft(field: keyof ListingDraft, value: string) {
     setDraft((current) => ({ ...current, [field]: value }));
@@ -152,21 +169,21 @@ export function ListingForm({
     }
 
     try {
-      const content = {
-        title: draft.title,
-        description: draft.description,
-        price: Number(draft.price),
-        category: draft.category,
-        condition: draft.condition,
-      };
+      const formData = new FormData();
+      formData.set("title", draft.title);
+      formData.set("description", draft.description);
+      formData.set("price", String(Number(draft.price)));
+      formData.set("category", draft.category);
+      formData.set("condition", draft.condition);
+      formData.set("publish", "true");
+      if (photoFile) formData.set("photo", photoFile);
+      if (removePhoto) formData.set("removePhoto", "true");
+
       const response = await fetch(
         listing ? `/api/listings/${encodeURIComponent(listing.id)}` : "/api/listings",
         {
           method: listing ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(
-            listing ? content : { ...content, imageUrl: "", publish: true },
-          ),
+          body: formData,
         },
       );
       const result = (await response.json().catch(() => null)) as
@@ -194,6 +211,8 @@ export function ListingForm({
     setStep(0);
     setError("");
     setSent(false);
+    setPhotoFile(null);
+    setRemovePhoto(false);
   }
 
   const categoryLabel =
@@ -205,6 +224,13 @@ export function ListingForm({
 
   const preview = (
     <article className="classified-preview" aria-label="Vista previa del aviso">
+      {currentPhotoUrl ? (
+        <img
+          className="classified-preview-photo"
+          src={currentPhotoUrl}
+          alt={`Foto de ${draft.title || "tu artículo"}`}
+        />
+      ) : null}
       <div className="classified-preview-heading">
         <div>
           <h3>{draft.title || "Título del artículo"}</h3>
@@ -396,6 +422,52 @@ export function ListingForm({
                 })}
               </div>
             </fieldset>
+
+            <div className="listing-photo-field">
+              <label htmlFor="listing-photo">Foto del artículo <span>Opcional</span></label>
+              <p id="listing-photo-help">
+                Una imagen basta para mostrar su estado. JPG, PNG o WebP; máximo 8 MB.
+              </p>
+              {currentPhotoUrl ? (
+                <img
+                  className="listing-photo-preview"
+                  src={currentPhotoUrl}
+                  alt={`Foto de ${draft.title || "tu artículo"}`}
+                />
+              ) : null}
+              <input
+                className="listing-photo-input"
+                id="listing-photo"
+                name="photo"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                aria-describedby="listing-photo-help"
+                onChange={(event) => {
+                  const selected = event.currentTarget.files?.[0] ?? null;
+                  event.currentTarget.value = "";
+                  if (!selected) return;
+                  if (selected.size > 8 * 1024 * 1024) {
+                    setError("La foto pesa más de 8 MB. Elige una imagen más ligera.");
+                    return;
+                  }
+                  setError("");
+                  setRemovePhoto(false);
+                  setPhotoFile(selected);
+                }}
+              />
+              {currentPhotoUrl ? (
+                <button
+                  className="text-action listing-photo-remove"
+                  type="button"
+                  onClick={() => {
+                    setPhotoFile(null);
+                    setRemovePhoto(true);
+                  }}
+                >
+                  Quitar foto
+                </button>
+              ) : null}
+            </div>
           </div>
         ) : null}
 

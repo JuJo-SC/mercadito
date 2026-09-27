@@ -860,6 +860,16 @@ select {
   border-top: 1px solid var(--rule);
 }
 
+.notice-photo {
+  display: block;
+  width: min(100%, 34rem);
+  max-height: 25rem;
+  margin: 0 0 1rem;
+  border: 1px solid var(--rule);
+  background: var(--paper-alt);
+  object-fit: contain;
+}
+
 .notice-description p {
   max-width: 72ch;
   margin: 0;
@@ -1385,6 +1395,66 @@ select {
   max-width: 100%;
 }
 
+.listing-photo-field {
+  display: grid;
+  justify-items: start;
+  gap: 0.45rem;
+}
+
+.listing-photo-field > label {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.listing-photo-field > label span {
+  margin-left: 0.35rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.listing-photo-field > p {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.listing-photo-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.35rem;
+  border: 1px solid rgba(24, 37, 45, 0.35);
+  background: #fffdf8;
+  font-size: 0.88rem;
+}
+
+.listing-photo-input::file-selector-button {
+  min-height: 38px;
+  margin-right: 0.65rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--rule);
+  background: var(--paper-alt);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.listing-photo-preview {
+  display: block;
+  width: min(100%, 26rem);
+  max-height: 16rem;
+  border: 1px solid var(--rule);
+  background: var(--paper-alt);
+  object-fit: contain;
+}
+
+.listing-photo-remove {
+  min-height: 40px;
+}
+
 .condition-fieldset {
   min-width: 0;
   margin: 0;
@@ -1490,6 +1560,16 @@ select {
   padding-block: 1rem 1.1rem;
   border-top: 2px solid var(--ink);
   border-bottom: 1px solid var(--rule);
+}
+
+.classified-preview-photo {
+  display: block;
+  width: min(100%, 32rem);
+  max-height: 16rem;
+  margin: 0 0 0.9rem;
+  border: 1px solid var(--rule);
+  background: var(--paper-alt);
+  object-fit: contain;
 }
 
 .classified-preview-heading {

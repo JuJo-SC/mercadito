@@ -40,13 +40,14 @@ La pertenencia a una universidad define el acceso al mercadito de esa comunidad.
 - Alcance confirmado para el MVP: publicar y explorar artículos, conversar por chat para coordinar el interés, sin procesar pagos.
 - Los estudiantes pueden consultar y editar sus propios avisos, cambiar su disponibilidad (publicado, apartado, vendido o archivado) dentro de su campus, y conversar con interesados.
 - El chat del MVP permite mensajes de texto entre estudiantes del mismo campus; no admite adjuntos.
+- Cada aviso puede incluir una foto opcional. Se limita a una imagen JPG, PNG o WebP, se convierte a WebP y solo se entrega a estudiantes activos del mismo campus; el recorrido de demostración solo previsualiza la selección y no la guarda.
 - Si una navegación falla por red o disponibilidad, la PWA muestra una página estática; no almacena ni reenvía publicaciones, mensajes o datos privados.
 
 - Inferencia provisional a partir de «mercadito interno»: sin sesión solo se muestra el campus ficticio de demostración; una cuenta estudiantil activa solo accede al mercadito de su universidad.
 
 ## Evidence on Hand
 
-El brief de producto proviene de la persona usuaria. Aún no hay proveedor institucional conectado, logotipo, fotografías ni catálogo real. El servidor tiene UMAN como campus de prueba (isTest) y cuentas locales sintéticas de Keycloak para recorrer la publicación; no verifican matrícula. Cualquier artículo de muestra debe identificarse como contenido ficticio y las credenciales no deben guardarse en Git.
+El brief de producto proviene de la persona usuaria. Aún no hay proveedor institucional conectado, logotipo, fotografías reales ni catálogo real. El servidor tiene UMAN como campus de prueba (isTest) y cuentas locales sintéticas de Keycloak para recorrer la publicación; no verifican matrícula. La publicación permite adjuntar una foto de artículo, pero no existen imágenes de ejemplo precargadas. Cualquier artículo de muestra debe identificarse como contenido ficticio y las credenciales no deben guardarse en Git.
 
 ## Pendiente antes de recibir solicitudes reales
 

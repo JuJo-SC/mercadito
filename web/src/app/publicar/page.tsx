@@ -44,6 +44,7 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
           category: true,
           condition: true,
           status: true,
+          photo: { select: { listingId: true } },
         },
       })
     : null;
@@ -106,8 +107,16 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
             key={editableListing.id}
             universityName={university.name}
             listing={{
-              ...editableListing,
+              id: editableListing.id,
+              title: editableListing.title,
+              description: editableListing.description,
               price: editableListing.price.toNumber(),
+              category: editableListing.category,
+              condition: editableListing.condition,
+              status: editableListing.status,
+              imageUrl: editableListing.photo
+                ? `/api/listings/${encodeURIComponent(editableListing.id)}/photo`
+                : null,
             }}
           />
         ) : editRequested && student ? (

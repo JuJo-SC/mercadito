@@ -35,6 +35,7 @@ export default async function Home() {
           category: true,
           condition: true,
           imageUrl: true,
+          photo: { select: { listingId: true } },
           isDemo: true,
           createdAt: true,
           seller: { select: { id: true, name: true } },
@@ -54,9 +55,19 @@ export default async function Home() {
         <Marketplace
           university={university}
           initialListings={initialListings.map((listing) => ({
-            ...listing,
+            id: listing.id,
+            title: listing.title,
+            description: listing.description,
             price: listing.price.toNumber(),
+            currency: listing.currency,
+            category: listing.category,
+            condition: listing.condition,
+            imageUrl: listing.photo
+              ? `/api/listings/${encodeURIComponent(listing.id)}/photo`
+              : null,
+            isDemo: listing.isDemo,
             createdAt: listing.createdAt.toISOString(),
+            seller: listing.seller,
           }))}
           canSignIn={realUniversityCount > 0}
           applicationIntakeEnabled={

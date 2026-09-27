@@ -2,6 +2,11 @@ import { z } from "zod";
 import { ListingCategory } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getActiveStudent } from "@/lib/require-student";
+import {
+  ListingPhotoInputError,
+  parseListingMultipart,
+  parseListingPhoto,
+} from "@/lib/listing-photo";
 
 export const runtime = "nodejs";
 
@@ -13,7 +18,6 @@ const createListingSchema = z.object({
   price: z.number().finite().min(0).max(1000000),
   category: z.enum(ListingCategory),
   condition: z.enum(["NEW", "LIKE_NEW", "GOOD", "FAIR"]),
-  imageUrl: z.union([z.url().max(1200), z.literal("")]).optional(),
   publish: z.boolean().default(true),
 });
 
@@ -87,6 +91,7 @@ export async function GET(request: Request) {
         category: true,
         condition: true,
         imageUrl: true,
+        photo: { select: { listingId: true } },
         isDemo: true,
         createdAt: true,
         seller: { select: { id: true, name: true } },
@@ -100,8 +105,17 @@ export async function GET(request: Request) {
     pageSize: 24,
     total,
     listings: listings.map((listing) => ({
-      ...listing,
+      id: listing.id,
+      title: listing.title,
+      description: listing.description,
       price: listing.price.toNumber(),
+      currency: listing.currency,
+      category: listing.category,
+      condition: listing.condition,
+      imageUrl: listing.photo ? `/api/listings/${encodeURIComponent(listing.id)}/photo` : null,
+      isDemo: listing.isDemo,
+      createdAt: listing.createdAt,
+      seller: listing.seller,
     })),
   }, { headers: privateNoStore });
 }
@@ -109,43 +123,81 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const student = await getActiveStudent();
   if (!student) {
-    return Response.json({ error: "Inicia sesión con tu cuenta institucional." }, { status: 401 });
-  }
-
-  const body: unknown = await request.json().catch(() => null);
-  const parsed = createListingSchema.safeParse(body);
-  if (!parsed.success) {
     return Response.json(
-      { error: "Revisa el título, la descripción, el precio y la categoría." },
-      { status: 400 },
+      { error: "Inicia sesión con tu cuenta institucional." },
+      { status: 401, headers: privateNoStore },
     );
   }
 
-  const listing = await prisma.listing.create({
-    data: {
-      ...parsed.data,
-      imageUrl: parsed.data.imageUrl || null,
-      status: parsed.data.publish ? "PUBLISHED" : "DRAFT",
-      universityId: student.universityId,
-      sellerId: student.id,
-    },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      price: true,
-      currency: true,
-      category: true,
-      condition: true,
-      status: true,
-      imageUrl: true,
-      isDemo: true,
-      createdAt: true,
-    },
-  });
+  let formData: FormData;
+  let photo: Awaited<ReturnType<typeof parseListingPhoto>>;
+  try {
+    formData = await parseListingMultipart(request);
+    const rawPrice = formData.get("price");
+    const parsed = createListingSchema.safeParse({
+      title: formData.get("title"),
+      description: formData.get("description"),
+      price: typeof rawPrice === "string" && rawPrice.trim() ? Number(rawPrice) : Number.NaN,
+      category: formData.get("category"),
+      condition: formData.get("condition"),
+      publish: formData.get("publish") !== "false",
+    });
+    if (!parsed.success) {
+      return Response.json(
+        { error: "Revisa el título, la descripción, el precio y la categoría." },
+        { status: 400, headers: privateNoStore },
+      );
+    }
+    photo = await parseListingPhoto(formData);
 
-  return Response.json(
-    { listing: { ...listing, price: listing.price.toNumber() } },
-    { status: 201 },
-  );
+    const { publish, ...content } = parsed.data;
+    const listing = await prisma.$transaction(async (transaction) => {
+      const created = await transaction.listing.create({
+        data: {
+          ...content,
+          imageUrl: null,
+          status: publish ? "PUBLISHED" : "DRAFT",
+          universityId: student.universityId,
+          sellerId: student.id,
+        },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          price: true,
+          currency: true,
+          category: true,
+          condition: true,
+          status: true,
+          isDemo: true,
+          createdAt: true,
+        },
+      });
+      if (photo) {
+        await transaction.listingPhoto.create({
+          data: { listingId: created.id, ...photo },
+        });
+      }
+      return created;
+    });
+
+    return Response.json(
+      {
+        listing: {
+          ...listing,
+          price: listing.price.toNumber(),
+          imageUrl: photo ? `/api/listings/${encodeURIComponent(listing.id)}/photo` : null,
+        },
+      },
+      { status: 201, headers: privateNoStore },
+    );
+  } catch (error) {
+    if (error instanceof ListingPhotoInputError) {
+      return Response.json({ error: error.message }, { status: error.status, headers: privateNoStore });
+    }
+    return Response.json(
+      { error: "No pudimos publicar el aviso. Intenta de nuevo." },
+      { status: 503, headers: privateNoStore },
+    );
+  }
 }

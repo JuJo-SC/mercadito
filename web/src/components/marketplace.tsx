@@ -352,6 +352,15 @@ export function Marketplace({
                 </summary>
                 <div className="notice-expanded">
                   <div className="notice-description">
+                    {listing.imageUrl ? (
+                      <img
+                        className="notice-photo"
+                        src={listing.imageUrl}
+                        alt={`Foto de ${listing.title}`}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : null}
                     <p>{listing.description}</p>
                     {listing.isDemo ? (
                       <span className="notice-demo-note">

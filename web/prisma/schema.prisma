@@ -173,6 +173,7 @@ model Listing {
   seller       User            @relation(fields: [sellerId], references: [id], onDelete: Restrict)
   favorites    Favorite[]
   conversations Conversation[]
+  photo         ListingPhoto?
 
   @@index([universityId, status, createdAt])
   @@index([universityId, category, status])
@@ -222,4 +223,15 @@ model Message {
 
   @@index([conversationId, createdAt, id])
   @@index([conversationId, senderId, readAt])
+}
+
+
+model ListingPhoto {
+  listingId String   @id
+  mimeType  String   @default("image/webp") @db.VarChar(24)
+  width     Int
+  height    Int
+  data      Bytes    @db.ByteA
+  createdAt DateTime @default(now())
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }
