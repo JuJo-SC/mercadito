@@ -495,11 +495,12 @@ export function ListingForm({
               <small>El precio que aparecerá junto al artículo.</small>
             </label>
 
-            <label className="field" htmlFor="listing-description">
-              <span>Descripción *</span>
+            <div className="field">
+              <label htmlFor="listing-description">Descripción *</label>
               <textarea
                 id="listing-description"
                 name="description"
+                aria-describedby="listing-description-help listing-description-limit"
                 minLength={10}
                 maxLength={2000}
                 rows={6}
@@ -510,8 +511,15 @@ export function ListingForm({
                 }
                 required
               />
-              <small>Incluye solo lo que otra persona necesita saber antes de escribirte.</small>
-            </label>
+              <div className="listing-description-meta">
+                <small id="listing-description-help">
+                  Incluye solo lo que otra persona necesita saber antes de escribirte.
+                </small>
+                <small id="listing-description-limit" aria-live="polite" aria-atomic="true">
+                  {draft.description.length}/2,000 caracteres
+                </small>
+              </div>
+            </div>
           </div>
         ) : null}
 
@@ -543,7 +551,7 @@ export function ListingForm({
                 ? "Al terminar verás la vista previa. No se enviará ni guardará el aviso."
                 : editing && listing
                   ? `Disponibilidad actual: ${listingStatusLabels[listing.status]}. Al guardar, se conserva este estado.`
-                  : "Al publicar, el aviso será visible para estudiantes activos de tu universidad."}
+                  : "Lo verán estudiantes activos de tu universidad. Quien se interese puede escribirte por el chat. Mercadito no procesa pagos; el pago se acuerda fuera de la plataforma."}
             </p>
           </div>
         ) : null}
