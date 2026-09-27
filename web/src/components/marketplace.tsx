@@ -161,7 +161,7 @@ export function Marketplace({
       <section className="lead-section page-width" aria-labelledby="lead-title">
         <div className="lead-copy">
           <h1 id="lead-title">
-            Lo que ya no usas puede ser justo lo que alguien busca.
+            Lo que ya no usas puede servirle a alguien más.
           </h1>
           <p>
             Un mercadito hecho para encontrar y publicar artículos dentro de
@@ -185,7 +185,7 @@ export function Marketplace({
             <span />
             <span />
           </div>
-          <span className="print-wordmark">EN COMÚN</span>
+          <h2 className="print-title">EN COMÚN</h2>
           <p>Una hoja abierta a lo que la comunidad comparte.</p>
           <div className="print-rules" aria-hidden="true">
             <span />

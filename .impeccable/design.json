@@ -1,0 +1,325 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-27T07:44:02Z",
+  "title": "Design System: Mercadito",
+  "extensions": {
+    "colorMeta": {
+      "ink-carbon": {
+        "role": "primary",
+        "displayName": "Carbón de imprenta",
+        "canonical": "#18252D",
+        "tonalRamp": [
+          "oklch(15% 0.0235 235.92)",
+          "oklch(26% 0.0235 235.92)",
+          "oklch(37% 0.0235 235.92)",
+          "oklch(48% 0.0235 235.92)",
+          "oklch(59% 0.0235 235.92)",
+          "oklch(70% 0.0235 235.92)",
+          "oklch(82% 0.0235 235.92)",
+          "oklch(95% 0.0235 235.92)"
+        ]
+      },
+      "warm-paper": {
+        "role": "neutral",
+        "displayName": "Papel cálido",
+        "canonical": "#FAF9F4",
+        "tonalRamp": [
+          "oklch(15% 0.0067 97.35)",
+          "oklch(26% 0.0067 97.35)",
+          "oklch(37% 0.0067 97.35)",
+          "oklch(48% 0.0067 97.35)",
+          "oklch(59% 0.0067 97.35)",
+          "oklch(70% 0.0067 97.35)",
+          "oklch(82% 0.0067 97.35)",
+          "oklch(95% 0.0067 97.35)"
+        ]
+      },
+      "paper-secondary": {
+        "role": "neutral",
+        "displayName": "Papel secundario",
+        "canonical": "#F0EEE5",
+        "tonalRamp": [
+          "oklch(15% 0.0122 96.43)",
+          "oklch(26% 0.0122 96.43)",
+          "oklch(37% 0.0122 96.43)",
+          "oklch(48% 0.0122 96.43)",
+          "oklch(59% 0.0122 96.43)",
+          "oklch(70% 0.0122 96.43)",
+          "oklch(82% 0.0122 96.43)",
+          "oklch(95% 0.0122 96.43)"
+        ]
+      },
+      "paper-quiet": {
+        "role": "neutral",
+        "displayName": "Papel quieto",
+        "canonical": "#E8E6DC",
+        "tonalRamp": [
+          "oklch(15% 0.0135 97.45)",
+          "oklch(26% 0.0135 97.45)",
+          "oklch(37% 0.0135 97.45)",
+          "oklch(48% 0.0135 97.45)",
+          "oklch(59% 0.0135 97.45)",
+          "oklch(70% 0.0135 97.45)",
+          "oklch(82% 0.0135 97.45)",
+          "oklch(95% 0.0135 97.45)"
+        ]
+      },
+      "muted-ink": {
+        "role": "neutral",
+        "displayName": "Tinta secundaria",
+        "canonical": "#4B5960",
+        "tonalRamp": [
+          "oklch(15% 0.0209 229.45)",
+          "oklch(26% 0.0209 229.45)",
+          "oklch(37% 0.0209 229.45)",
+          "oklch(48% 0.0209 229.45)",
+          "oklch(59% 0.0209 229.45)",
+          "oklch(70% 0.0209 229.45)",
+          "oklch(82% 0.0209 229.45)",
+          "oklch(95% 0.0209 229.45)"
+        ]
+      },
+      "ink-rule": {
+        "role": "neutral",
+        "displayName": "Regla de tinta",
+        "canonical": "rgba(24, 37, 45, 0.2)",
+        "tonalRamp": [
+          "oklch(15% 0.0235 235.92)",
+          "oklch(26% 0.0235 235.92)",
+          "oklch(37% 0.0235 235.92)",
+          "oklch(48% 0.0235 235.92)",
+          "oklch(59% 0.0235 235.92)",
+          "oklch(70% 0.0235 235.92)",
+          "oklch(82% 0.0235 235.92)",
+          "oklch(95% 0.0235 235.92)"
+        ]
+      },
+      "signal-lime": {
+        "role": "secondary",
+        "displayName": "Lima de señal",
+        "canonical": "#D6FA45",
+        "tonalRamp": [
+          "oklch(15% 0.1994 120.41)",
+          "oklch(26% 0.1994 120.41)",
+          "oklch(37% 0.1994 120.41)",
+          "oklch(48% 0.1994 120.41)",
+          "oklch(59% 0.1994 120.41)",
+          "oklch(70% 0.1994 120.41)",
+          "oklch(82% 0.1994 120.41)",
+          "oklch(95% 0.1994 120.41)"
+        ]
+      },
+      "editorial-coral": {
+        "role": "tertiary",
+        "displayName": "Coral editorial",
+        "canonical": "#EA5845",
+        "tonalRamp": [
+          "oklch(15% 0.1843 30.20)",
+          "oklch(26% 0.1843 30.20)",
+          "oklch(37% 0.1843 30.20)",
+          "oklch(48% 0.1843 30.20)",
+          "oklch(59% 0.1843 30.20)",
+          "oklch(70% 0.1843 30.20)",
+          "oklch(82% 0.1843 30.20)",
+          "oklch(95% 0.1843 30.20)"
+        ]
+      },
+      "error-oxblood": {
+        "role": "tertiary",
+        "displayName": "Oxblood de error",
+        "canonical": "#7B271F",
+        "tonalRamp": [
+          "oklch(15% 0.1184 28.85)",
+          "oklch(26% 0.1184 28.85)",
+          "oklch(37% 0.1184 28.85)",
+          "oklch(48% 0.1184 28.85)",
+          "oklch(59% 0.1184 28.85)",
+          "oklch(70% 0.1184 28.85)",
+          "oklch(82% 0.1184 28.85)",
+          "oklch(95% 0.1184 28.85)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Titular de gaceta",
+        "purpose": "Titulares principales con voz editorial."
+      },
+      "headline": {
+        "displayName": "Encabezado",
+        "purpose": "Introducciones de portada, acceso y formularios."
+      },
+      "title": {
+        "displayName": "Título de sección",
+        "purpose": "Jerarquía intermedia y títulos de bloque."
+      },
+      "body": {
+        "displayName": "Texto de interfaz",
+        "purpose": "Lectura, descripción y controles."
+      },
+      "label": {
+        "displayName": "Etiqueta",
+        "purpose": "Metadatos y encabezados compactos."
+      }
+    },
+    "shadows": [
+      {
+        "name": "install-popover",
+        "value": "0 12px 24px rgba(24, 37, 45, 0.14)",
+        "purpose": "Separar el panel superpuesto de instrucciones de instalación."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-transition",
+        "value": "160ms ease",
+        "purpose": "Cambios de color, borde y subrayado en navegación y controles."
+      },
+      {
+        "name": "loading-turn",
+        "value": "760ms linear",
+        "purpose": "Giro del indicador de carga."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-grid",
+        "value": "920px"
+      },
+      {
+        "name": "mobile-navigation",
+        "value": "760px"
+      },
+      {
+        "name": "compact-controls",
+        "value": "540px"
+      },
+      {
+        "name": "narrow-header",
+        "value": "360px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Acción principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción de mayor prioridad en portada y publicación.",
+      "html": "<button class=\"ds-button\" type=\"button\">Publicar aviso</button>",
+      "css": ".ds-button{min-height:48px;padding:12px 16px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);font-family:var(--font-body),sans-serif;font-size:1rem;font-weight:700;transition:background-color 170ms ease,color 170ms ease,border-color 170ms ease}.ds-button:hover{border-color:var(--signal);background:var(--signal);color:var(--ink)}.ds-button:focus-visible{outline:3px solid var(--coral);outline-offset:3px}"
+    },
+    {
+      "name": "Botón de búsqueda",
+      "kind": "button",
+      "refersTo": "button-search",
+      "description": "Envía la consulta junto al campo de búsqueda.",
+      "html": "<button class=\"ds-search-submit\" type=\"button\">Buscar</button>",
+      "css": ".ds-search-submit{min-width:7.5rem;min-height:52px;padding:11px 16px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);font-family:var(--font-body),sans-serif;font-weight:700;transition:background-color 160ms ease,color 160ms ease}.ds-search-submit:hover{background:var(--signal);color:var(--ink)}.ds-search-submit:focus-visible{outline:3px solid var(--coral);outline-offset:3px}@media(max-width:540px){.ds-search-submit{min-width:5.2rem;min-height:46px;padding-inline:0.55rem;font-size:0.82rem}}"
+    },
+    {
+      "name": "Acción de texto",
+      "kind": "button",
+      "refersTo": "button-text",
+      "description": "Acción secundaria que conserva el flujo editorial sin llenar la pantalla de botones.",
+      "html": "<a class=\"ds-text-action\" href=\"#avisos\">Volver a los avisos</a>",
+      "css": ".ds-text-action{display:inline-flex;align-items:center;gap:0.65rem;padding:0.45rem 0;border:0;border-bottom:1px solid var(--ink);background:transparent;color:var(--ink);font-family:var(--font-body),sans-serif;font-weight:700;text-decoration:none;transition:border-color 160ms ease,color 160ms ease}.ds-text-action:hover{border-color:var(--coral);color:var(--error)}.ds-text-action:focus-visible{outline:3px solid var(--coral);outline-offset:3px}"
+    },
+    {
+      "name": "Navegación",
+      "kind": "nav",
+      "refersTo": "navigation-link",
+      "description": "Enlaces de escritorio con contraste que crece al interactuar.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Principal\"><a href=\"#avisos\">Avisos</a><a href=\"#como-funciona\">Cómo funciona</a><a href=\"#universidades\">Universidades</a></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:clamp(1.1rem,2.5vw,2.4rem)}.ds-nav a{color:var(--muted);font-family:var(--font-body),sans-serif;font-size:0.93rem;font-weight:600;text-decoration:none;text-underline-offset:0.45rem;transition:color 160ms ease,text-decoration-color 160ms ease}.ds-nav a:hover,.ds-nav a:focus-visible{color:var(--ink);text-decoration:underline;text-decoration-color:var(--coral)}.ds-nav a:focus-visible{outline:3px solid var(--coral);outline-offset:3px}@media(max-width:760px){.ds-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.35rem;min-height:52px;align-items:center}.ds-nav a{text-align:center;font-size:0.74rem}}"
+    },
+    {
+      "name": "Campo de búsqueda",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "Etiqueta explícita, campo de papel y foco coral alrededor del contenedor.",
+      "html": "<label class=\"ds-search\"><span>Buscar avisos</span><span class=\"ds-search-field\"><input type=\"search\" placeholder=\"Libro, calculadora…\"></span></label>",
+      "css": ".ds-search{display:grid;gap:0.55rem;font-family:var(--font-body),sans-serif;font-size:0.86rem;font-weight:700}.ds-search-field{min-height:52px;display:flex;align-items:center;padding:0 0.85rem;border:1px solid rgba(24,37,45,0.35);background:var(--paper)}.ds-search input{width:100%;min-width:0;height:50px;border:0;outline:0;background:transparent;color:var(--ink);font:400 1rem var(--font-body),sans-serif}.ds-search-field:focus-within{outline:3px solid var(--coral);outline-offset:2px}.ds-search input::placeholder{color:#536169;opacity:1}"
+    },
+    {
+      "name": "Pestaña de categoría",
+      "kind": "chip",
+      "refersTo": "category-tab-selected",
+      "description": "Filtro transparente; una línea lima comunica la categoría activa.",
+      "html": "<button class=\"ds-tab ds-selected\" type=\"button\" aria-pressed=\"true\">Libros y apuntes</button>",
+      "css": ".ds-tab{min-height:46px;padding:10px 0 8px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--muted);font:600 0.91rem var(--font-body),sans-serif;white-space:nowrap;transition:border-color 140ms ease,color 140ms ease}.ds-tab:hover{color:var(--ink)}.ds-tab.ds-selected{border-bottom-color:var(--signal);color:var(--ink)}.ds-tab:focus-visible{outline:3px solid var(--coral);outline-offset:2px}@media(max-width:540px){.ds-tab{min-height:42px;padding-inline:0.1rem;font-size:0.76rem;white-space:normal}}"
+    },
+    {
+      "name": "Fila de clasificado",
+      "kind": "card",
+      "refersTo": "classified-entry",
+      "description": "Aviso desplegable: artículo y precio se comparan antes de leer el detalle.",
+      "html": "<details class=\"ds-entry\"><summary class=\"ds-entry-summary\"><span class=\"ds-number\">04</span><span class=\"ds-main\"><strong>Calculadora científica</strong><span class=\"ds-meta\">Tecnología <b>·</b> Buen estado <em>Ejemplo</em></span></span><span class=\"ds-seller\">Jordan R.</span><strong class=\"ds-price\">$450</strong><span class=\"ds-read\">Leer <svg aria-hidden=\"true\" width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m6 9 6 6 6-6\"></path></svg></span></summary><div class=\"ds-expanded\"><p>Publicación ficticia de demostración.</p><span>Publicado por Jordan R. · Fecha del aviso: 12 sep 2026</span></div></details>",
+      "css": ".ds-entry{border-bottom:1px solid var(--rule);font-family:var(--font-body),sans-serif}.ds-entry-summary{min-height:88px;display:grid;grid-template-columns:3.4rem minmax(0,1fr) 8rem 5rem 5rem;align-items:center;column-gap:clamp(0.65rem,1.8vw,1.35rem);padding-block:0.8rem;list-style:none;cursor:pointer;transition:background-color 160ms ease}.ds-entry-summary::-webkit-details-marker{display:none}.ds-entry-summary:hover{background:rgba(24,37,45,0.035)}.ds-entry-summary:focus-visible{outline:3px solid var(--coral);outline-offset:2px}.ds-number,.ds-meta,.ds-seller,.ds-read{color:var(--muted)}.ds-main{min-width:0;display:grid;gap:0.22rem}.ds-main strong{overflow:hidden;font-size:1.05rem;text-overflow:ellipsis}.ds-meta{display:flex;flex-wrap:wrap;gap:0.26rem 0.45rem;font-size:0.79rem}.ds-meta b{color:var(--coral)}.ds-meta em{padding:0.06rem 0.32rem;background:var(--signal);color:var(--ink);font-size:0.67rem;font-style:normal;font-weight:700;text-transform:uppercase}.ds-seller{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ds-price{font:600 1.45rem var(--font-editorial),Georgia,serif;white-space:nowrap}.ds-read{display:inline-flex;align-items:center;justify-content:flex-end;gap:0.2rem;color:var(--muted);font-size:0.76rem;font-weight:700;text-align:right}.ds-read svg{flex:0 0 auto;transition:transform 180ms ease}.ds-entry[open] .ds-read svg{transform:rotate(180deg)}.ds-expanded{display:grid;gap:0.8rem;margin-left:3.4rem;padding:1.05rem 0 1.4rem;border-top:1px solid var(--rule);color:var(--muted);font-size:0.86rem}.ds-expanded p{margin:0}.ds-expanded span{color:var(--ink)}@media(max-width:920px){.ds-entry-summary{grid-template-columns:2.8rem minmax(0,1fr) 7.2rem 4rem}.ds-seller{display:none}}@media(max-width:540px){.ds-entry-summary{min-height:84px;grid-template-columns:2.1rem minmax(0,1fr) max-content 1.25rem;column-gap:0.55rem;padding-block:0.72rem}.ds-seller{display:none}.ds-price{font-size:1.2rem}.ds-read{font-size:0}.ds-expanded{margin-left:2.1rem;padding-block:0.85rem 1rem}}"
+    },
+    {
+      "name": "Aviso de demostración",
+      "kind": "custom",
+      "refersTo": "demo-banner",
+      "description": "La franja lima identifica contenido ficticio antes de entrar al índice.",
+      "html": "<aside class=\"ds-demo-banner\"><span aria-hidden=\"true\">i</span><strong>Campus de demostración: estos avisos son ejemplos.</strong></aside>",
+      "css": ".ds-demo-banner{display:flex;align-items:center;gap:0.65rem;padding:0.75rem 0.9rem;background:var(--signal);color:var(--ink);font:600 0.9rem var(--font-body),sans-serif}.ds-demo-banner span{width:23px;height:23px;display:inline-grid;flex:0 0 auto;place-items:center;border:1px solid var(--ink);border-radius:50%;font-size:0.7rem;font-weight:700}@media(max-width:760px){.ds-demo-banner{align-items:start;padding:0.55rem 0.7rem;font-size:0.8rem}}"
+    },
+    {
+      "name": "Progreso de publicación",
+      "kind": "custom",
+      "refersTo": "publish-progress",
+      "description": "Tres etapas con estado actual, completado y pendiente, anunciadas semánticamente.",
+      "html": "<ol class=\"ds-progress\" aria-label=\"Pasos para publicar\"><li class=\"ds-complete\"><span></span><b>Artículo</b></li><li class=\"ds-current\" aria-current=\"step\"><span></span><b>Detalles</b></li><li><span></span><b>Revisar</b></li></ol>",
+      "css": ".ds-progress{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.7rem;margin:0;padding:0;list-style:none;font:700 0.78rem var(--font-body),sans-serif}.ds-progress li{display:grid;gap:0.4rem;color:var(--muted)}.ds-progress li>span{height:3px;background:var(--paper-quiet)}.ds-progress li.ds-current{color:var(--ink)}.ds-progress li.ds-current>span{background:var(--ink)}.ds-progress li.ds-complete>span{background:var(--signal)}"
+    },
+    {
+      "name": "Vista previa de clasificado",
+      "kind": "card",
+      "refersTo": "classified-preview",
+      "description": "Previsualización final con los mismos datos que se enviarán al publicar.",
+      "html": "<article class=\"ds-preview\"><div><div><strong>Calculadora científica</strong><p>Tecnología · Buen estado</p></div><b>$450.00</b></div><p>En buen estado, con funda y manual.</p></article>",
+      "css": ".ds-preview{margin-top:0.9rem;padding:1rem 0 1.1rem;border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);font-family:var(--font-body),sans-serif}.ds-preview>div{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:0.8rem}.ds-preview strong{font-size:1.08rem}.ds-preview p{margin:0.4rem 0 0;color:var(--muted);line-height:1.6}.ds-preview>div>b{font:600 1.3rem var(--font-editorial),Georgia,serif;font-variant-numeric:tabular-nums}@media(max-width:540px){.ds-preview>div{gap:0.45rem}.ds-preview>div>b{font-size:1.18rem}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "La Gaceta de Intercambio",
+    "overview": "Mercadito convierte los intercambios del campus en clasificados que se pueden recorrer y comparar de un vistazo. La estructura toma de una gaceta estudiantil su cabecera, jerarquía tipográfica y reglas impresas; conserva la agilidad de una aplicación en los controles, la búsqueda y la publicación.\n\nNewsreader da carácter a titulares y precios; DM Sans mantiene legibles los campos, metadatos y acciones. El papel cálido y la tinta carbón dominan la superficie. La lima señala selección y avance; el coral queda reservado para foco, énfasis editorial y señales de error. Las publicaciones ficticias deben identificarse como ejemplos.",
+    "keyCharacteristics": [
+      "Jerarquía editorial breve, con títulos serif y controles sans serif.",
+      "Clasificados ordenados para comparar título, condición y precio antes de abrir detalles.",
+      "Superficies planas, reglas finas y acentos cromáticos con significado funcional.",
+      "Interacción cómoda desde 320 px y formularios progresivos en móvil."
+    ],
+    "rules": [
+      {
+        "name": "The Two-Accent Rule",
+        "body": "La lima indica selección, avance o demostración; el coral indica foco o énfasis. No intercambies sus funciones.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two-Voice Rule",
+        "body": "Reserva Newsreader para titulares, nombre de marca, precios y encabezados; conserva DM Sans para datos que la gente necesita escanear o editar.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Reserva la elevación para un popover que se superpone al contenido; no añadas sombras a filas o formularios.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do mantener visibles título, condición y precio antes de expandir un clasificado.",
+      "Do usar la lima para estados activos o contenido de demostración, acompañado de una etiqueta textual.",
+      "Do conservar el indicador de foco coral y su separación del control.",
+      "Do mantener el primer botón de publicación debajo de sus campos en pantallas móviles estrechas.",
+      "Do usar reglas, tipografía y contraste tonal para estructurar la página."
+    ],
+    "donts": [
+      "Don't convertir cada aviso en una tarjeta flotante redondeada con sombra.",
+      "Don't usar coral como estado seleccionado ni lima como indicador de foco.",
+      "Don't presentar contenido ficticio como una oferta real.",
+      "Don't colocar una acción fija sobre un control del formulario o sobre el área segura del teléfono."
+    ]
+  }
+}

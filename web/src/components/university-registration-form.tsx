@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CircleCheck, Info } from "lucide-react";
 
 function slugFromName(value: string) {
   return value
@@ -64,7 +64,9 @@ export function UniversityRegistrationForm({ enabled }: { enabled: boolean }) {
   if (!enabled) {
     return (
       <section className="form-notice" role="status" aria-labelledby="application-gate-title">
-        <span className="form-notice-mark" aria-hidden="true">i</span>
+        <span className="form-notice-mark" aria-hidden="true">
+          <Info size={18} strokeWidth={1.8} />
+        </span>
         <div>
           <h2 id="application-gate-title">Registro universitario en preparación.</h2>
           <p>
@@ -80,7 +82,9 @@ export function UniversityRegistrationForm({ enabled }: { enabled: boolean }) {
   if (sent) {
     return (
       <section className="form-success" role="status">
-        <span className="success-registration-mark" aria-hidden="true">✓</span>
+        <span className="success-registration-mark" aria-hidden="true">
+          <CircleCheck size={18} strokeWidth={1.8} />
+        </span>
         <div>
           <h2>Recibimos la solicitud.</h2>
           <p>
