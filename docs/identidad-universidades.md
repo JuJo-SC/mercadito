@@ -21,6 +21,8 @@ El claim de estatus puede ser texto, booleano o número; la aplicación compara 
 
 La aplicación rechaza el acceso si falta cualquiera de estos datos, el claim institucional no coincide, el estudiante no está activo, la universidad no está activa o la cuenta pertenece a un registro de demostración. No usar el dominio del correo como sustituto del claim de matrícula.
 
+En el primer acceso válido, la aplicación permite que Auth.js cree la cuenta local con el campus resuelto por los claims y el rol de estudiante activo. Si el correo ya pertenece a otra cuenta local, el inicio se rechaza para evitar vincular identidades solo por correo; la resolución queda a cargo del operador.
+
 Una vez vinculada una cuenta federada, su campus no cambia automáticamente. En cada inicio de sesión la aplicación vuelve a resolver los claims y exige que el sub coincida con la cuenta Keycloak vinculada y que la universidad activa sea la misma que ya está asociada al usuario. Si cambia el university_id, la cuenta o su estado, se rechaza el acceso; no se migra el perfil ni sus publicaciones a otro campus de forma implícita.
 
 ## Datos que solicitar a la institución
@@ -58,6 +60,7 @@ El callback que la institución debe registrar como retorno de su proveedor es e
 Antes de activar un campus real, comprobar con cuentas de prueba controladas por la universidad:
 
 - Alumno activo con claims válidos: puede iniciar sesión y solo consultar el mercadito de su campus.
+- Primer acceso válido sin cuenta local previa: se crea una cuenta de estudiante en el campus del claim; un correo ya asociado a otra cuenta no se vincula automáticamente.
 - Cuenta inactiva: el acceso se rechaza.
 - university_id ausente o de otra universidad: el acceso se rechaza.
 - Cuenta ya vinculada cuyo university_id cambió a otro campus, cuyo sub dejó de coincidir o cuya universidad/estatus ya no está activo: el acceso se rechaza y no se reasigna el usuario.

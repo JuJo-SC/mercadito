@@ -80,14 +80,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         include: { university: true },
       });
 
-      return Boolean(
-        localUser &&
-          localUser.universityId === currentUniversity.id &&
-          !localUser.isDemo &&
-          localUser.status === "ACTIVE" &&
-          localUser.role === "STUDENT" &&
-          localUser.university.status === "ACTIVE" &&
-          !localUser.university.isDemo,
+      if (!localUser) {
+        return (
+          user.universityId === currentUniversity.id &&
+          user.role === "STUDENT" &&
+          user.status === "ACTIVE"
+        );
+      }
+
+      return (
+        localUser.universityId === currentUniversity.id &&
+        !localUser.isDemo &&
+        localUser.status === "ACTIVE" &&
+        localUser.role === "STUDENT" &&
+        localUser.university.status === "ACTIVE" &&
+        !localUser.university.isDemo
       );
     },
     async session({ session, user }) {
