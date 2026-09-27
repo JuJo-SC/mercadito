@@ -240,14 +240,20 @@ export async function PATCH(
 ) {
   const student = await getActiveStudent();
   if (!student) {
-    return Response.json({ error: "Inicia sesión con tu cuenta institucional." }, { status: 401 });
+    return Response.json(
+      { error: "Inicia sesión con tu cuenta institucional." },
+      { status: 401, headers: privateNoStore },
+    );
   }
 
   const { id } = await context.params;
   const body: unknown = await request.json().catch(() => null);
   const parsed = updateListingSchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json({ error: "Elige un estado válido para el aviso." }, { status: 400 });
+    return Response.json(
+      { error: "Elige un estado válido para el aviso." },
+      { status: 400, headers: privateNoStore },
+    );
   }
 
   const listing = await prisma.listing.findFirst({
@@ -262,14 +268,17 @@ export async function PATCH(
   });
 
   if (!listing) {
-    return Response.json({ error: "No encontramos ese aviso." }, { status: 404 });
+    return Response.json(
+      { error: "No encontramos ese aviso." },
+      { status: 404, headers: privateNoStore },
+    );
   }
 
   const nextStatus = parsed.data.status;
   if (!allowedTransitions[listing.status].includes(nextStatus)) {
     return Response.json(
       { error: "Ese cambio ya no está disponible. Recarga tus avisos e inténtalo de nuevo." },
-      { status: 409 },
+      { status: 409, headers: privateNoStore },
     );
   }
 
@@ -288,7 +297,7 @@ export async function PATCH(
   if (changed.count !== 1) {
     return Response.json(
       { error: "El estado cambió en otra pestaña. Recarga tus avisos e inténtalo de nuevo." },
-      { status: 409 },
+      { status: 409, headers: privateNoStore },
     );
   }
 
@@ -309,10 +318,14 @@ export async function PATCH(
   });
 
   if (!updatedListing) {
-    return Response.json({ error: "No encontramos ese aviso." }, { status: 404 });
+    return Response.json(
+      { error: "No encontramos ese aviso." },
+      { status: 404, headers: privateNoStore },
+    );
   }
 
-  return Response.json({
-    listing: { ...updatedListing, price: updatedListing.price.toNumber() },
-  });
+  return Response.json(
+    { listing: { ...updatedListing, price: updatedListing.price.toNumber() } },
+    { headers: privateNoStore },
+  );
 }
