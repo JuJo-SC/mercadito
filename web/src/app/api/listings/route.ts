@@ -57,11 +57,28 @@ export async function GET(request: Request) {
 
   const rawPage = Number.parseInt(url.searchParams.get("page") ?? "1", 10);
   const page = Number.isFinite(rawPage) ? Math.max(1, rawPage) : 1;
+  const cursorId = url.searchParams.get("cursor")?.trim();
   const category = url.searchParams.get("category");
   const query = url.searchParams.get("q")?.trim().slice(0, 80);
   const validCategory = Object.values(ListingCategory).includes(
     category as ListingCategory,
   );
+
+  const cursorAnchor = cursorId
+    ? await prisma.listing.findFirst({
+        where: {
+          id: cursorId,
+          universityId: university.id,
+        },
+        select: { id: true, createdAt: true },
+      })
+    : null;
+  if (cursorId && !cursorAnchor) {
+    return Response.json(
+      { error: "Actualiza los avisos para continuar." },
+      { status: 400, headers: privateNoStore },
+    );
+  }
 
   const where = {
     universityId: university.id,
@@ -80,10 +97,22 @@ export async function GET(request: Request) {
   const [total, listings] = await Promise.all([
     prisma.listing.count({ where }),
     prisma.listing.findMany({
-      where,
+      where: cursorAnchor
+        ? {
+            ...where,
+            AND: [
+              {
+                OR: [
+                  { createdAt: { lt: cursorAnchor.createdAt } },
+                  { createdAt: cursorAnchor.createdAt, id: { lt: cursorAnchor.id } },
+                ],
+              },
+            ],
+          }
+        : where,
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-      skip: (page - 1) * 24,
-      take: 24,
+      skip: cursorAnchor ? undefined : (page - 1) * 24,
+      take: cursorAnchor ? 25 : 24,
       select: {
         id: true,
         title: true,
@@ -101,12 +130,18 @@ export async function GET(request: Request) {
     }),
   ]);
 
+  const pageListings = listings.slice(0, 24);
+  const hasMore = pageListings.length > 0 && (cursorAnchor ? listings.length > 24 : page * 24 < total);
+  const nextCursor = pageListings.at(-1)?.id ?? null;
+
   return Response.json({
     university: { id: university.id, name: university.name, slug: university.slug },
     page,
     pageSize: 24,
     total,
-    listings: listings.map((listing) => ({
+    hasMore,
+    nextCursor,
+    listings: pageListings.map((listing) => ({
       id: listing.id,
       title: listing.title,
       description: listing.description,

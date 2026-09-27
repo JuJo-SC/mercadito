@@ -42,6 +42,11 @@ export default async function Home() {
         },
       })
     : [];
+  const initialTotal = university
+    ? await prisma.listing.count({
+        where: { universityId: university.id, status: "PUBLISHED" },
+      })
+    : 0;
   const realUniversityCount = student
     ? 0
     : await prisma.university.count({
@@ -54,6 +59,7 @@ export default async function Home() {
       <main>
         <Marketplace
           university={university}
+          initialTotal={initialTotal}
           initialListings={initialListings.map((listing) => ({
             id: listing.id,
             title: listing.title,

@@ -37,6 +37,7 @@ type ListingNotice = {
 type MarketplaceProps = {
   university: University | null;
   initialListings: ListingNotice[];
+  initialTotal: number;
   canSignIn: boolean;
   applicationIntakeEnabled: boolean;
   currentUserId: string | null;
@@ -93,13 +94,18 @@ function formatNoticeDate(value: string) {
 export function Marketplace({
   university,
   initialListings,
+  initialTotal,
   canSignIn,
   applicationIntakeEnabled,
   currentUserId,
   signedIn,
 }: MarketplaceProps) {
   const [listings, setListings] = useState(initialListings);
-  const [total, setTotal] = useState(initialListings.length);
+  const [total, setTotal] = useState(initialTotal);
+  const [hasMore, setHasMore] = useState(initialTotal > initialListings.length);
+  const [nextCursor, setNextCursor] = useState(initialListings.at(-1)?.id ?? null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState("");
   const [draftQuery, setDraftQuery] = useState("");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("ALL");
@@ -107,17 +113,30 @@ export function Marketplace({
   const [error, setError] = useState("");
   const currentRequest = useRef<AbortController | null>(null);
 
-  async function loadListings(nextQuery: string, nextCategory: string) {
+  async function loadListings(
+    nextQuery: string,
+    nextCategory: string,
+    options: { append?: boolean; cursor?: string } = {},
+  ) {
     if (!university) return;
+    const append = options.append ?? false;
     currentRequest.current?.abort();
     const controller = new AbortController();
     currentRequest.current = controller;
-    setLoading(true);
-    setError("");
+    if (append) {
+      setLoadingMore(true);
+      setLoadMoreError("");
+    } else {
+      setLoading(true);
+      setLoadingMore(false);
+      setError("");
+      setLoadMoreError("");
+    }
 
     const params = new URLSearchParams({ university: university.slug });
     if (nextQuery.trim()) params.set("q", nextQuery.trim());
     if (nextCategory !== "ALL") params.set("category", nextCategory);
+    if (options.cursor) params.set("cursor", options.cursor);
 
     try {
       const response = await fetch("/api/listings?" + params.toString(), {
@@ -125,22 +144,42 @@ export function Marketplace({
         cache: "no-store",
       });
       const payload = (await response.json().catch(() => null)) as
-        | { error?: string; total?: number; listings?: ListingNotice[] }
+        | {
+            error?: string;
+            total?: number;
+            listings?: ListingNotice[];
+            hasMore?: boolean;
+            nextCursor?: string | null;
+          }
         | null;
       if (!response.ok) {
         throw new Error(payload?.error ?? "No pudimos cargar los avisos.");
       }
-      setListings(payload?.listings ?? []);
+      const incoming = payload?.listings ?? [];
+      if (append) {
+        setListings((current) => {
+          const seen = new Set(current.map((listing) => listing.id));
+          return [...current, ...incoming.filter((listing) => !seen.has(listing.id))];
+        });
+      } else {
+        setListings(incoming);
+      }
       setTotal(payload?.total ?? 0);
+      setHasMore(payload?.hasMore ?? false);
+      setNextCursor(payload?.nextCursor ?? null);
     } catch (cause) {
       if (cause instanceof DOMException && cause.name === "AbortError") return;
-      setError(
+      const message =
         cause instanceof Error
           ? cause.message
-          : "No pudimos cargar los avisos. Intenta de nuevo.",
-      );
+          : "No pudimos cargar los avisos. Intenta de nuevo.";
+      if (append) setLoadMoreError(message);
+      else setError(message);
     } finally {
-      if (currentRequest.current === controller) setLoading(false);
+      if (currentRequest.current === controller) {
+        setLoading(false);
+        setLoadingMore(false);
+      }
     }
   }
 
@@ -161,6 +200,13 @@ export function Marketplace({
     setCategory("ALL");
     void loadListings("", "ALL");
   }
+
+  function loadMoreListings() {
+    if (!nextCursor || !hasMore || loadingMore) return;
+    void loadListings(query, category, { append: true, cursor: nextCursor });
+  }
+
+  const hasActiveFilters = Boolean(query.trim()) || category !== "ALL";
 
   return (
     <>
@@ -314,6 +360,7 @@ export function Marketplace({
             <p>Buscando avisos…</p>
           </div>
         ) : listings.length ? (
+          <>
           <div className="notice-index" aria-live="polite">
             <div className="notice-columns" aria-hidden="true">
               <span>Índice</span>
@@ -394,17 +441,68 @@ export function Marketplace({
               </details>
             ))}
           </div>
+          {hasMore ? (
+            <div className="notice-pagination" aria-busy={loadingMore}>
+              <p className="notice-pagination-count" aria-live="polite" aria-atomic="true">
+                Mostrando {listings.length} de {total} avisos
+              </p>
+              <button
+                className="button-ink"
+                type="button"
+                onClick={loadMoreListings}
+                disabled={loadingMore || !nextCursor}
+              >
+                {loadingMore ? "Cargando…" : "Cargar más avisos"}
+                <ArrowDown aria-hidden="true" size={17} strokeWidth={1.8} />
+              </button>
+            </div>
+          ) : null}
+          {loadMoreError ? (
+            <div className="result-message result-error" role="alert">
+              <p>{loadMoreError}</p>
+              <button type="button" className="text-action" onClick={loadMoreListings}>
+                Intentar de nuevo
+                <ArrowRight aria-hidden="true" size={16} />
+              </button>
+            </div>
+          ) : null}
+          </>
         ) : (
           <div className="result-message empty-message" role="status">
             <p>
-              {university
-                ? "No encontramos avisos con esos filtros."
-                : "Todavía no hay una comunidad para mostrar."}
+              {!university
+                ? "Todavía no hay una comunidad para mostrar."
+                : hasActiveFilters
+                  ? "No encontramos avisos con esos filtros."
+                  : university.isDemo
+                    ? "Aún no hay ejemplos en esta gaceta."
+                    : "Aún no hay avisos publicados en este campus."}
             </p>
-            <button type="button" className="text-action" onClick={clearFilters}>
-              {university ? "Quitar filtros" : "Actualizar"}
-              <ArrowRight aria-hidden="true" size={16} />
-            </button>
+            <div className="empty-message-actions">
+              {hasActiveFilters && university ? (
+                <button type="button" className="text-action" onClick={clearFilters}>
+                  Quitar filtros
+                  <ArrowRight aria-hidden="true" size={16} />
+                </button>
+              ) : university ? (
+                <Link
+                  className="text-action"
+                  href={university.isDemo ? "/publicar?demo=1" : signedIn ? "/publicar" : "/ingresar"}
+                >
+                  {university.isDemo
+                    ? "Recorrer cómo publicar"
+                    : signedIn
+                      ? "Publicar el primer aviso"
+                      : "Iniciar sesión para publicar"}
+                  <ArrowRight aria-hidden="true" size={16} />
+                </Link>
+              ) : (
+                <Link className="text-action" href="/universidades">
+                  Conocer la integración
+                  <ArrowRight aria-hidden="true" size={16} />
+                </Link>
+              )}
+            </div>
           </div>
         )}
 

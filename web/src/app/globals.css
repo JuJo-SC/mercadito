@@ -735,6 +735,24 @@ select {
   border-top: 1px solid var(--rule);
 }
 
+.notice-pagination {
+  display: grid;
+  justify-items: center;
+  gap: 0.65rem;
+  margin-top: 1.4rem;
+}
+
+.notice-pagination-count {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.notice-pagination .button-ink {
+  min-height: 48px;
+}
+
 .notice-columns,
 .notice-summary {
   display: grid;
@@ -928,6 +946,13 @@ select {
 .result-error {
   align-items: start;
   color: var(--error);
+}
+
+.empty-message-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .loading-rule {
