@@ -22,6 +22,8 @@ El MVP no procesa pagos. La comunidad coordina el intercambio directamente y las
 
 ## Acceso institucional
 
+El procedimiento de integración y el contrato exacto de claims están en [docs/identidad-universidades.md](docs/identidad-universidades.md).
+
 El inicio de sesión requiere que una universidad esté activada y que su proveedor OIDC o SAML se configure en Keycloak. Cada institución debe proporcionar sus metadatos y un claim verificable que identifique el estado activo del alumno. Mercadito verifica el identificador de universidad y ese claim; no considera suficiente el dominio del correo.
 
 El realm inicial es mercadito y el cliente web es mercadito-web. La URI de retorno configurada es https://mercadito.291006.xyz/api/auth/callback/keycloak. No hay un proveedor de identidad institucional real conectado. En el servidor existe un campus de prueba UMAN con cinco cuentas locales sintéticas en Keycloak para recorrer la publicación; no equivalen a una validación institucional. El acceso de alumnos de campus reales permanece deshabilitado hasta configurar el proveedor y sus claims. Las credenciales de prueba se entregaron directamente al operador y no deben subirse a Git.
