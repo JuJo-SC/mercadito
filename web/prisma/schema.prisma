@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UniversityStatus {
+  PENDING_REVIEW
+  ACTIVE
+  SUSPENDED
+}
+
+enum UniversityApplicationStatus {
+  PENDING
+  REVIEWING
+  APPROVED
+  REJECTED
+}
+
+enum UserRole {
+  STUDENT
+  UNIVERSITY_ADMIN
+  PLATFORM_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum ListingStatus {
+  DRAFT
+  PUBLISHED
+  RESERVED
+  SOLD
+  ARCHIVED
+}
+
+enum ListingCategory {
+  BOOKS
+  TECHNOLOGY
+  HOME
+  CLOTHING
+  ACCESSORIES
+  SERVICES
+  OTHER
+}
+
+enum ItemCondition {
+  NEW
+  LIKE_NEW
+  GOOD
+  FAIR
+}
+
+model University {
+  id                   String           @id @default(cuid())
+  name                 String
+  slug                 String           @unique
+  websiteUrl           String?
+  status               UniversityStatus @default(PENDING_REVIEW)
+  isDemo               Boolean          @default(false)
+  identityKey          String?          @unique
+  studentStatusClaim   String?
+  studentStatusValue   String?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  users                User[]
+  listings             Listing[]
+
+  @@index([status, slug])
+}
+
+model UniversityApplication {
+  id                String                       @id @default(cuid())
+  name              String
+  slug              String                       @unique
+  websiteUrl        String
+  contactName       String
+  contactEmail      String
+  privacyAcceptedAt DateTime
+  status            UniversityApplicationStatus  @default(PENDING)
+  createdAt         DateTime                     @default(now())
+  updatedAt         DateTime                     @updatedAt
+
+  @@index([status, createdAt])
+  @@index([contactEmail, status])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  universityId  String
+  role          UserRole  @default(STUDENT)
+  status        UserStatus @default(ACTIVE)
+  isDemo        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  university    University @relation(fields: [universityId], references: [id], onDelete: Restrict)
+  accounts      Account[]
+  sessions      Session[]
+  listings      Listing[]
+  favorites     Favorite[]
+
+  @@index([universityId, status])
+  @@index([universityId, role])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Listing {
+  id           String          @id @default(cuid())
+  universityId String
+  sellerId     String
+  title        String
+  description  String          @db.Text
+  price        Decimal         @db.Decimal(10, 2)
+  currency     String          @default("MXN") @db.VarChar(3)
+  category     ListingCategory
+  condition    ItemCondition
+  status       ListingStatus   @default(DRAFT)
+  imageUrl     String?
+  isDemo       Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  university   University      @relation(fields: [universityId], references: [id], onDelete: Restrict)
+  seller       User            @relation(fields: [sellerId], references: [id], onDelete: Restrict)
+  favorites    Favorite[]
+
+  @@index([universityId, status, createdAt])
+  @@index([universityId, category, status])
+  @@index([sellerId, status])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@index([listingId])
+}

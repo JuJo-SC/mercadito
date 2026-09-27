@@ -1,0 +1,23 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets/
+
+# JavaScript / Next.js
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# Prisma-generated client
+web/src/generated/prisma/
+
+# Impeccable transient review artifacts
+.impeccable/direction-options.json
+.impeccable/mocks/
+.impeccable/review/

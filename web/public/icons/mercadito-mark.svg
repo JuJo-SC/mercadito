@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>Mercadito, gaceta de intercambio</title>
+  <rect width="512" height="512" fill="#D6FA45"/>
+  <rect x="76" y="54" width="360" height="404" fill="#18252D"/>
+  <rect x="88" y="66" width="336" height="380" fill="#FAF9F4"/>
+  <rect x="88" y="66" width="336" height="75" fill="#18252D"/>
+  <rect x="116" y="92" width="174" height="14" fill="#D6FA45"/>
+  <rect x="116" y="116" width="118" height="5" fill="#FAF9F4"/>
+  <circle cx="365" cy="105" r="21" fill="#EA5845"/>
+  <circle cx="365" cy="105" r="9" fill="#18252D"/>
+  <rect x="116" y="170" width="280" height="12" fill="#18252D"/>
+  <rect x="116" y="198" width="249" height="6" fill="#4B5960"/>
+  <rect x="116" y="228" width="268" height="6" fill="#4B5960"/>
+  <rect x="116" y="258" width="232" height="6" fill="#4B5960"/>
+  <rect x="116" y="296" width="280" height="1" fill="#B8BAB2"/>
+  <rect x="116" y="319" width="185" height="8" fill="#18252D"/>
+  <rect x="116" y="341" width="240" height="5" fill="#4B5960"/>
+  <rect x="116" y="371" width="210" height="5" fill="#4B5960"/>
+  <rect x="346" y="360" width="50" height="50" fill="#D6FA45"/>
+  <circle cx="371" cy="385" r="13" fill="#EA5845"/>
+</svg>
