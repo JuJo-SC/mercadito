@@ -103,6 +103,7 @@ export function ListingForm({
   const [step, setStep] = useState(0);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const [submissionConflict, setSubmissionConflict] = useState(false);
   const [sent, setSent] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [removePhoto, setRemovePhoto] = useState(false);
@@ -158,6 +159,7 @@ export function ListingForm({
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (pending || submissionConflict) return;
     if (step < steps.length - 1) {
       continueStep();
       return;
@@ -215,6 +217,7 @@ export function ListingForm({
         | { error?: string; listing?: { imageUrl?: string | null } }
         | null;
       if (!response.ok) {
+        if (response.status === 409) setSubmissionConflict(true);
         throw new Error(
           result?.error ?? "No pudimos publicar el aviso. Revisa tus datos.",
         );
@@ -239,10 +242,27 @@ export function ListingForm({
     }
   }
 
+  function resetConflictingSubmission() {
+    if (studentId) {
+      try {
+        sessionStorage.setItem(
+          "mercadito:publish-attempt:" + studentId,
+          crypto.randomUUID(),
+        );
+      } catch {
+        // The next form can create an in-memory key when storage is unavailable.
+      }
+    }
+    submissionIdRef.current = null;
+    setSubmissionConflict(false);
+    setError("");
+  }
+
   function startAgain() {
     setDraft(emptyDraft);
     setStep(0);
     setError("");
+    setSubmissionConflict(false);
     setSent(false);
     setPhotoFile(null);
     setRemovePhoto(false);
@@ -589,7 +609,23 @@ export function ListingForm({
           </div>
         ) : null}
 
-        {error ? <p className="form-error" role="alert">{error}</p> : null}
+        {submissionConflict ? (
+          <>
+            <p className="form-error" role="alert">
+              Este intento ya guardó un aviso con otros datos. Revisa Mis avisos antes de volver a publicar.
+            </p>
+            <div className="form-actions">
+              <Link
+                className="text-action"
+                href="/mis-avisos"
+                onNavigate={resetConflictingSubmission}
+              >
+                Revisar Mis avisos
+                <ArrowRight aria-hidden="true" size={16} />
+              </Link>
+            </div>
+          </>
+        ) : error ? <p className="form-error" role="alert">{error}</p> : null}
 
         <div className={`publish-step-actions${step === 0 ? " is-first-step" : ""}`}>
           {step > 0 ? (
@@ -621,7 +657,7 @@ export function ListingForm({
             <button
               className="button-ink form-submit step-next"
               type="submit"
-              disabled={pending}
+              disabled={pending || submissionConflict}
             >
               {pending ? (
                 <LoaderCircle className="publish-loading-icon" aria-hidden="true" size={17} />
