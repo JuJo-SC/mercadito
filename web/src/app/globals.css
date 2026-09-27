@@ -2281,13 +2281,17 @@ select {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  html {
+    scroll-behavior: auto;
+  }
+
+  .loading-rule,
+  .publish-loading-icon {
+    animation: none;
+  }
+
+  .notice-disclosure svg {
+    transition: none;
   }
 }
 
