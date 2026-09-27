@@ -76,12 +76,15 @@ export function StartConversationForm({
     }
   }
 
+  const limitId = `first-message-limit-${listingId}`;
+
   return (
     <form className="notice-contact-form" onSubmit={startConversation}>
       <h3>Pregunta por este artículo</h3>
       <label htmlFor={`first-message-${listingId}`}>Primer mensaje para {sellerName}</label>
       <textarea
         id={`first-message-${listingId}`}
+        aria-describedby={limitId}
         value={body}
         onChange={(event) => setBody(event.target.value)}
         placeholder="¿Sigue disponible? ¿Podemos acordar un lugar para el intercambio?"
@@ -90,7 +93,10 @@ export function StartConversationForm({
         required
       />
       <div className="notice-contact-foot">
-        <p>Solo texto · pagos fuera de Mercadito</p>
+        <div className="notice-contact-meta">
+          <p id={limitId}>{body.length}/2,000 caracteres</p>
+          <p>Solo texto · pagos fuera de Mercadito</p>
+        </div>
         <button className="button-ink" type="submit" disabled={sending || !body.trim()}>
           {sending ? "Enviando…" : "Enviar pregunta"}
           {sending ? null : <Send aria-hidden="true" size={16} strokeWidth={1.8} />}

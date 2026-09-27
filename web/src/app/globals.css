@@ -3143,6 +3143,12 @@ select {
   align-items: center;
 }
 
+.notice-contact-meta {
+  display: grid;
+  min-width: 0;
+  gap: 0.12rem;
+}
+
 .notice-contact-foot .button-ink {
   min-height: 48px;
 }
