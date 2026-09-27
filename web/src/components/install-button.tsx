@@ -18,6 +18,13 @@ export function InstallButton() {
   const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+    void navigator.serviceWorker.register("/sw.js?v=1", { scope: "/" }).catch(() => {
+      // Offline support is progressive enhancement; installation controls still work.
+    });
+  }, []);
+
+  useEffect(() => {
     const standalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       Boolean((navigator as ExtendedNavigator).standalone);

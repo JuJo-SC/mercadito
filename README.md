@@ -7,7 +7,7 @@ El MVP no procesa pagos. La comunidad coordina el intercambio directamente y las
 ## Tecnología
 
 - Next.js App Router, React, TypeScript y Tailwind CSS.
-- PWA optimizada para móvil e instalación desde el navegador.
+- PWA instalable desde el navegador, con un aviso estático ante fallos de conexión o disponibilidad; no almacena publicaciones ni conversaciones offline.
 - Auth.js con Keycloak como intermediario OIDC para los proveedores institucionales.
 - PostgreSQL y Prisma ORM.
 - Docker Compose y Caddy para ejecución y HTTPS.

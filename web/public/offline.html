@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#18252d" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Mercadito no está disponible</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #18252d;
+        --paper: #faf9f4;
+        --muted: #4b5960;
+        --rule: rgba(24, 37, 45, 0.2);
+        --lime: #d6fa45;
+        --coral: #ea5845;
+      }
+
+      * { box-sizing: border-box; }
+
+      ::selection { background: var(--lime); color: var(--ink); }
+
+      body {
+        min-height: 100svh;
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "DM Sans", Arial, sans-serif;
+        line-height: 1.55;
+      }
+
+      .page {
+        width: min(100% - 40px, 72rem);
+        min-height: 100svh;
+        margin-inline: auto;
+        padding: 0 0 calc(32px + env(safe-area-inset-bottom));
+        display: flex;
+        flex-direction: column;
+      }
+
+      .masthead {
+        padding: 22px 0 17px;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 10px;
+        color: var(--ink);
+        text-decoration: none;
+      }
+
+      .brand strong {
+        font-family: "Newsreader", Georgia, serif;
+        font-size: 1.45rem;
+        font-weight: 600;
+        letter-spacing: -0.035em;
+      }
+
+      .brand span {
+        color: var(--muted);
+        font-size: 0.76rem;
+        letter-spacing: 0.045em;
+        text-transform: uppercase;
+      }
+
+      main {
+        width: min(100%, 38rem);
+        margin-block: auto;
+        padding-block: clamp(4rem, 13vh, 8rem);
+      }
+
+      h1 {
+        max-width: 10ch;
+        margin: 23px 0 18px;
+        font-family: "Newsreader", Georgia, serif;
+        font-size: clamp(3rem, 13vw, 5.25rem);
+        font-weight: 500;
+        letter-spacing: -0.035em;
+        line-height: 0.97;
+        text-wrap: balance;
+      }
+
+      .message {
+        max-width: 42rem;
+        margin: 0;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.65;
+      }
+
+      .retry {
+        display: inline-flex;
+        min-height: 48px;
+        align-items: center;
+        justify-content: center;
+        margin-top: 28px;
+        padding: 12px 17px;
+        background: var(--ink);
+        color: var(--paper);
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .retry:hover {
+        background: var(--lime);
+        color: var(--ink);
+      }
+
+      .retry:focus-visible {
+        outline: 3px solid var(--coral);
+        outline-offset: 3px;
+      }
+
+      .note {
+        max-width: 42rem;
+        margin: 22px 0 0;
+        padding-top: 14px;
+        border-top: 1px solid var(--rule);
+        color: var(--muted);
+        font-size: 0.875rem;
+      }
+
+      @media (max-width: 420px) {
+        .page { width: min(100% - 32px, 72rem); }
+        .masthead { padding-top: 18px; }
+        .brand { align-items: flex-start; flex-direction: column; gap: 1px; }
+        main { padding-block: 3.5rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="masthead">
+        <a class="brand" href="/" aria-label="Mercadito, gaceta de intercambio">
+          <strong>Mercadito</strong>
+          <span>Gaceta de intercambio</span>
+        </a>
+      </header>
+      <main>
+        <h1>No pudimos abrir la gaceta.</h1>
+        <p class="message">
+          <strong>Comprueba tu conexión e inténtalo de nuevo.</strong> Si sigue
+          sin cargar, Mercadito puede estar temporalmente fuera de servicio. No
+          guarda publicaciones ni mensajes para enviarlos después.
+        </p>
+        <a class="retry" href="/">Volver a intentar</a>
+        <p class="note">
+          Si estabas editando un aviso, vuelve a abrirlo cuando Mercadito esté
+          disponible. Esta pantalla no conserva datos de tu campus.
+        </p>
+      </main>
+    </div>
+  </body>
+</html>
