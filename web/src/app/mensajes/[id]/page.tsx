@@ -13,10 +13,11 @@ type MessagePageProps = {
 };
 
 export default async function ConversationPage({ params }: MessagePageProps) {
-  const student = await getActiveStudent();
-  if (!student) redirect("/ingresar?returnTo=%2Fmensajes");
-
   const { id } = await params;
+  const student = await getActiveStudent();
+  if (!student) {
+    redirect("/ingresar?returnTo=" + encodeURIComponent("/mensajes/" + id));
+  }
   const conversation = await findConversationForStudent(
     id,
     student.id,
