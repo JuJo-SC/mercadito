@@ -34,6 +34,7 @@ export function SiteHeader({ signedIn = false, userName }: SiteHeaderProps) {
           <Link href="/#avisos">Explorar</Link>
           <Link href="/publicar">Publicar</Link>
           {signedIn ? <Link href="/mis-avisos">Mis avisos</Link> : null}
+          {signedIn ? <Link href="/mensajes">Mensajes</Link> : null}
           <Link href="/universidades">Universidades</Link>
         </nav>
 
@@ -65,8 +66,12 @@ export function SiteHeader({ signedIn = false, userName }: SiteHeaderProps) {
           )}
         </div>
       </div>
-      <nav className="mobile-navigation page-width" aria-label="Accesos rápidos">
+      <nav
+        className={signedIn ? "mobile-navigation page-width has-messages" : "mobile-navigation page-width"}
+        aria-label="Accesos rápidos"
+      >
         <Link href="/#avisos">Explorar</Link>
+        {signedIn ? <Link href="/mensajes">Mensajes</Link> : null}
         {signedIn ? (
           <Link href="/mis-avisos">Mis avisos</Link>
         ) : (

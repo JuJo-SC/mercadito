@@ -32,7 +32,7 @@ export default async function Home() {
           imageUrl: true,
           isDemo: true,
           createdAt: true,
-          seller: { select: { name: true } },
+          seller: { select: { id: true, name: true } },
         },
       })
     : [];
@@ -57,6 +57,8 @@ export default async function Home() {
           applicationIntakeEnabled={
             process.env.ENABLE_UNIVERSITY_APPLICATIONS === "true"
           }
+          currentUserId={student?.id ?? null}
+          signedIn={Boolean(student)}
         />
       </main>
       <SiteFooter />

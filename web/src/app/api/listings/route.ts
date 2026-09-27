@@ -81,7 +81,7 @@ export async function GET(request: Request) {
         imageUrl: true,
         isDemo: true,
         createdAt: true,
-        seller: { select: { name: true } },
+        seller: { select: { id: true, name: true } },
       },
     }),
   ]);

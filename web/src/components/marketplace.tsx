@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { StartConversationForm } from "@/components/start-conversation-form";
 import type { FormEvent } from "react";
 import Link from "next/link";
 import {
@@ -30,7 +31,7 @@ type ListingNotice = {
   imageUrl: string | null;
   isDemo: boolean;
   createdAt: string;
-  seller: { name: string | null };
+  seller: { id: string; name: string | null };
 };
 
 type MarketplaceProps = {
@@ -38,6 +39,8 @@ type MarketplaceProps = {
   initialListings: ListingNotice[];
   canSignIn: boolean;
   applicationIntakeEnabled: boolean;
+  currentUserId: string | null;
+  signedIn: boolean;
 };
 
 const categories = [
@@ -92,6 +95,8 @@ export function Marketplace({
   initialListings,
   canSignIn,
   applicationIntakeEnabled,
+  currentUserId,
+  signedIn,
 }: MarketplaceProps) {
   const [listings, setListings] = useState(initialListings);
   const [total, setTotal] = useState(initialListings.length);
@@ -368,6 +373,14 @@ export function Marketplace({
                       <dd>{formatPrice(listing.price, listing.currency)}</dd>
                     </div>
                   </dl>
+                  <StartConversationForm
+                    listingId={listing.id}
+                    sellerId={listing.seller.id}
+                    sellerName={listing.seller.name ?? "Estudiante"}
+                    currentUserId={currentUserId}
+                    signedIn={signedIn}
+                    isDemo={listing.isDemo}
+                  />
                 </div>
               </details>
             ))}
