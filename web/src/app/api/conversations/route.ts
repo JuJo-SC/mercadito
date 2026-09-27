@@ -49,73 +49,42 @@ export async function POST(request: Request) {
     );
   }
 
-  const listing = await prisma.listing.findFirst({
-    where: {
-      id: parsed.data.listingId,
+  let result: Awaited<ReturnType<typeof createConversationMessage>>;
+  try {
+    result = await createConversationMessage({
+      listingId: parsed.data.listingId,
+      body: parsed.data.body,
+      studentId: student.id,
       universityId: student.universityId,
-      status: "PUBLISHED",
-      isDemo: false,
-      university: { status: "ACTIVE", isDemo: false },
-      seller: { role: "STUDENT", status: "ACTIVE", isDemo: false },
-    },
-    select: { id: true, universityId: true, sellerId: true },
-  });
+    });
+  } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "P2034"
+    ) {
+      return Response.json(
+        { error: "El artículo cambió mientras escribías. Recarga y vuelve a intentar." },
+        { status: 409, headers: privateNoStore },
+      );
+    }
+    throw error;
+  }
 
-  if (!listing) {
+  if (result.kind === "unavailable") {
     return Response.json(
       { error: "Este artículo ya no está disponible para iniciar una conversación." },
       { status: 404, headers: privateNoStore },
     );
   }
-  if (listing.sellerId === student.id) {
+  if (result.kind === "own") {
     return Response.json(
       { error: "No puedes iniciar una conversación sobre tu propio aviso." },
       { status: 400, headers: privateNoStore },
     );
   }
-
-  const result = await prisma.$transaction(async (transaction) => {
-    const conversation = await transaction.conversation.upsert({
-      where: {
-        listingId_buyerId: {
-          listingId: listing.id,
-          buyerId: student.id,
-        },
-      },
-      create: {
-        universityId: listing.universityId,
-        listingId: listing.id,
-        buyerId: student.id,
-        sellerId: listing.sellerId,
-      },
-      update: {},
-      select: { id: true, sellerId: true },
-    });
-
-    if (conversation.sellerId !== listing.sellerId) {
-      return { conflict: true as const };
-    }
-
-    const message = await transaction.message.create({
-      data: {
-        conversationId: conversation.id,
-        senderId: student.id,
-        body: parsed.data.body,
-      },
-      select: { id: true },
-    });
-    await transaction.conversation.update({
-      where: { id: conversation.id },
-      data: { updatedAt: new Date() },
-    });
-    return {
-      conflict: false as const,
-      conversationId: conversation.id,
-      messageId: message.id,
-    };
-  });
-
-  if (result.conflict) {
+  if (result.kind === "conflict") {
     return Response.json(
       { error: "Este aviso cambió de vendedor. Recarga la página e inténtalo de nuevo." },
       { status: 409, headers: privateNoStore },
@@ -125,5 +94,77 @@ export async function POST(request: Request) {
   return Response.json(
     { conversationId: result.conversationId, messageId: result.messageId },
     { status: 201, headers: privateNoStore },
+  );
+}
+
+async function createConversationMessage({
+  listingId,
+  body,
+  studentId,
+  universityId,
+}: {
+  listingId: string;
+  body: string;
+  studentId: string;
+  universityId: string;
+}) {
+  return prisma.$transaction(
+    async (transaction) => {
+      const listing = await transaction.listing.findFirst({
+        where: {
+          id: listingId,
+          universityId,
+          status: "PUBLISHED",
+          isDemo: false,
+          university: { status: "ACTIVE", isDemo: false },
+          seller: { role: "STUDENT", status: "ACTIVE", isDemo: false },
+        },
+        select: { id: true, universityId: true, sellerId: true },
+      });
+
+      if (!listing) return { kind: "unavailable" as const };
+      if (listing.sellerId === studentId) return { kind: "own" as const };
+
+      const conversation = await transaction.conversation.upsert({
+        where: {
+          listingId_buyerId: {
+            listingId: listing.id,
+            buyerId: studentId,
+          },
+        },
+        create: {
+          universityId: listing.universityId,
+          listingId: listing.id,
+          buyerId: studentId,
+          sellerId: listing.sellerId,
+        },
+        update: {},
+        select: { id: true, sellerId: true },
+      });
+
+      if (conversation.sellerId !== listing.sellerId) {
+        return { kind: "conflict" as const };
+      }
+
+      const message = await transaction.message.create({
+        data: {
+          conversationId: conversation.id,
+          senderId: studentId,
+          body,
+        },
+        select: { id: true },
+      });
+      await transaction.conversation.update({
+        where: { id: conversation.id },
+        data: { updatedAt: new Date() },
+      });
+
+      return {
+        kind: "created" as const,
+        conversationId: conversation.id,
+        messageId: message.id,
+      };
+    },
+    { isolationLevel: "Serializable" },
   );
 }
