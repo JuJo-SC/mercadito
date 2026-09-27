@@ -27,7 +27,7 @@ export default async function ConversationPage({ params }: MessagePageProps) {
   const [latest, university, unreadMessageCount] = await Promise.all([
     prisma.message.findMany({
       where: { conversationId: conversation.id },
-      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      orderBy: { sequence: "desc" },
       take: 80,
       select: { id: true, senderId: true, body: true, readAt: true, createdAt: true },
     }),

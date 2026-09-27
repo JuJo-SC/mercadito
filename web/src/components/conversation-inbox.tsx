@@ -15,6 +15,7 @@ type ConversationSummary = {
     status: string;
   };
   otherStudentName: string;
+  direction: "received" | "initiated";
   lastMessage: {
     id: string;
     body: string;
@@ -145,6 +146,9 @@ export function ConversationInbox({
                   {lastMessage ? formatActivity(lastMessage.createdAt) : formatActivity(conversation.updatedAt)}
                 </time>
                 <span className="conversation-index-main">
+                  <span className="conversation-direction">
+                    {conversation.direction === "received" ? "Te preguntaron" : "Preguntaste tú"}
+                  </span>
                   <span className="conversation-counterpart">{conversation.otherStudentName}</span>
                   <span className="conversation-listing-title">{conversation.listing.title}</span>
                   <span className="conversation-preview">{preview}</span>

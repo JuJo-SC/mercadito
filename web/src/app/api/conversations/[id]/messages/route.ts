@@ -50,7 +50,7 @@ export async function GET(
   if (afterId) {
     const anchor = await prisma.message.findFirst({
       where: { id: afterId, conversationId: conversation.id },
-      select: { id: true, createdAt: true },
+      select: { id: true, sequence: true },
     });
     if (!anchor) {
       return Response.json(
@@ -58,22 +58,19 @@ export async function GET(
         { status: 400, headers: privateNoStore },
       );
     }
-    // CUIDs are not chronological. Re-read a short window so a concurrent
-    // message committed behind this timestamp cursor is not silently skipped.
-    const overlapStart = new Date(anchor.createdAt.getTime() - 30_000);
     messages = await prisma.message.findMany({
       where: {
         conversationId: conversation.id,
-        createdAt: { gte: overlapStart },
+        sequence: { gt: anchor.sequence },
       },
-      orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      orderBy: { sequence: "asc" },
       take: 60,
       select: { id: true, senderId: true, body: true, readAt: true, createdAt: true },
     });
   } else {
     const latest = await prisma.message.findMany({
       where: { conversationId: conversation.id },
-      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      orderBy: { sequence: "desc" },
       take: 80,
       select: { id: true, senderId: true, body: true, readAt: true, createdAt: true },
     });

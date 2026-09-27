@@ -38,13 +38,14 @@ export async function listConversationsForStudent(
       id: true,
       updatedAt: true,
       buyerId: true,
+      sellerId: true,
       listing: {
         select: { id: true, title: true, price: true, currency: true, status: true },
       },
       buyer: { select: { name: true } },
       seller: { select: { name: true } },
       messages: {
-        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        orderBy: { sequence: "desc" },
         take: 1,
         select: { id: true, body: true, senderId: true, createdAt: true },
       },
@@ -72,6 +73,7 @@ export async function listConversationsForStudent(
     return {
       id: conversation.id,
       updatedAt: conversation.updatedAt.toISOString(),
+      direction: conversation.sellerId === studentId ? "received" as const : "initiated" as const,
       listing: {
         id: conversation.listing.id,
         title: conversation.listing.title,

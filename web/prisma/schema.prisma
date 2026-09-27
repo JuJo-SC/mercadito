@@ -200,6 +200,7 @@ model Conversation {
   sellerId     String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  lastMessageSequence Int @default(0)
   university   University @relation(fields: [universityId], references: [id], onDelete: Restrict)
   listing      Listing    @relation(fields: [listingId], references: [id], onDelete: Restrict)
   buyer        User       @relation("ConversationBuyer", fields: [buyerId], references: [id], onDelete: Restrict)
@@ -218,10 +219,11 @@ model Message {
   body           String       @db.Text
   readAt         DateTime?
   createdAt      DateTime     @default(now())
+  sequence       Int          @default(0)
   conversation  Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender        User         @relation(fields: [senderId], references: [id], onDelete: Restrict)
 
-  @@index([conversationId, createdAt, id])
+  @@unique([conversationId, sequence])
   @@index([conversationId, senderId, readAt])
 }
 
