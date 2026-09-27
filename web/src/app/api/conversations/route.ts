@@ -5,6 +5,8 @@ import { listConversationsForStudent } from "@/lib/conversations";
 
 export const runtime = "nodejs";
 
+const privateNoStore = { "Cache-Control": "private, no-store" };
+
 const startConversationSchema = z.object({
   listingId: z.string().trim().min(1).max(191),
   body: z.string().trim().min(1).max(2000),
@@ -15,7 +17,7 @@ export async function GET() {
   if (!student) {
     return Response.json(
       { error: "Inicia sesión con tu cuenta institucional." },
-      { status: 401, headers: { "Cache-Control": "no-store" } },
+      { status: 401, headers: privateNoStore },
     );
   }
 
@@ -25,7 +27,7 @@ export async function GET() {
   );
   return Response.json(
     { conversations },
-    { headers: { "Cache-Control": "no-store" } },
+    { headers: privateNoStore },
   );
 }
 
@@ -34,7 +36,7 @@ export async function POST(request: Request) {
   if (!student) {
     return Response.json(
       { error: "Inicia sesión con tu cuenta institucional." },
-      { status: 401, headers: { "Cache-Control": "no-store" } },
+      { status: 401, headers: privateNoStore },
     );
   }
 
@@ -43,7 +45,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return Response.json(
       { error: "Escribe un mensaje de hasta 2,000 caracteres." },
-      { status: 400, headers: { "Cache-Control": "no-store" } },
+      { status: 400, headers: privateNoStore },
     );
   }
 
@@ -62,13 +64,13 @@ export async function POST(request: Request) {
   if (!listing) {
     return Response.json(
       { error: "Este artículo ya no está disponible para iniciar una conversación." },
-      { status: 404, headers: { "Cache-Control": "no-store" } },
+      { status: 404, headers: privateNoStore },
     );
   }
   if (listing.sellerId === student.id) {
     return Response.json(
       { error: "No puedes iniciar una conversación sobre tu propio aviso." },
-      { status: 400, headers: { "Cache-Control": "no-store" } },
+      { status: 400, headers: privateNoStore },
     );
   }
 
@@ -116,12 +118,12 @@ export async function POST(request: Request) {
   if (result.conflict) {
     return Response.json(
       { error: "Este aviso cambió de vendedor. Recarga la página e inténtalo de nuevo." },
-      { status: 409, headers: { "Cache-Control": "no-store" } },
+      { status: 409, headers: privateNoStore },
     );
   }
 
   return Response.json(
     { conversationId: result.conversationId, messageId: result.messageId },
-    { status: 201, headers: { "Cache-Control": "no-store" } },
+    { status: 201, headers: privateNoStore },
   );
 }

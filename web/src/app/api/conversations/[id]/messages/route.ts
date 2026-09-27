@@ -5,6 +5,8 @@ import { getActiveStudent } from "@/lib/require-student";
 
 export const runtime = "nodejs";
 
+const privateNoStore = { "Cache-Control": "private, no-store" };
+
 const sendMessageSchema = z.object({
   body: z.string().trim().min(1).max(2000),
 });
@@ -23,7 +25,10 @@ export async function GET(
 ) {
   const student = await getActiveStudent();
   if (!student) {
-    return Response.json({ error: "Inicia sesión con tu cuenta institucional." }, { status: 401 });
+    return Response.json(
+      { error: "Inicia sesión con tu cuenta institucional." },
+      { status: 401, headers: privateNoStore },
+    );
   }
 
   const { id } = await context.params;
@@ -33,7 +38,10 @@ export async function GET(
     student.universityId,
   );
   if (!conversation) {
-    return Response.json({ error: "No encontramos esta conversación." }, { status: 404 });
+    return Response.json(
+      { error: "No encontramos esta conversación." },
+      { status: 404, headers: privateNoStore },
+    );
   }
 
   const url = new URL(request.url);
@@ -45,7 +53,10 @@ export async function GET(
       select: { id: true, createdAt: true },
     });
     if (!anchor) {
-      return Response.json({ error: "Recarga la conversación para continuar." }, { status: 400 });
+      return Response.json(
+        { error: "Recarga la conversación para continuar." },
+        { status: 400, headers: privateNoStore },
+      );
     }
     messages = await prisma.message.findMany({
       where: {
@@ -71,7 +82,7 @@ export async function GET(
 
   return Response.json(
     { messages },
-    { headers: { "Cache-Control": "no-store" } },
+    { headers: privateNoStore },
   );
 }
 
@@ -81,7 +92,10 @@ export async function POST(
 ) {
   const student = await getActiveStudent();
   if (!student) {
-    return Response.json({ error: "Inicia sesión con tu cuenta institucional." }, { status: 401 });
+    return Response.json(
+      { error: "Inicia sesión con tu cuenta institucional." },
+      { status: 401, headers: privateNoStore },
+    );
   }
 
   const { id } = await context.params;
@@ -91,7 +105,10 @@ export async function POST(
     student.universityId,
   );
   if (!conversation) {
-    return Response.json({ error: "No encontramos esta conversación." }, { status: 404 });
+    return Response.json(
+      { error: "No encontramos esta conversación." },
+      { status: 404, headers: privateNoStore },
+    );
   }
 
   const body: unknown = await request.json().catch(() => null);
@@ -99,7 +116,7 @@ export async function POST(
   if (!parsed.success) {
     return Response.json(
       { error: "Escribe un mensaje de hasta 2,000 caracteres." },
-      { status: 400 },
+      { status: 400, headers: privateNoStore },
     );
   }
 
@@ -119,5 +136,5 @@ export async function POST(
     return created;
   });
 
-  return Response.json({ message }, { status: 201, headers: { "Cache-Control": "no-store" } });
+  return Response.json({ message }, { status: 201, headers: privateNoStore });
 }
