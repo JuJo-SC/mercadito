@@ -58,13 +58,13 @@ export async function GET(
         { status: 400, headers: privateNoStore },
       );
     }
+    // CUIDs are not chronological. Re-read a short window so a concurrent
+    // message committed behind this timestamp cursor is not silently skipped.
+    const overlapStart = new Date(anchor.createdAt.getTime() - 30_000);
     messages = await prisma.message.findMany({
       where: {
         conversationId: conversation.id,
-        OR: [
-          { createdAt: { gt: anchor.createdAt } },
-          { createdAt: anchor.createdAt, id: { gt: anchor.id } },
-        ],
+        createdAt: { gte: overlapStart },
       },
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],
       take: 60,

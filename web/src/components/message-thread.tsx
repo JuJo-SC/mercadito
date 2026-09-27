@@ -104,12 +104,15 @@ export function MessageThread({
           throw new Error(payload?.error ?? "No pudimos actualizar los mensajes.");
         }
         const incoming = payload.messages ?? [];
-        if (incoming.length) {
+        const knownIds = new Set(messagesRef.current.map((message) => message.id));
+        const additions = incoming.filter((message) => !knownIds.has(message.id));
+        if (additions.length) {
           setMessages((current) => {
             const existing = new Set(current.map((message) => message.id));
-            return [...current, ...incoming.filter((message) => !existing.has(message.id))].slice(-120);
+            const unseen = additions.filter((message) => !existing.has(message.id));
+            return unseen.length ? [...current, ...unseen].slice(-120) : current;
           });
-          if (incoming.some((message) => message.senderId !== currentUserId)) void markRead();
+          if (additions.some((message) => message.senderId !== currentUserId)) void markRead();
         }
         setConnectionNotice("");
       } catch {
