@@ -223,6 +223,7 @@ model Message {
   readAt         DateTime?
   createdAt      DateTime     @default(now())
   sequence       Int          @default(0)
+  clientRequestId String?      @unique @db.Uuid
   conversation  Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender        User         @relation(fields: [senderId], references: [id], onDelete: Restrict)
 

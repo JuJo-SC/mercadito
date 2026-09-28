@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -25,6 +25,7 @@ export function StartConversationForm({
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+  const messageRequestRef = useRef<{ body: string; id: string } | null>(null);
 
   if (isDemo) {
     return (
@@ -56,13 +57,25 @@ export function StartConversationForm({
     if (!message || sending) return;
     setSending(true);
     setError("");
+    const previousRequest = messageRequestRef.current;
+    const request = previousRequest?.body === message
+      ? previousRequest
+      : { body: message, id: crypto.randomUUID() };
+    messageRequestRef.current = request;
 
     try {
-      const response = await fetch("/api/conversations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ listingId, body: message }),
-      });
+      let response: Response;
+      try {
+        response = await fetch("/api/conversations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ listingId, body: message, clientRequestId: request.id }),
+        });
+      } catch {
+        setError("No pudimos confirmar si la pregunta se envió. Comprueba tu conexión y vuelve a intentar con el mismo texto; evitaremos duplicarla.");
+        setSending(false);
+        return;
+      }
       const payload = (await response.json().catch(() => null)) as
         | { conversationId?: string; error?: string }
         | null;

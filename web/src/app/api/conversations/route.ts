@@ -2,6 +2,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getActiveStudent } from "@/lib/require-student";
 import { listConversationsForStudent } from "@/lib/conversations";
+import { findMessageRequestReplay, prismaErrorCode } from "@/lib/message-idempotency";
 
 export const runtime = "nodejs";
 
@@ -10,6 +11,7 @@ const privateNoStore = { "Cache-Control": "private, no-store" };
 const startConversationSchema = z.object({
   listingId: z.string().trim().min(1).max(191),
   body: z.string().trim().min(1).max(2000),
+  clientRequestId: z.string().uuid().optional(),
 });
 
 export async function GET() {
@@ -49,21 +51,62 @@ export async function POST(request: Request) {
     );
   }
 
+  const { listingId, body: firstMessage, clientRequestId } = parsed.data;
+  const replayScope = { listingId, universityId: student.universityId };
+  const existingMessage = await findMessageRequestReplay(
+    clientRequestId,
+    student.id,
+    firstMessage,
+    replayScope,
+  );
+  if (existingMessage?.kind === "conflict") {
+    return Response.json(
+      { error: "Esta solicitud ya se usó para otro mensaje. Recarga el artículo antes de intentarlo de nuevo." },
+      { status: 409, headers: privateNoStore },
+    );
+  }
+  if (existingMessage?.kind === "replayed") {
+    return Response.json(
+      {
+        conversationId: existingMessage.message.conversationId,
+        messageId: existingMessage.message.id,
+      },
+      { status: 200, headers: privateNoStore },
+    );
+  }
+
   let result: Awaited<ReturnType<typeof createConversationMessage>>;
   try {
     result = await createConversationMessage({
-      listingId: parsed.data.listingId,
-      body: parsed.data.body,
+      listingId,
+      body: firstMessage,
+      clientRequestId,
       studentId: student.id,
       universityId: student.universityId,
     });
   } catch (error) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "P2034"
-    ) {
+    const errorCode = prismaErrorCode(error);
+    if (clientRequestId && (errorCode === "P2002" || errorCode === "P2034")) {
+      const replay = await findMessageRequestReplay(
+        clientRequestId,
+        student.id,
+        firstMessage,
+        replayScope,
+      );
+      if (replay?.kind === "replayed") {
+        return Response.json(
+          { conversationId: replay.message.conversationId, messageId: replay.message.id },
+          { status: 200, headers: privateNoStore },
+        );
+      }
+      if (replay?.kind === "conflict") {
+        return Response.json(
+          { error: "Esta solicitud ya se usó para otro mensaje. Recarga el artículo antes de intentarlo de nuevo." },
+          { status: 409, headers: privateNoStore },
+        );
+      }
+    }
+    if (errorCode === "P2034") {
       return Response.json(
         { error: "El artículo cambió mientras escribías. Recarga y vuelve a intentar." },
         { status: 409, headers: privateNoStore },
@@ -100,11 +143,13 @@ export async function POST(request: Request) {
 async function createConversationMessage({
   listingId,
   body,
+  clientRequestId,
   studentId,
   universityId,
 }: {
   listingId: string;
   body: string;
+  clientRequestId?: string;
   studentId: string;
   universityId: string;
 }) {
@@ -151,6 +196,7 @@ async function createConversationMessage({
           conversationId: conversation.id,
           senderId: studentId,
           body,
+          clientRequestId,
         },
         select: { id: true },
       });

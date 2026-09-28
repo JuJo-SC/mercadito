@@ -2,6 +2,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { findConversationForStudent } from "@/lib/conversation-access";
 import { getActiveStudent } from "@/lib/require-student";
+import { findMessageRequestReplay, prismaErrorCode } from "@/lib/message-idempotency";
 
 export const runtime = "nodejs";
 
@@ -9,6 +10,7 @@ const privateNoStore = { "Cache-Control": "private, no-store" };
 
 const sendMessageSchema = z.object({
   body: z.string().trim().min(1).max(2000),
+  clientRequestId: z.string().uuid().optional(),
 });
 
 type MessageRecord = {
@@ -117,21 +119,86 @@ export async function POST(
     );
   }
 
-  const message = await prisma.$transaction(async (transaction) => {
-    const created = await transaction.message.create({
-      data: {
-        conversationId: conversation.id,
-        senderId: student.id,
-        body: parsed.data.body,
+  const { body: messageBody, clientRequestId } = parsed.data;
+  const replayScope = { conversationId: conversation.id };
+  const existingMessage = await findMessageRequestReplay(
+    clientRequestId,
+    student.id,
+    messageBody,
+    replayScope,
+  );
+  if (existingMessage?.kind === "conflict") {
+    return Response.json(
+      { error: "Esta solicitud ya se usó para otro mensaje. Recarga la conversación antes de volver a intentar." },
+      { status: 409, headers: privateNoStore },
+    );
+  }
+  if (existingMessage?.kind === "replayed") {
+    const replayed = existingMessage.message;
+    return Response.json(
+      {
+        message: {
+          id: replayed.id,
+          senderId: replayed.senderId,
+          body: replayed.body,
+          readAt: replayed.readAt,
+          createdAt: replayed.createdAt,
+        },
       },
-      select: { id: true, senderId: true, body: true, readAt: true, createdAt: true },
+      { status: 200, headers: privateNoStore },
+    );
+  }
+
+  let message: MessageRecord;
+  try {
+    message = await prisma.$transaction(async (transaction) => {
+      const created = await transaction.message.create({
+        data: {
+          conversationId: conversation.id,
+          senderId: student.id,
+          body: messageBody,
+          clientRequestId,
+        },
+        select: { id: true, senderId: true, body: true, readAt: true, createdAt: true },
+      });
+      await transaction.conversation.update({
+        where: { id: conversation.id },
+        data: { updatedAt: new Date() },
+      });
+      return created;
     });
-    await transaction.conversation.update({
-      where: { id: conversation.id },
-      data: { updatedAt: new Date() },
-    });
-    return created;
-  });
+  } catch (error) {
+    if (clientRequestId && prismaErrorCode(error) === "P2002") {
+      const replay = await findMessageRequestReplay(
+        clientRequestId,
+        student.id,
+        messageBody,
+        replayScope,
+      );
+      if (replay?.kind === "replayed") {
+        const replayed = replay.message;
+        return Response.json(
+          {
+            message: {
+              id: replayed.id,
+              senderId: replayed.senderId,
+              body: replayed.body,
+              readAt: replayed.readAt,
+              createdAt: replayed.createdAt,
+            },
+          },
+          { status: 200, headers: privateNoStore },
+        );
+      }
+      if (replay?.kind === "conflict") {
+        return Response.json(
+          { error: "Esta solicitud ya se usó para otro mensaje. Recarga la conversación antes de volver a intentar." },
+          { status: 409, headers: privateNoStore },
+        );
+      }
+    }
+    throw error;
+  }
 
   return Response.json({ message }, { status: 201, headers: privateNoStore });
 }

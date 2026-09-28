@@ -70,6 +70,7 @@ export function MessageThread({
   const messageListRef = useRef<HTMLOListElement>(null);
   const messagesRef = useRef(initialMessages);
   const polling = useRef(false);
+  const messageRequestRef = useRef<{ body: string; id: string } | null>(null);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -140,19 +141,36 @@ export function MessageThread({
     if (!body || sending) return;
     setSending(true);
     setError("");
+    const previousRequest = messageRequestRef.current;
+    const request = previousRequest?.body === body
+      ? previousRequest
+      : { body, id: crypto.randomUUID() };
+    messageRequestRef.current = request;
     try {
-      const response = await fetch(`/api/conversations/${conversationId}/messages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ body }),
-      });
+      let response: Response;
+      try {
+        response = await fetch(`/api/conversations/${conversationId}/messages`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ body, clientRequestId: request.id }),
+        });
+      } catch {
+        setError("No pudimos confirmar si el mensaje se envió. Comprueba tu conexión y vuelve a intentar con el mismo texto; evitaremos duplicarlo.");
+        return;
+      }
       const payload = (await response.json().catch(() => null)) as
         | { message?: ThreadMessage; error?: string }
         | null;
       if (!response.ok || !payload?.message) {
         throw new Error(payload?.error ?? "No pudimos enviar el mensaje. Intenta de nuevo.");
       }
-      setMessages((current) => [...current, payload.message!].slice(-120));
+      const sentMessage = payload.message;
+      setMessages((current) =>
+        current.some((message) => message.id === sentMessage.id)
+          ? current
+          : [...current, sentMessage].slice(-120),
+      );
+      messageRequestRef.current = null;
       setDraft("");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "No pudimos enviar el mensaje. Intenta de nuevo.");
