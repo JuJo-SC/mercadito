@@ -13,11 +13,11 @@ SEED_KEY: 41089191
 
 ## Direction contract
 
-THESIS: Cada conversación se encuentra por su actividad reciente y conserva el artículo a la vista para que ambas personas sepan qué intercambio están coordinando.
+THESIS: Cada conversación se encuentra por el siguiente turno y conserva el artículo a la vista para que ambas personas sepan qué intercambio están coordinando.
 
 OWN-WORLD: La Gaceta de Intercambio: papel cálido, tipografía editorial, tinta oscura, reglas finas y acento lima reservado a la pertenencia del campus de prueba. Los hilos se ordenan como correspondencia; las filas planas reemplazan tarjetas genéricas.
 
-STORY: El interés empieza desde un aviso publicado con un primer mensaje de texto. La bandeja ordena los hilos por actividad más reciente y muestra quién inició la conversación, el artículo, el último mensaje, el turno (“Te toca responder” / “Esperas respuesta”) y si hay mensajes sin leer. Al abrir un hilo, la referencia del artículo permanece fija arriba y debajo se leen los mensajes en orden cronológico. Un alumno solo inicia conversaciones dentro de su universidad y no puede escribir a su propio aviso.
+STORY: El interés empieza desde un aviso publicado con un primer mensaje de texto. La bandeja agrupa primero los hilos por responder, después los que esperan respuesta y deja al final los hilos sin mensaje inicial; dentro de cada grupo ordena por actividad reciente. Cada fila muestra quién inició la conversación, el artículo, el último mensaje y los mensajes sin leer. Al abrir un hilo, la referencia del artículo permanece fija arriba y debajo se leen los mensajes en orden cronológico. Un alumno solo inicia conversaciones dentro de su universidad y no puede escribir a su propio aviso.
 
 FIRST VIEWPORT: En móvil, el título de la conversación, el anuncio de referencia, el aviso de pagos fuera de Mercadito y los mensajes recientes quedan visibles antes del compositor. La referencia ocupa una franja editorial plana; el historial se desplaza por separado para que el artículo no desaparezca mientras se lee.
 

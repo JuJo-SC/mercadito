@@ -204,7 +204,7 @@ La navegación de escritorio usa enlaces sans serif en tinta secundaria. Hover y
 - Guarda únicamente el aviso público sin conexión. El service worker nunca almacena páginas del campus, avisos, mensajes, respuestas de API ni borradores.
 
 ### Messaging
-- **Inbox:** ordena conversaciones por actividad más reciente. Cada fila plana mantiene juntos el artículo, la contraparte, el último mensaje y el estado de mensajes pendientes; una regla fina separa filas sin convertirlas en tarjetas.
+- **Inbox:** prioriza primero las conversaciones por responder, después las que esperan respuesta y, al final, los hilos por iniciar. Dentro de cada grupo conserva la actividad reciente. Cada fila plana mantiene juntos el artículo, la contraparte, el último mensaje y los mensajes sin leer; las reglas finas separan filas sin convertirlas en tarjetas.
 - **Thread:** deja fija arriba la ficha del aviso relacionado y desplaza solo el historial cronológico. El aviso de pagos fuera de Mercadito queda visible junto a esa referencia. El MVP usa mensajes de texto sin adjuntos ni controles de pago.
 
 ### Publication flow

@@ -123,63 +123,91 @@ export function ConversationInbox({
     );
   }
 
+  const groups = [
+    {
+      id: "needs-reply",
+      title: "Por responder",
+      conversations: conversations.filter(
+        (conversation) =>
+          Boolean(conversation.lastMessage) &&
+          conversation.lastMessage?.senderId !== currentUserId,
+      ),
+    },
+    {
+      id: "waiting",
+      title: "Esperando respuesta",
+      conversations: conversations.filter(
+        (conversation) =>
+          Boolean(conversation.lastMessage) &&
+          conversation.lastMessage?.senderId === currentUserId,
+      ),
+    },
+    {
+      id: "start",
+      title: "Por iniciar",
+      conversations: conversations.filter((conversation) => !conversation.lastMessage),
+    },
+  ].filter((group) => group.conversations.length > 0);
+
   return (
     <section className="conversation-inbox" aria-labelledby="conversation-list-title">
       <div className="conversation-inbox-heading">
-        <h2 id="conversation-list-title">Por actividad reciente</h2>
+        <h2 id="conversation-list-title">Tus conversaciones</h2>
         <p>{conversations.length} {conversations.length === 1 ? "hilo" : "hilos"}</p>
       </div>
       {error ? <p className="messages-refresh-error" role="status">{error}</p> : null}
-      <ol className="conversation-index">
-        {conversations.map((conversation) => {
-          const lastMessage = conversation.lastMessage;
-          const turnState = lastMessage
-            ? lastMessage.senderId === currentUserId
-              ? { label: "Esperas respuesta", className: "is-waiting" }
-              : { label: "Te toca responder", className: "is-action" }
-            : null;
-          const preview = lastMessage
-            ? `${lastMessage.senderId === currentUserId ? "Tú: " : ""}${lastMessage.body}`
-            : "Abre el hilo para continuar.";
-          return (
-            <li key={conversation.id}>
-              <Link className="conversation-index-row" href={`/mensajes/${conversation.id}`}>
-                <time
-                  className="conversation-index-date"
-                  dateTime={lastMessage?.createdAt ?? conversation.updatedAt}
-                >
-                  {lastMessage ? formatActivity(lastMessage.createdAt) : formatActivity(conversation.updatedAt)}
-                </time>
-                <span className="conversation-index-main">
-                  <span className="conversation-index-kicker">
-                    <span className="conversation-direction">
-                      {conversation.direction === "received" ? "Te preguntaron" : "Preguntaste tú"}
-                    </span>
-                    {turnState ? (
-                      <span className={`conversation-turn ${turnState.className}`}>
-                        {turnState.label}
+      {groups.map((group) => (
+        <section
+          className="conversation-group"
+          key={group.id}
+          aria-labelledby={"conversation-group-" + group.id}
+        >
+          <div className="conversation-group-heading">
+            <h3 id={"conversation-group-" + group.id}>{group.title}</h3>
+            <p>{group.conversations.length} {group.conversations.length === 1 ? "hilo" : "hilos"}</p>
+          </div>
+          <ol className="conversation-index">
+            {group.conversations.map((conversation) => {
+              const lastMessage = conversation.lastMessage;
+              const preview = lastMessage
+                ? (lastMessage.senderId === currentUserId ? "Tú: " : "") + lastMessage.body
+                : "Abre el hilo para continuar.";
+              return (
+                <li key={conversation.id}>
+                  <Link className="conversation-index-row" href={"/mensajes/" + conversation.id}>
+                    <time
+                      className="conversation-index-date"
+                      dateTime={lastMessage?.createdAt ?? conversation.updatedAt}
+                    >
+                      {lastMessage ? formatActivity(lastMessage.createdAt) : formatActivity(conversation.updatedAt)}
+                    </time>
+                    <span className="conversation-index-main">
+                      <span className="conversation-index-kicker">
+                        <span className="conversation-direction">
+                          {conversation.direction === "received" ? "Te preguntaron" : "Preguntaste tú"}
+                        </span>
                       </span>
-                    ) : null}
-                  </span>
-                  <span className="conversation-counterpart">{conversation.otherStudentName}</span>
-                  <span className="conversation-listing-title">{conversation.listing.title}</span>
-                  <span className="conversation-preview">{preview}</span>
-                </span>
-                <span className="conversation-index-meta">
-                  <span className="conversation-price">{formatPrice(conversation.listing.price, conversation.listing.currency)}</span>
-                  <span className="conversation-availability">{availabilityName(conversation.listing.status)}</span>
-                  {conversation.unreadCount > 0 ? (
-                    <span className="conversation-unread">
-                      {conversation.unreadCount} {conversation.unreadCount === 1 ? "nuevo" : "nuevos"}
+                      <span className="conversation-counterpart">{conversation.otherStudentName}</span>
+                      <span className="conversation-listing-title">{conversation.listing.title}</span>
+                      <span className="conversation-preview">{preview}</span>
                     </span>
-                  ) : null}
-                </span>
-                <ArrowRight className="conversation-index-arrow" aria-hidden="true" size={18} strokeWidth={1.8} />
-              </Link>
-            </li>
-          );
-        })}
-      </ol>
+                    <span className="conversation-index-meta">
+                      <span className="conversation-price">{formatPrice(conversation.listing.price, conversation.listing.currency)}</span>
+                      <span className="conversation-availability">{availabilityName(conversation.listing.status)}</span>
+                      {conversation.unreadCount > 0 ? (
+                        <span className="conversation-unread">
+                          {conversation.unreadCount} {conversation.unreadCount === 1 ? "nuevo" : "nuevos"}
+                        </span>
+                      ) : null}
+                    </span>
+                    <ArrowRight className="conversation-index-arrow" aria-hidden="true" size={18} strokeWidth={1.8} />
+                  </Link>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      ))}
     </section>
   );
 }
