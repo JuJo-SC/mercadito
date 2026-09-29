@@ -30,7 +30,7 @@ export function StartConversationForm({
   if (isDemo) {
     return (
       <p className="notice-contact-note">
-        Este aviso es ficticio; desde la demostración no se envían mensajes.
+        Esta publicación es ficticia; en la demostración no se envían mensajes.
       </p>
     );
   }
@@ -48,7 +48,7 @@ export function StartConversationForm({
   }
 
   if (sellerId === currentUserId) {
-    return <p className="notice-contact-note">Este es tu aviso. Las personas interesadas pueden escribirte aquí.</p>;
+    return <p className="notice-contact-note">Esta es tu publicación. Las personas interesadas pueden escribirte aquí.</p>;
   }
 
   async function startConversation(event: FormEvent<HTMLFormElement>) {
@@ -93,7 +93,7 @@ export function StartConversationForm({
 
   return (
     <form className="notice-contact-form" onSubmit={startConversation}>
-      <h3>Pregunta por este artículo</h3>
+      <h3>Pregunta por esta publicación</h3>
       <label htmlFor={`first-message-${listingId}`}>Primer mensaje para {sellerName}</label>
       <textarea
         id={`first-message-${listingId}`}

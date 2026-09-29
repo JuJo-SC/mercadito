@@ -6,6 +6,7 @@ import type { FormEvent } from "react";
 import Link from "next/link";
 import {
   ArrowDown,
+  Camera,
   ArrowRight,
   ArrowUpRight,
   ChevronDown,
@@ -22,7 +23,7 @@ type University = {
   isTest: boolean;
 };
 
-type ListingNotice = {
+type MarketplaceListing = {
   id: string;
   title: string;
   description: string;
@@ -38,7 +39,7 @@ type ListingNotice = {
 
 type MarketplaceProps = {
   university: University;
-  initialListings: ListingNotice[];
+  initialListings: MarketplaceListing[];
   initialTotal: number;
   initialSort: SortMode;
   hasInterestSignals: boolean;
@@ -87,7 +88,7 @@ function formatPrice(price: number, currency: string) {
   }
 }
 
-function formatNoticeDate(value: string) {
+function formatListingDate(value: string) {
   return new Intl.DateTimeFormat("es-MX", {
     day: "2-digit",
     month: "short",
@@ -154,7 +155,7 @@ export function Marketplace({
         | {
             error?: string;
             total?: number;
-            listings?: ListingNotice[];
+            listings?: MarketplaceListing[];
             hasMore?: boolean;
             nextCursor?: string | null;
             sortMode?: SortMode;
@@ -162,7 +163,7 @@ export function Marketplace({
           }
         | null;
       if (!response.ok) {
-        throw new Error(payload?.error ?? "No pudimos cargar los artículos.");
+        throw new Error(payload?.error ?? "No pudimos cargar las publicaciones.");
       }
 
       const incoming = payload?.listings ?? [];
@@ -184,7 +185,7 @@ export function Marketplace({
       const message =
         cause instanceof Error
           ? cause.message
-          : "No pudimos cargar los artículos. Intenta de nuevo.";
+          : "No pudimos cargar las publicaciones. Intenta de nuevo.";
       if (append) setLoadMoreError(message);
       else setError(message);
     } finally {
@@ -226,10 +227,10 @@ export function Marketplace({
   const hasActiveFilters = Boolean(query.trim()) || category !== "ALL";
 
   return (
-    <section className="marketplace-section campus-marketplace page-width" id="avisos">
+    <section className="marketplace-section campus-marketplace page-width" id="productos">
       <header className="campus-marketplace-header">
         <div>
-          <h1>Artículos de tu campus.</h1>
+          <h1>Mercadito de tu campus.</h1>
           <p className="campus-name">{university.name}</p>
         </div>
         <div className="campus-marketplace-actions">
@@ -237,7 +238,7 @@ export function Marketplace({
             Pregunta por chat. La entrega y cualquier pago se acuerdan fuera de Mercadito.
           </p>
           <Link className="button-ink" href="/publicar">
-            Publicar un artículo
+            Publicar un producto
             <ArrowUpRight aria-hidden="true" size={17} strokeWidth={1.8} />
           </Link>
         </div>
@@ -246,7 +247,7 @@ export function Marketplace({
       {university.isTest ? (
         <p className="demo-banner campus-test-banner" role="note">
           <span className="demo-mark" aria-hidden="true">P</span>
-          UMAN es un campus de prueba. Usa artículos ficticios mientras recorres el mercadito.
+          UMAN es un campus de prueba. Recorre publicaciones de ejemplo mientras conoces el mercadito.
         </p>
       ) : null}
 
@@ -254,13 +255,13 @@ export function Marketplace({
         <div>
           <h2>Encuentra algo para tu día.</h2>
           <p>
-            {total} {total === 1 ? "artículo" : "artículos"} publicados en {university.name}
+            {total} {total === 1 ? "publicación" : "publicaciones"}
           </p>
         </div>
       </div>
 
       <form className="search-form" role="search" onSubmit={submitSearch}>
-        <label htmlFor="market-search">Buscar artículos</label>
+        <label htmlFor="market-search">Buscar publicaciones</label>
         <div className="search-row">
           <div className="search-input-wrap">
             <Search aria-hidden="true" size={19} strokeWidth={1.7} />
@@ -270,7 +271,7 @@ export function Marketplace({
               type="search"
               value={draftQuery}
               onChange={(event) => setDraftQuery(event.target.value)}
-              placeholder="Comida, ropa, tecnología…"
+              placeholder="Comida, ropa, libros, tecnología…"
               autoComplete="off"
             />
           </div>
@@ -295,7 +296,7 @@ export function Marketplace({
             </button>
           ))}
         </div>
-        <div className="sort-controls" role="group" aria-label="Ordenar artículos">
+        <div className="sort-controls" role="group" aria-label="Ordenar publicaciones">
           <span>Ordenar</span>
           <button
             className={sortMode === "INTEREST" ? "sort-button is-selected" : "sort-button"}
@@ -341,90 +342,101 @@ export function Marketplace({
       ) : loading ? (
         <div className="result-message" aria-live="polite">
           <span className="loading-rule" />
-          <p>Buscando artículos…</p>
+          <p>Buscando publicaciones…</p>
         </div>
       ) : listings.length ? (
         <>
-          <div className="notice-index" aria-live="polite">
-            <div className="notice-columns" aria-hidden="true">
-              <span>Índice</span>
-              <span>Artículo y condición</span>
-              <span>Publicado por</span>
-              <span>Precio</span>
-              <span />
-            </div>
-            {listings.map((listing, index) => (
-              <details className="notice-entry" key={listing.id}>
-                <summary className="notice-summary">
-                  <span className="notice-number">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className="notice-main">
-                    <span className="notice-title">{listing.title}</span>
-                    <span className="notice-meta">
-                      <span>{categoryNames[listing.category] ?? "Otros"}</span>
-                      <span className="meta-separator" aria-hidden="true">·</span>
-                      <span>{conditionNames[listing.condition] ?? "Condición no indicada"}</span>
-                      {listing.isDemo ? <span className="notice-demo">Ejemplo</span> : null}
-                    </span>
-                  </span>
-                  <span className="notice-seller">{listing.seller.name ?? "Estudiante"}</span>
-                  <span className="notice-price">
-                    {formatPrice(listing.price, listing.currency)}
-                  </span>
-                  <span className="notice-disclosure">
-                    <span>Ver</span>
-                    <ChevronDown aria-hidden="true" size={17} strokeWidth={1.8} />
-                  </span>
-                </summary>
-                <div className="notice-expanded">
-                  <div className="notice-description">
+          <div className="product-grid" aria-live="polite">
+            {listings.map((listing) => (
+              <details className="product-card" key={listing.id}>
+                <summary className="product-card-summary">
+                  <span className="product-card-media">
                     {listing.imageUrl ? (
                       <img
-                        className="notice-photo"
+                        className="product-card-image"
                         src={listing.imageUrl}
                         alt={"Foto de " + listing.title}
                         loading="lazy"
                         decoding="async"
                       />
+                    ) : (
+                      <span className="product-card-no-image">
+                        <Camera aria-hidden="true" size={25} strokeWidth={1.5} />
+                        <span>Sin foto todavía</span>
+                      </span>
+                    )}
+                    {listing.imageUrl ? (
+                      <span className="product-card-photo-count">1 foto</span>
                     ) : null}
+                    {listing.isDemo ? (
+                      <span className="product-card-demo">Ejemplo</span>
+                    ) : null}
+                  </span>
+                  <span className="product-card-copy">
+                    <span className="product-card-meta">
+                      <span className="product-card-category">
+                        {categoryNames[listing.category] ?? "Otros"}
+                      </span>
+                      <span className="product-card-separator" aria-hidden="true">·</span>
+                      <span className="product-card-condition">
+                        {conditionNames[listing.condition] ?? "Condición no indicada"}
+                      </span>
+                    </span>
+                    <span className="product-card-title">{listing.title}</span>
+                    <span className="product-card-price">
+                      {formatPrice(listing.price, listing.currency)}
+                    </span>
+                    <span className="product-card-seller">
+                      Por {listing.seller.name ?? "Estudiante"}
+                    </span>
+                    <span className="product-card-disclosure">
+                      <span className="product-disclosure-closed">Ver publicación</span>
+                      <span className="product-disclosure-open">Ocultar detalles</span>
+                      <ChevronDown aria-hidden="true" size={17} strokeWidth={1.8} />
+                    </span>
+                  </span>
+                </summary>
+                <div className="product-expanded">
+                  <div className="product-description">
                     <p>{listing.description}</p>
                     {listing.isDemo ? (
-                      <span className="notice-demo-note">
+                      <span className="product-demo-note">
                         Publicación ficticia de demostración.
                       </span>
                     ) : null}
                   </div>
-                  <dl className="notice-details">
-                    <div>
-                      <dt>Publicado por</dt>
-                      <dd>{listing.seller.name ?? "Estudiante"}</dd>
-                    </div>
-                    <div>
-                      <dt>Fecha del aviso</dt>
-                      <dd>{formatNoticeDate(listing.createdAt)}</dd>
-                    </div>
-                    <div>
-                      <dt>Precio indicado</dt>
-                      <dd>{formatPrice(listing.price, listing.currency)}</dd>
-                    </div>
-                  </dl>
-                  <StartConversationForm
-                    listingId={listing.id}
-                    sellerId={listing.seller.id}
-                    sellerName={listing.seller.name ?? "Estudiante"}
-                    currentUserId={currentUserId}
-                    signedIn
-                    isDemo={listing.isDemo}
-                  />
+                  <div className="product-contact">
+                    <dl className="product-details">
+                      <div>
+                        <dt>Publicado por</dt>
+                        <dd>{listing.seller.name ?? "Estudiante"}</dd>
+                      </div>
+                      <div>
+                        <dt>Fecha de publicación</dt>
+                        <dd>{formatListingDate(listing.createdAt)}</dd>
+                      </div>
+                      <div>
+                        <dt>Precio indicado</dt>
+                        <dd>{formatPrice(listing.price, listing.currency)}</dd>
+                      </div>
+                    </dl>
+                    <StartConversationForm
+                      listingId={listing.id}
+                      sellerId={listing.seller.id}
+                      sellerName={listing.seller.name ?? "Estudiante"}
+                      currentUserId={currentUserId}
+                      signedIn
+                      isDemo={listing.isDemo}
+                    />
+                  </div>
                 </div>
               </details>
             ))}
           </div>
           {hasMore ? (
-            <div className="notice-pagination" aria-busy={loadingMore}>
-              <p className="notice-pagination-count" aria-live="polite" aria-atomic="true">
-                Mostrando {listings.length} de {total} artículos
+            <div className="product-pagination" aria-busy={loadingMore}>
+              <p className="product-pagination-count" aria-live="polite" aria-atomic="true">
+                Mostrando {listings.length} de {total} publicaciones
               </p>
               <button
                 className="button-ink"
@@ -432,7 +444,7 @@ export function Marketplace({
                 onClick={loadMoreListings}
                 disabled={loadingMore || !nextCursor}
               >
-                {loadingMore ? "Cargando…" : "Cargar más artículos"}
+                {loadingMore ? "Cargando…" : "Cargar más publicaciones"}
                 <ArrowDown aria-hidden="true" size={17} strokeWidth={1.8} />
               </button>
             </div>
@@ -455,8 +467,8 @@ export function Marketplace({
         <div className="result-message empty-message" role="status">
           <p>
             {hasActiveFilters
-              ? "No encontramos artículos con esos filtros."
-              : "Todavía no hay artículos publicados en este campus."}
+              ? "No encontramos publicaciones con esos filtros."
+              : "Todavía no hay publicaciones en este campus."}
           </p>
           <div className="empty-message-actions">
             {hasActiveFilters ? (
@@ -466,7 +478,7 @@ export function Marketplace({
               </button>
             ) : (
               <Link className="text-action" href="/publicar">
-                Publicar el primer artículo
+                Crear la primera publicación
                 <ArrowRight aria-hidden="true" size={16} />
               </Link>
             )}

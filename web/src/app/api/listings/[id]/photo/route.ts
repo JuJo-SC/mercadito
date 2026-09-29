@@ -35,7 +35,7 @@ export async function GET(
 
   if (!listing?.photo) {
     return Response.json(
-      { error: "No encontramos la foto de este artículo." },
+      { error: "No encontramos la foto de esta publicación." },
       { status: 404, headers: privateNoStore },
     );
   }

@@ -5,6 +5,7 @@ import type { FormEvent } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
+  Camera,
   ArrowRight,
   Check,
   CircleCheck,
@@ -29,7 +30,7 @@ const conditions = [
   { value: "FAIR", label: "Con detalles" },
 ];
 
-const steps = ["Artículo", "Detalles", "Revisar"] as const;
+const steps = ["Publicación", "Detalles", "Revisar"] as const;
 
 type ListingDraft = {
   title: string;
@@ -220,7 +221,7 @@ export function ListingForm({
       if (!response.ok) {
         if (response.status === 409) setSubmissionConflict(true);
         throw new Error(
-          result?.error ?? "No pudimos publicar el aviso. Revisa tus datos.",
+          result?.error ?? "No pudimos guardar tu publicación. Revisa los datos e inténtalo de nuevo.",
         );
       }
       if (result?.listing?.imageUrl) setPublishedPhotoUrl(result.listing.imageUrl);
@@ -236,7 +237,7 @@ export function ListingForm({
       setError(
         cause instanceof Error
           ? cause.message
-          : "No pudimos publicar el aviso. Intenta de nuevo.",
+          : "No pudimos completar la publicación. Intenta de nuevo.",
       );
     } finally {
       setPending(false);
@@ -277,28 +278,35 @@ export function ListingForm({
     "Condición pendiente";
 
   const preview = (
-    <article className="classified-preview" aria-label="Vista previa del aviso">
-      {currentPhotoUrl ? (
-        <img
-          className="classified-preview-photo"
-          src={currentPhotoUrl}
-          alt={`Foto de ${draft.title || "tu artículo"}`}
-        />
-      ) : null}
-      <div className="classified-preview-heading">
-        <div>
-          <h3>{draft.title || "Título del artículo"}</h3>
-          <p>
-            <span>{categoryLabel}</span>
-            <span aria-hidden="true"> · </span>
-            <span>{conditionLabel}</span>
-          </p>
-        </div>
-        <strong>{formatPrice(draft.price)}</strong>
+    <article className="product-preview" aria-label="Vista previa de la publicación">
+      <div className="product-preview-media">
+        {currentPhotoUrl ? (
+          <img
+            className="product-preview-photo"
+            src={currentPhotoUrl}
+            alt={"Foto principal de " + (draft.title || "tu producto")}
+          />
+        ) : (
+          <div className="product-preview-no-photo">
+            <Camera aria-hidden="true" size={27} strokeWidth={1.5} />
+            <span>Sin foto principal</span>
+          </div>
+        )}
       </div>
-      <p className="classified-preview-description">
-        {draft.description || "La descripción aparecerá aquí."}
-      </p>
+      <div className="product-preview-content">
+        <div className="product-preview-meta">
+          <span>{categoryLabel}</span>
+          <span aria-hidden="true">·</span>
+          <span>{conditionLabel}</span>
+        </div>
+        <div className="product-preview-heading">
+          <h3>{draft.title || "Nombre del producto o servicio"}</h3>
+          <strong>{formatPrice(draft.price)}</strong>
+        </div>
+        <p className="product-preview-description">
+          {draft.description || "La descripción aparecerá aquí."}
+        </p>
+      </div>
     </article>
   );
 
@@ -313,31 +321,31 @@ export function ListingForm({
             {demo
               ? "Tu vista previa está lista."
               : editing
-                ? "Tu aviso quedó actualizado."
-                : "Tu aviso ya está publicado."}
+                ? "Tu publicación se actualizó."
+                : "Tu publicación ya está en el mercadito."}
           </h2>
           <p>
             {demo
-              ? "Este recorrido es una demostración: el aviso no se publicó, no se guardó y no se envió a ningún servicio."
+              ? "Este recorrido es una demostración: la publicación no se envió ni se guardó."
               : editing
-                ? `Guardamos los cambios en ${universityName}. El aviso conserva su estado: ${listing ? listingStatusLabels[listing.status].toLowerCase() : "sin cambios"}.`
-                : `El aviso aparece en el mercadito privado de ${universityName}. Puedes revisar su estado desde Mis avisos.`}
+                ? `Guardamos los cambios en ${universityName}. La publicación conserva su estado: ${listing ? listingStatusLabels[listing.status].toLowerCase() : "sin cambios"}.`
+                : `La publicación aparece en el mercadito privado de ${universityName}. Puedes revisar su estado en Mis publicaciones.`}
           </p>
           {preview}
           <div className="publish-success-actions">
             {demo ? (
               <button className="text-action" type="button" onClick={startAgain}>
-                Empezar otro aviso
+                Empezar otra publicación
                 <ArrowRight aria-hidden="true" size={16} />
               </button>
             ) : (
               <Link className="text-action" href="/mis-avisos">
-                Gestionar mis avisos
+                Gestionar mis publicaciones
                 <ArrowRight aria-hidden="true" size={16} />
               </Link>
             )}
             <Link className="text-action" href="/">
-              {demo ? "Volver a los avisos" : "Explorar el mercadito"}
+              {demo ? "Volver al mercadito" : "Explorar el mercadito"}
               <ArrowRight aria-hidden="true" size={16} />
             </Link>
           </div>
@@ -385,27 +393,27 @@ export function ListingForm({
           <h2 id="listing-step-title" ref={headingRef} tabIndex={-1}>
             {step === 0
               ? editing
-                ? "¿Qué artículo quieres actualizar?"
-                : "¿Qué artículo quieres vender?"
+                ? "¿Qué producto o servicio quieres actualizar?"
+                : "¿Qué producto o servicio quieres ofrecer?"
               : step === 1
                 ? editing
                   ? "Ajusta el precio y el contexto."
                   : "Ponle precio y contexto."
                 : editing
                   ? "Revisa los cambios antes de guardar."
-                  : "Revisa tu clasificado."}
+                  : "Revisa tu publicación."}
           </h2>
           <p>
             {step === 0
               ? editing
-                ? "Corrige el título, la categoría o la condición del artículo."
+                ? "Corrige el título, la categoría o la condición de la publicación."
                 : "Empieza por lo que alguien necesitaría para reconocerlo."
               : step === 1
                 ? editing
                   ? "Ajusta el precio o añade el contexto que haga falta."
                   : "Una condición clara y una buena descripción evitan dudas."
                 : editing
-                  ? "Así quedará el aviso. Su disponibilidad no cambiará."
+                  ? "Así se verá la publicación. Su disponibilidad no cambiará."
                   : `Así lo verán los estudiantes activos de ${universityName}.`}
           </p>
         </div>
@@ -413,7 +421,7 @@ export function ListingForm({
         {step === 0 ? (
           <div className="publish-step-fields">
             <label className="field" htmlFor="listing-title">
-              <span>Nombre del artículo *</span>
+              <span>Nombre del producto o servicio *</span>
               <input
                 id="listing-title"
                 name="title"
@@ -425,7 +433,7 @@ export function ListingForm({
                 onChange={(event) => updateDraft("title", event.target.value)}
                 required
               />
-              <small>Usa un nombre que se entienda al leerlo en la lista.</small>
+              <small>Usa un nombre que destaque al explorar el mercadito.</small>
             </label>
 
             <label className="field" htmlFor="listing-category">
@@ -478,15 +486,15 @@ export function ListingForm({
             </fieldset>
 
             <div className="listing-photo-field">
-              <label htmlFor="listing-photo">Foto del artículo <span>Opcional</span></label>
+              <label htmlFor="listing-photo">Foto principal <span>Opcional</span></label>
               <p id="listing-photo-help">
-                Una imagen basta para mostrar su estado. JPG, PNG o WebP; máximo 8 MB.
+                Una foto clara ayuda a reconocer lo que ofreces. JPG, PNG o WebP; máximo 8 MB. Será la imagen principal en el catálogo.
               </p>
               {currentPhotoUrl ? (
                 <img
                   className="listing-photo-preview"
                   src={currentPhotoUrl}
-                  alt={`Foto de ${draft.title || "tu artículo"}`}
+                  alt={`Foto principal de ${draft.title || "tu producto"}`}
                 />
               ) : null}
               <input
@@ -509,6 +517,9 @@ export function ListingForm({
                   setPhotoFile(selected);
                 }}
               />
+              <span className="listing-photo-state" aria-live="polite">
+                {photoFile ? "Foto seleccionada: " + photoFile.name : currentPhotoUrl ? "Foto principal actual" : "Sin foto seleccionada"}
+              </span>
               {currentPhotoUrl ? (
                 <button
                   className="text-action listing-photo-remove"
@@ -546,7 +557,7 @@ export function ListingForm({
                 />
                 <span className="price-input-currency" aria-hidden="true">MXN</span>
               </div>
-              <small>El precio que aparecerá junto al artículo.</small>
+              <small>El precio que aparecerá junto a la publicación.</small>
             </label>
 
             <div className="field">
@@ -590,7 +601,7 @@ export function ListingForm({
                 type="button"
                 onClick={() => goToStep(0)}
               >
-                Editar artículo
+                Editar publicación
               </button>
               <button
                 className="text-action"
@@ -602,7 +613,7 @@ export function ListingForm({
             </div>
             <p className="publish-review-note">
               {demo
-                ? "Al terminar verás la vista previa. No se enviará ni guardará el aviso."
+                ? "Al terminar verás la vista previa. No se publicará ni se guardará."
                 : editing && listing
                   ? `Disponibilidad actual: ${listingStatusLabels[listing.status]}. Al guardar, se conserva este estado.`
                   : "Lo verán estudiantes activos de tu universidad. Quien se interese puede escribirte por el chat. Mercadito no procesa pagos; el pago se acuerda fuera de la plataforma."}
@@ -613,7 +624,7 @@ export function ListingForm({
         {submissionConflict ? (
           <>
             <p className="form-error" role="alert">
-              Este intento ya guardó un aviso con otros datos. Revisa Mis avisos antes de volver a publicar.
+              Este intento ya guardó una publicación con otros datos. Revisa Mis publicaciones antes de volver a publicar.
             </p>
             <div className="form-actions">
               <Link
@@ -621,7 +632,7 @@ export function ListingForm({
                 href="/mis-avisos"
                 onNavigate={resetConflictingSubmission}
               >
-                Revisar Mis avisos
+                Revisar Mis publicaciones
                 <ArrowRight aria-hidden="true" size={16} />
               </Link>
             </div>
@@ -671,7 +682,7 @@ export function ListingForm({
                   ? "Terminar demostración"
                   : editing
                     ? "Guardar cambios"
-                    : "Publicar aviso"}
+                    : "Publicar en Mercadito"}
               {!pending ? <ArrowRight aria-hidden="true" size={17} /> : null}
             </button>
           )}

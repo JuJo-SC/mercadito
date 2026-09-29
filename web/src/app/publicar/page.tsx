@@ -67,22 +67,22 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
       <main className="form-page page-width publish-page">
         <Link className="back-link" href={editRequested ? "/mis-avisos" : demoMode ? "/publicar" : student ? "/mercadito" : "/"}>
           <ArrowRight aria-hidden="true" size={16} />
-          {editRequested ? "Volver a Mis avisos" : demoMode ? "Salir del recorrido" : student ? "Volver al mercadito" : "Volver al inicio"}
+          {editRequested ? "Volver a Mis publicaciones" : demoMode ? "Salir del recorrido" : student ? "Volver al mercadito" : "Volver al inicio"}
         </Link>
         <div className="form-intro">
           <h1>
             {demoMode
-              ? "Arma un clasificado para tu campus."
+              ? "Arma una publicación para tu campus."
               : editRequested
-                ? "Ajusta el aviso de tu campus."
-                : "Prepara un aviso para tu campus."}
+                ? "Edita tu publicación."
+                : "Crea una publicación para tu campus."}
           </h1>
           <p>
             {demoMode
-              ? "Recorre los pasos de publicación y revisa cómo se verá tu artículo en la gaceta."
+              ? "Recorre los pasos de publicación y revisa cómo se verá tu publicación en el mercadito."
               : editRequested
-                ? "Corrige los datos del artículo. Guardar conserva su disponibilidad actual."
-                : "Describe el artículo con claridad. Solo estudiantes activos de tu universidad podrán ver esta publicación."}
+                ? "Corrige los datos de la publicación. Guardar conserva su disponibilidad actual."
+                : "Describe lo que ofreces con claridad. Solo estudiantes activos de tu universidad podrán ver esta publicación."}
           </p>
         </div>
 
@@ -90,7 +90,7 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
           <p className="demo-banner publish-demo-note" role="note">
             <span className="demo-mark" aria-hidden="true">P</span>
             Estás en el campus de prueba UMAN. Usa datos ficticios; las cuentas
-            activas de UMAN podrán ver el aviso.
+            activas de UMAN podrán ver la publicación.
           </p>
         ) : null}
 
@@ -122,12 +122,12 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
         ) : editRequested && student ? (
           <section className="auth-notice">
             <div className="auth-panel-heading">
-              <h2>No encontramos ese aviso en tu campus.</h2>
+              <h2>No encontramos esa publicación en tu campus.</h2>
             </div>
-            <p>Revisa tus avisos y vuelve a intentarlo desde la cuenta con la que lo publicaste.</p>
+            <p>Revisa tus publicaciones y vuelve a intentarlo desde la cuenta con la que lo publicaste.</p>
             <div className="form-actions">
               <Link className="button-ink" href="/mis-avisos">
-                Ir a Mis avisos
+                Ir a Mis publicaciones
                 <ArrowRight aria-hidden="true" size={17} />
               </Link>
             </div>
@@ -136,9 +136,9 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
           <section className="auth-notice">
             <div className="auth-panel-heading">
               <LockKeyhole aria-hidden="true" size={22} strokeWidth={1.7} />
-              <h2>Inicia sesión para revisar este aviso.</h2>
+              <h2>Inicia sesión para editar esta publicación.</h2>
             </div>
-            <p>Usa la cuenta institucional con la que publicaste el artículo para editarlo.</p>
+            <p>Usa la cuenta institucional con la que publicaste este producto para editarlo.</p>
             <div className="form-actions">
               <Link className="button-ink" href={editLoginHref}>
                 Acceso institucional

@@ -18,11 +18,11 @@ const body = DM_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "Mercadito — Gaceta de intercambio",
+    default: "Mercadito — Mercado del campus",
     template: "%s — Mercadito",
   },
   description:
-    "Un mercadito universitario para encontrar y publicar artículos dentro de cada comunidad.",
+    "Un mercadito universitario para explorar productos y publicar dentro de cada comunidad.",
   applicationName: "Mercadito",
   manifest: "/manifest.webmanifest",
   appleWebApp: {

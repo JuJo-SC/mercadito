@@ -61,7 +61,7 @@ export async function POST(request: Request) {
   );
   if (existingMessage?.kind === "conflict") {
     return Response.json(
-      { error: "Esta solicitud ya se usó para otro mensaje. Recarga el artículo antes de intentarlo de nuevo." },
+      { error: "Esta solicitud ya se usó para otro mensaje. Recarga la publicación antes de intentarlo de nuevo." },
       { status: 409, headers: privateNoStore },
     );
   }
@@ -101,14 +101,14 @@ export async function POST(request: Request) {
       }
       if (replay?.kind === "conflict") {
         return Response.json(
-          { error: "Esta solicitud ya se usó para otro mensaje. Recarga el artículo antes de intentarlo de nuevo." },
+          { error: "Esta solicitud ya se usó para otro mensaje. Recarga la publicación antes de intentarlo de nuevo." },
           { status: 409, headers: privateNoStore },
         );
       }
     }
     if (errorCode === "P2034") {
       return Response.json(
-        { error: "El artículo cambió mientras escribías. Recarga y vuelve a intentar." },
+        { error: "La publicación cambió mientras escribías. Recarga y vuelve a intentar." },
         { status: 409, headers: privateNoStore },
       );
     }
@@ -117,19 +117,19 @@ export async function POST(request: Request) {
 
   if (result.kind === "unavailable") {
     return Response.json(
-      { error: "Este artículo ya no está disponible para iniciar una conversación." },
+      { error: "Esta publicación ya no está disponible para iniciar una conversación." },
       { status: 404, headers: privateNoStore },
     );
   }
   if (result.kind === "own") {
     return Response.json(
-      { error: "No puedes iniciar una conversación sobre tu propio aviso." },
+      { error: "No puedes iniciar una conversación sobre tu propia publicación." },
       { status: 400, headers: privateNoStore },
     );
   }
   if (result.kind === "conflict") {
     return Response.json(
-      { error: "Este aviso cambió de vendedor. Recarga la página e inténtalo de nuevo." },
+      { error: "Esta publicación cambió de vendedor. Recarga la página e inténtalo de nuevo." },
       { status: 409, headers: privateNoStore },
     );
   }

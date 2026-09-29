@@ -96,7 +96,7 @@ export function ManageListings({ initialListings }: { initialListings: ManagedLi
       });
       const result = (await response.json().catch(() => null)) as { error?: string } | null;
       if (!response.ok) {
-        throw new Error(result?.error ?? "No pudimos actualizar el aviso. Intenta de nuevo.");
+        throw new Error(result?.error ?? "No pudimos actualizar la publicación. Intenta de nuevo.");
       }
 
       setListings((current) =>
@@ -107,7 +107,7 @@ export function ManageListings({ initialListings }: { initialListings: ManagedLi
       setError(
         cause instanceof Error
           ? cause.message
-          : "No pudimos actualizar el aviso. Intenta de nuevo.",
+          : "No pudimos actualizar la publicación. Intenta de nuevo.",
       );
     } finally {
       setPendingId(null);
@@ -117,9 +117,9 @@ export function ManageListings({ initialListings }: { initialListings: ManagedLi
   if (listings.length === 0) {
     return (
       <section className="seller-empty" aria-labelledby="seller-empty-title">
-        <h2 id="seller-empty-title">El índice todavía está en blanco.</h2>
-        <p>Tu primer clasificado empieza con un título que se entienda al leerlo en la lista.</p>
-        <Link className="button-ink" href="/publicar">Publicar un artículo</Link>
+        <h2 id="seller-empty-title">Todavía no tienes publicaciones.</h2>
+        <p>Crea tu primera publicación con un título fácil de reconocer.</p>
+        <Link className="button-ink" href="/publicar">Crear una publicación</Link>
       </section>
     );
   }
@@ -130,7 +130,7 @@ export function ManageListings({ initialListings }: { initialListings: ManagedLi
         {message}
       </p>
       {error ? <p className="seller-error" role="alert">{error}</p> : null}
-      <ol className="seller-listing-index" aria-label="Tus avisos">
+      <ol className="seller-listing-index" aria-label="Tus publicaciones">
         {listings.map((listing, index) => (
           <li className="seller-listing-entry" key={listing.id} aria-busy={pendingId === listing.id}>
             <div className="seller-listing-heading">

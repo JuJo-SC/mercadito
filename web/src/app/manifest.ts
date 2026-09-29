@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: "/",
     name: "Mercadito universitario",
     short_name: "Mercadito",
-    description: "Avisos de intercambio dentro de cada comunidad universitaria.",
+    description: "Compra y vende dentro de cada comunidad universitaria.",
     start_url: "/",
     scope: "/",
     display: "standalone",
@@ -13,15 +13,15 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#18252d",
     shortcuts: [
       {
-        name: "Publicar un artículo",
+        name: "Crear publicación",
         short_name: "Publicar",
-        description: "Crear un aviso para tu comunidad universitaria.",
+        description: "Publicar un producto o servicio en tu comunidad universitaria.",
         url: "/publicar",
         icons: [{ src: "/icons/mercadito-192.png", sizes: "192x192", type: "image/png" }],
       },
       {
-        name: "Mis avisos",
-        short_name: "Mis avisos",
+        name: "Mis publicaciones",
+        short_name: "Mis publicaciones",
         description: "Consultar y actualizar tus publicaciones.",
         url: "/mis-avisos",
         icons: [{ src: "/icons/mercadito-192.png", sizes: "192x192", type: "image/png" }],

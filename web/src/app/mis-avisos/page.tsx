@@ -56,13 +56,13 @@ export default async function MyListingsPage() {
           Volver al mercadito
         </Link>
         <div className="form-intro">
-          <h1>Tus avisos, a tu ritmo.</h1>
+          <h1>Tus publicaciones, a tu ritmo.</h1>
           <p>
             Solo estudiantes activos de tu campus pueden verlos. Actualiza su estado desde aquí.
           </p>
           {student ? (
             <Link className="text-action seller-new-listing" href="/publicar">
-              Publicar otro artículo
+              Crear otra publicación
               <ArrowRight aria-hidden="true" size={16} />
             </Link>
           ) : null}
@@ -79,13 +79,13 @@ export default async function MyListingsPage() {
           <section className="seller-inventory" aria-labelledby="seller-inventory-title">
             <div className="seller-inventory-heading">
               <h2 id="seller-inventory-title">Tu índice</h2>
-              <p>{listings.length} {listings.length === 1 ? "aviso" : "avisos"}</p>
+              <p>{listings.length} {listings.length === 1 ? "publicación" : "publicaciones"}</p>
             </div>
             <ManageListings initialListings={serializedListings} />
           </section>
         ) : (
           <section className="auth-notice">
-            <p className="auth-notice-title">Tus avisos pertenecen a tu cuenta.</p>
+            <p className="auth-notice-title">Tus publicaciones pertenecen a tu cuenta.</p>
             <p>Inicia sesión con la cuenta institucional para consultar lo que publicaste.</p>
             <Link className="button-ink" href="/ingresar">
               Acceso institucional

@@ -63,7 +63,7 @@ export async function GET(
 
   if (!listing) {
     return Response.json(
-      { error: "No encontramos este artículo." },
+      { error: "No encontramos esta publicación." },
       { status: 404, headers: privateNoStore },
     );
   }
@@ -72,7 +72,7 @@ export async function GET(
     const student = await getActiveStudent();
     if (!student || student.universityId !== listing.universityId) {
       return Response.json(
-        { error: "No encontramos este artículo." },
+        { error: "No encontramos esta publicación." },
         { status: 404, headers: privateNoStore },
       );
     }
@@ -156,7 +156,7 @@ export async function PUT(
 
   if (!listing) {
     return Response.json(
-      { error: "No encontramos ese aviso." },
+      { error: "No encontramos esa publicación." },
       { status: 404, headers: privateNoStore },
     );
   }
@@ -189,7 +189,7 @@ export async function PUT(
 
   if (changed.count !== 1) {
     return Response.json(
-      { error: "El aviso cambió mientras lo editabas. Recarga y vuelve a intentar." },
+      { error: "La publicación cambió mientras la editabas. Recarga y vuelve a intentar." },
       { status: 409, headers: privateNoStore },
     );
   }
@@ -219,7 +219,7 @@ export async function PUT(
 
   if (!updatedListing) {
     return Response.json(
-      { error: "No encontramos ese aviso." },
+      { error: "No encontramos esa publicación." },
       { status: 404, headers: privateNoStore },
     );
   }
@@ -251,7 +251,7 @@ export async function PATCH(
   const parsed = updateListingSchema.safeParse(body);
   if (!parsed.success) {
     return Response.json(
-      { error: "Elige un estado válido para el aviso." },
+      { error: "Elige un estado válido para la publicación." },
       { status: 400, headers: privateNoStore },
     );
   }
@@ -269,7 +269,7 @@ export async function PATCH(
 
   if (!listing) {
     return Response.json(
-      { error: "No encontramos ese aviso." },
+      { error: "No encontramos esa publicación." },
       { status: 404, headers: privateNoStore },
     );
   }
@@ -277,7 +277,7 @@ export async function PATCH(
   const nextStatus = parsed.data.status;
   if (!allowedTransitions[listing.status].includes(nextStatus)) {
     return Response.json(
-      { error: "Ese cambio ya no está disponible. Recarga tus avisos e inténtalo de nuevo." },
+      { error: "Ese cambio ya no está disponible. Recarga tus publicaciones e inténtalo de nuevo." },
       { status: 409, headers: privateNoStore },
     );
   }
@@ -296,7 +296,7 @@ export async function PATCH(
 
   if (changed.count !== 1) {
     return Response.json(
-      { error: "El estado cambió en otra pestaña. Recarga tus avisos e inténtalo de nuevo." },
+      { error: "El estado cambió en otra pestaña. Recarga tus publicaciones e inténtalo de nuevo." },
       { status: 409, headers: privateNoStore },
     );
   }
@@ -319,7 +319,7 @@ export async function PATCH(
 
   if (!updatedListing) {
     return Response.json(
-      { error: "No encontramos ese aviso." },
+      { error: "No encontramos esa publicación." },
       { status: 404, headers: privateNoStore },
     );
   }

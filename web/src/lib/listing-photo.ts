@@ -20,7 +20,7 @@ export class ListingPhotoInputError extends Error {
 export async function parseListingMultipart(request: Request) {
   const contentType = request.headers.get("content-type") ?? "";
   if (!contentType.toLowerCase().startsWith("multipart/form-data;")) {
-    throw new ListingPhotoInputError("Envía los datos del aviso en un formulario válido.", 415);
+    throw new ListingPhotoInputError("Envía los datos de la publicación en un formulario válido.", 415);
   }
 
   const declaredLength = request.headers.get("content-length");
@@ -32,7 +32,7 @@ export async function parseListingMultipart(request: Request) {
   }
 
   const reader = request.body?.getReader();
-  if (!reader) throw new ListingPhotoInputError("No recibimos los datos del aviso.");
+  if (!reader) throw new ListingPhotoInputError("No recibimos los datos de la publicación.");
 
   const chunks: Uint8Array<ArrayBuffer>[] = [];
   let totalBytes = 0;
@@ -68,7 +68,7 @@ export async function parseListingMultipart(request: Request) {
 export async function parseListingPhoto(formData: FormData) {
   const entries = formData.getAll("photo");
   if (entries.length > 1) {
-    throw new ListingPhotoInputError("Elige una sola foto para el artículo.");
+    throw new ListingPhotoInputError("Elige una sola foto para la publicación.");
   }
   const entry = entries[0];
   if (entry === undefined || entry === "") return null;

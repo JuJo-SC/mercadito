@@ -122,7 +122,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
         )}
 
         <p className="form-footnote">
-          Los avisos de campus reales solo aparecen después de verificar la
+          Las publicaciones reales de un campus solo aparecen después de verificar la
           pertenencia a esa comunidad.
         </p>
       </main>

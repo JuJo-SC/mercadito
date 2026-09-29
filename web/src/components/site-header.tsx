@@ -42,7 +42,7 @@ export function SiteHeader({
             </span>
             <span className="brand-copy">
               <span className="brand-name">Mercadito</span>
-              <span className="brand-description">Gaceta de intercambio</span>
+              <span className="brand-description">Mercado del campus</span>
             </span>
           </Link>
 
@@ -51,7 +51,7 @@ export function SiteHeader({
               <>
                 <Link href="/mercadito">Mercadito</Link>
                 <Link href="/publicar">Publicar</Link>
-                <Link href="/mis-avisos">Mis avisos</Link>
+                <Link href="/mis-avisos">Mis publicaciones</Link>
                 <UnreadMessagesNavLink />
               </>
             ) : (
@@ -96,7 +96,7 @@ export function SiteHeader({
             <>
               <Link href="/mercadito">Mercadito</Link>
               <UnreadMessagesNavLink />
-              <Link href="/mis-avisos">Mis avisos</Link>
+              <Link href="/mis-avisos">Mis publicaciones</Link>
               <Link href="/publicar">Publicar</Link>
             </>
           ) : (
@@ -118,9 +118,9 @@ export function SiteFooter() {
       <div className="page-width footer-inner">
         <Link className="footer-brand" href="/">
           <span>Mercadito</span>
-          <span>Gaceta de intercambio</span>
+          <span>Mercado del campus</span>
         </Link>
-        <p>Un aviso claro. Una comunidad cerca.</p>
+        <p>Compra y vende dentro de tu comunidad.</p>
         <nav aria-label="Enlaces al pie">
           <Link href="/universidades">Integrar una universidad</Link>
           <Link href="/ingresar?returnTo=%2Fmercadito">Acceso institucional</Link>

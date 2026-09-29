@@ -109,13 +109,13 @@ export function ConversationInbox({
   if (!conversations.length) {
     return (
       <section className="messages-empty" aria-live="polite">
-        <h2>Tu correspondencia empieza con un aviso.</h2>
+        <h2>Tu próximo intercambio puede empezar aquí.</h2>
         <p>
-          Cuando preguntes por un artículo o alguien responda a tu publicación,
+          Cuando preguntes por una publicación o alguien responda a la tuya,
           el intercambio aparecerá aquí.
         </p>
-        <Link className="button-ink" href="/#avisos">
-          Explorar artículos
+        <Link className="button-ink" href="/mercadito#productos">
+          Explorar publicaciones
           <ArrowRight aria-hidden="true" size={17} strokeWidth={1.8} />
         </Link>
         {error ? <p className="messages-refresh-error" role="status">{error}</p> : null}

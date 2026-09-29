@@ -71,7 +71,7 @@ export default async function Home() {
         <section className="landing-how page-width" id="como-funciona" aria-labelledby="how-title">
           <div className="landing-section-heading">
             <h2 id="how-title">Tu universidad marca el lugar.</h2>
-            <p>Entras a tu comunidad y encuentras artículos que circulan cerca.</p>
+            <p>Entras a tu comunidad y exploras productos y servicios de estudiantes.</p>
           </div>
           <ol className="landing-steps">
             <li>

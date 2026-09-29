@@ -190,7 +190,7 @@ export function MessageThread({
         <p>Coordinen aquí los detalles del intercambio.</p>
       </div>
 
-      <section className="thread-listing" aria-label="Artículo de esta conversación">
+      <section className="thread-listing" aria-label="Producto de esta conversación">
         <div className="thread-listing-copy">
           <h2>{listing.title}</h2>
           <p>{listing.condition} · {availabilityName(listing.status)}</p>

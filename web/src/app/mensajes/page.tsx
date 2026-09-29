@@ -37,7 +37,7 @@ export default async function MessagesPage() {
         <div className="messages-intro">
           <h1>La correspondencia del campus.</h1>
           <p>
-            Retoma cada intercambio desde el artículo que lo inició. Puedes
+            Retoma cada intercambio desde la publicación que lo inició. Puedes
             coordinar aquí y decidir con la otra persona si continúan por otro medio.
           </p>
         </div>

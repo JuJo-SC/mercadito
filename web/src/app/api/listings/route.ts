@@ -101,7 +101,7 @@ export async function GET(request: Request) {
     : null;
   if (cursorId && !cursorAnchor) {
     return Response.json(
-      { error: "Actualiza los artículos para continuar." },
+      { error: "Actualiza las publicaciones para continuar." },
       { status: 400, headers: privateNoStore },
     );
   }
@@ -279,7 +279,7 @@ export async function POST(request: Request) {
 
     if (result.kind === "conflict") {
       return Response.json(
-        { error: "Este intento ya tiene un aviso con otros datos. Revisa Mis avisos antes de volver a publicar." },
+        { error: "Este intento ya tiene una publicación con otros datos. Revisa Mis publicaciones antes de volver a publicar." },
         { status: 409, headers: privateNoStore },
       );
     }
@@ -304,7 +304,7 @@ export async function POST(request: Request) {
       return Response.json({ error: error.message }, { status: error.status, headers: privateNoStore });
     }
     return Response.json(
-      { error: "No pudimos publicar el aviso. Intenta de nuevo." },
+      { error: "No pudimos completar la publicación. Intenta de nuevo. Intenta de nuevo." },
       { status: 503, headers: privateNoStore },
     );
   }
