@@ -53,6 +53,15 @@ El brief de producto proviene de la persona usuaria. Aún no hay proveedor insti
 
 Aún se necesita el aviso de privacidad aprobado por quien operará el servicio, con identidad de la persona responsable, finalidades, conservación y medios de contacto para ejercer derechos. La interfaz explica el propósito del formulario, pero no sustituye ese aviso.
 
+## Flujo del estudiante
+
+1. La portada pública explica el servicio y la integración universitaria; no mezcla anuncios con información institucional.
+2. Al iniciar sesión, Keycloak entrega los claims que permiten asociar la cuenta con una universidad activa. El correo por sí solo no determina el campus.
+3. El alumno entra a /mercadito, donde ve el catálogo de su universidad, busca por texto o categoría y compara publicaciones.
+4. El catálogo empieza por publicaciones con más conversaciones iniciadas cuando hay actividad suficiente; si no, muestra las más recientes. Mercadito no procesa pagos.
+
+Las cuentas UMAN son sintéticas para recorrido de prueba. Sus correos se mantienen en el entorno de identidad y no se documentan como credenciales reales.
+
 ## Product Principles
 
 - El acceso y los datos de cada comunidad deben quedar asociados a su universidad.

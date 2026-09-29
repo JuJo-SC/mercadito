@@ -1,0 +1,1 @@
+ALTER TYPE "ListingCategory" ADD VALUE IF NOT EXISTS 'FOOD';

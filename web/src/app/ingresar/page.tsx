@@ -14,15 +14,15 @@ type SignInPageProps = {
 
 function safeReturnTo(value: string | string[] | undefined) {
   if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//") || value.includes("\\")) {
-    return "/";
+    return "/mercadito";
   }
 
   try {
     const destination = new URL(value, "https://mercadito.invalid");
-    if (destination.origin !== "https://mercadito.invalid") return "/";
+    if (destination.origin !== "https://mercadito.invalid") return "/mercadito";
     return `${destination.pathname}${destination.search}${destination.hash}`;
   } catch {
-    return "/";
+    return "/mercadito";
   }
 }
 
@@ -80,9 +80,9 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
         {student ? (
           <section className="auth-notice" role="status">
             <p className="auth-notice-title">Tu sesión institucional está activa.</p>
-            <p>Ya puedes publicar y explorar los avisos de tu comunidad.</p>
-            <Link className="button-ink" href="/">
-              Ir a los avisos
+            <p>Tu universidad ya está asociada a esta sesión.</p>
+            <Link className="button-ink" href="/mercadito">
+              Ir a mi mercadito
               <ArrowRight aria-hidden="true" size={17} />
             </Link>
           </section>

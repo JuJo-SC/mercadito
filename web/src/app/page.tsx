@@ -1,87 +1,106 @@
+import Link from "next/link";
+import { ArrowDown, ArrowRight, ArrowUpRight } from "lucide-react";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getActiveStudent } from "@/lib/require-student";
-import { countUnreadMessagesForStudent } from "@/lib/conversations";
-import { Marketplace } from "@/components/marketplace";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";
 
+const categories = ["Comida", "Ropa", "Tecnología", "Hogar", "Accesorios", "Servicios"];
+
 export default async function Home() {
   const student = await getActiveStudent();
-  const unreadMessageCountPromise = student
-    ? countUnreadMessagesForStudent(student.id, student.universityId)
-    : Promise.resolve(0);
-  const universities = await prisma.university.findMany({
-    where: student
-      ? { id: student.universityId, status: "ACTIVE", isDemo: false }
-      : { status: "ACTIVE", isDemo: true },
-    orderBy: { name: "asc" },
-    select: { id: true, name: true, slug: true, isDemo: true, isTest: true },
-    take: 1,
-  });
-  const university = universities[0] ?? null;
-  const unreadMessageCount = await unreadMessageCountPromise;
-  const initialListings = university
-    ? await prisma.listing.findMany({
-        where: { universityId: university.id, status: "PUBLISHED" },
-        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        take: 24,
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          price: true,
-          currency: true,
-          category: true,
-          condition: true,
-          imageUrl: true,
-          photo: { select: { listingId: true } },
-          isDemo: true,
-          createdAt: true,
-          seller: { select: { id: true, name: true } },
-        },
-      })
-    : [];
-  const initialTotal = university
-    ? await prisma.listing.count({
-        where: { universityId: university.id, status: "PUBLISHED" },
-      })
-    : 0;
-  const realUniversityCount = student
-    ? 0
-    : await prisma.university.count({
-        where: { status: "ACTIVE", isDemo: false },
-      });
+  if (student) redirect("/mercadito");
+
+  const hasUniversities = (await prisma.university.count({
+    where: { status: "ACTIVE", isDemo: false },
+  })) > 0;
 
   return (
     <>
-      <SiteHeader signedIn={Boolean(student)} userName={student?.name} unreadMessageCount={unreadMessageCount} />
+      <SiteHeader />
       <main>
-        <Marketplace
-          university={university}
-          initialTotal={initialTotal}
-          initialListings={initialListings.map((listing) => ({
-            id: listing.id,
-            title: listing.title,
-            description: listing.description,
-            price: listing.price.toNumber(),
-            currency: listing.currency,
-            category: listing.category,
-            condition: listing.condition,
-            imageUrl: listing.photo
-              ? `/api/listings/${encodeURIComponent(listing.id)}/photo`
-              : null,
-            isDemo: listing.isDemo,
-            createdAt: listing.createdAt.toISOString(),
-            seller: listing.seller,
-          }))}
-          canSignIn={realUniversityCount > 0}
-          applicationIntakeEnabled={
-            process.env.ENABLE_UNIVERSITY_APPLICATIONS === "true"
-          }
-          currentUserId={student?.id ?? null}
-          signedIn={Boolean(student)}
-        />
+        <section className="landing-hero page-width" aria-labelledby="landing-title">
+          <div className="landing-copy">
+            <h1 id="landing-title">Compra y vende dentro de tu universidad.</h1>
+            <p className="landing-description">
+              Encuentra comida, ropa, tecnología y cosas para tu día a día,
+              ofrecidas por estudiantes de tu mismo campus.
+            </p>
+            <div className="landing-actions">
+              {hasUniversities ? (
+                <Link className="button-ink" href="/ingresar?returnTo=%2Fmercadito">
+                  Entrar a mi mercadito
+                  <ArrowRight aria-hidden="true" size={17} />
+                </Link>
+              ) : (
+                <Link className="button-ink" href="/universidades">
+                  Conocer las universidades
+                  <ArrowRight aria-hidden="true" size={17} />
+                </Link>
+              )}
+              <Link className="text-action" href="#como-funciona">
+                Así funciona
+                <ArrowDown aria-hidden="true" size={16} strokeWidth={1.8} />
+              </Link>
+            </div>
+            <p className="landing-payment-note">
+              Las preguntas se hacen por chat; cualquier pago se acuerda fuera de Mercadito.
+            </p>
+          </div>
+
+          <aside className="landing-catalog-sheet" aria-label="Categorías del mercadito">
+            <div className="landing-sheet-heading">
+              <h2>Categorías del campus</h2>
+            </div>
+            <ul className="landing-category-list">
+              {categories.map((category) => (
+                <li key={category}>
+                  <strong>{category}</strong>
+                  <span aria-hidden="true"><ArrowUpRight size={15} strokeWidth={1.8} /></span>
+                </li>
+              ))}
+            </ul>
+            <p className="landing-sheet-foot">
+              De estudiante a estudiante. Cerca, claro y en comunidad.
+            </p>
+          </aside>
+        </section>
+
+        <section className="landing-how page-width" id="como-funciona" aria-labelledby="how-title">
+          <div className="landing-section-heading">
+            <h2 id="how-title">Tu universidad marca el lugar.</h2>
+            <p>Entras a tu comunidad y encuentras artículos que circulan cerca.</p>
+          </div>
+          <ol className="landing-steps">
+            <li>
+              <span>01</span>
+              <h3>Entra con tu cuenta institucional</h3>
+              <p>Mercadito identifica la universidad asociada a tu acceso.</p>
+            </li>
+            <li>
+              <span>02</span>
+              <h3>Explora y compara</h3>
+              <p>Busca por nombre o categoría; revisa el precio y la condición.</p>
+            </li>
+            <li>
+              <span>03</span>
+              <h3>Habla y acuerda</h3>
+              <p>Pregunta por chat y define con la otra persona cómo hacer el intercambio.</p>
+            </li>
+          </ol>
+        </section>
+
+        <section className="landing-university page-width">
+          <div>
+            <h2>Podemos preparar su espacio.</h2>
+          </div>
+          <Link className="landing-integration-link" href="/universidades">
+            Conocer la integración
+            <ArrowRight aria-hidden="true" size={17} />
+          </Link>
+        </section>
       </main>
       <SiteFooter />
     </>

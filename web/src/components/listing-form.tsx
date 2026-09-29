@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 const categories = [
+  { value: "FOOD", label: "Comida" },
   { value: "BOOKS", label: "Libros y apuntes" },
   { value: "TECHNOLOGY", label: "Tecnología" },
   { value: "HOME", label: "Hogar" },

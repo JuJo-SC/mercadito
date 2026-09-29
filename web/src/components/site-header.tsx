@@ -47,10 +47,16 @@ export function SiteHeader({
           </Link>
 
           <nav className="primary-navigation" aria-label="Navegación principal">
-            <Link href="/#avisos">Explorar</Link>
-            <Link href="/publicar">Publicar</Link>
-            {signedIn ? <Link href="/mis-avisos">Mis avisos</Link> : null}
-            {signedIn ? <UnreadMessagesNavLink /> : null}
+            {signedIn ? (
+              <>
+                <Link href="/mercadito">Mercadito</Link>
+                <Link href="/publicar">Publicar</Link>
+                <Link href="/mis-avisos">Mis avisos</Link>
+                <UnreadMessagesNavLink />
+              </>
+            ) : (
+              <Link href="/#como-funciona">Cómo funciona</Link>
+            )}
             <Link href="/universidades">Universidades</Link>
           </nav>
 
@@ -75,7 +81,7 @@ export function SiteHeader({
                 </form>
               </>
             ) : (
-              <Link className="header-login" href="/ingresar">
+              <Link className="header-login" href="/ingresar?returnTo=%2Fmercadito">
                 <span>Entrar</span>
                 <ArrowRight aria-hidden="true" size={16} strokeWidth={1.8} />
               </Link>
@@ -86,14 +92,20 @@ export function SiteHeader({
           className={signedIn ? "mobile-navigation page-width has-messages" : "mobile-navigation page-width"}
           aria-label="Accesos rápidos"
         >
-          <Link href="/#avisos">Explorar</Link>
-          {signedIn ? <UnreadMessagesNavLink /> : null}
           {signedIn ? (
-            <Link href="/mis-avisos">Mis avisos</Link>
+            <>
+              <Link href="/mercadito">Mercadito</Link>
+              <UnreadMessagesNavLink />
+              <Link href="/mis-avisos">Mis avisos</Link>
+              <Link href="/publicar">Publicar</Link>
+            </>
           ) : (
-            <Link href="/universidades">Universidades</Link>
+            <>
+              <Link href="/#como-funciona">Cómo funciona</Link>
+              <Link href="/universidades">Universidades</Link>
+              <Link href="/ingresar?returnTo=%2Fmercadito">Entrar</Link>
+            </>
           )}
-          <Link href="/publicar">Publicar</Link>
         </nav>
       </header>
     </UnreadMessagesProvider>
@@ -111,7 +123,7 @@ export function SiteFooter() {
         <p>Un aviso claro. Una comunidad cerca.</p>
         <nav aria-label="Enlaces al pie">
           <Link href="/universidades">Integrar una universidad</Link>
-          <Link href="/ingresar">Acceso institucional</Link>
+          <Link href="/ingresar?returnTo=%2Fmercadito">Acceso institucional</Link>
         </nav>
         <span className="footer-mark">M · MX</span>
       </div>

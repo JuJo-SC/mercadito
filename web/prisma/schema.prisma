@@ -46,6 +46,7 @@ enum ListingCategory {
   CLOTHING
   ACCESSORIES
   SERVICES
+  FOOD
   OTHER
 }
 

@@ -12,6 +12,8 @@ import {
   Search,
 } from "lucide-react";
 
+type SortMode = "RECENT" | "INTEREST";
+
 type University = {
   id: string;
   name: string;
@@ -35,27 +37,28 @@ type ListingNotice = {
 };
 
 type MarketplaceProps = {
-  university: University | null;
+  university: University;
   initialListings: ListingNotice[];
   initialTotal: number;
-  canSignIn: boolean;
-  applicationIntakeEnabled: boolean;
-  currentUserId: string | null;
-  signedIn: boolean;
+  initialSort: SortMode;
+  hasInterestSignals: boolean;
+  currentUserId: string;
 };
 
 const categories = [
   { id: "ALL", label: "Todos" },
-  { id: "BOOKS", label: "Libros" },
+  { id: "FOOD", label: "Comida" },
+  { id: "CLOTHING", label: "Ropa" },
   { id: "TECHNOLOGY", label: "Tecnología" },
   { id: "HOME", label: "Hogar" },
-  { id: "CLOTHING", label: "Ropa" },
   { id: "ACCESSORIES", label: "Accesorios" },
+  { id: "BOOKS", label: "Libros" },
   { id: "SERVICES", label: "Servicios" },
   { id: "OTHER", label: "Otros" },
 ];
 
 const categoryNames: Record<string, string> = {
+  FOOD: "Comida",
   BOOKS: "Libros",
   TECHNOLOGY: "Tecnología",
   HOME: "Hogar",
@@ -95,10 +98,9 @@ export function Marketplace({
   university,
   initialListings,
   initialTotal,
-  canSignIn,
-  applicationIntakeEnabled,
+  initialSort,
+  hasInterestSignals: initialHasInterestSignals,
   currentUserId,
-  signedIn,
 }: MarketplaceProps) {
   const [listings, setListings] = useState(initialListings);
   const [total, setTotal] = useState(initialTotal);
@@ -109,6 +111,8 @@ export function Marketplace({
   const [draftQuery, setDraftQuery] = useState("");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("ALL");
+  const [sortMode, setSortMode] = useState<SortMode>(initialSort);
+  const [hasInterestSignals, setHasInterestSignals] = useState(initialHasInterestSignals);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const currentRequest = useRef<AbortController | null>(null);
@@ -116,9 +120,9 @@ export function Marketplace({
   async function loadListings(
     nextQuery: string,
     nextCategory: string,
+    nextSort: SortMode,
     options: { append?: boolean; cursor?: string } = {},
   ) {
-    if (!university) return;
     const append = options.append ?? false;
     currentRequest.current?.abort();
     const controller = new AbortController();
@@ -133,7 +137,10 @@ export function Marketplace({
       setLoadMoreError("");
     }
 
-    const params = new URLSearchParams({ university: university.slug });
+    const params = new URLSearchParams({
+      university: university.slug,
+      sort: nextSort,
+    });
     if (nextQuery.trim()) params.set("q", nextQuery.trim());
     if (nextCategory !== "ALL") params.set("category", nextCategory);
     if (options.cursor) params.set("cursor", options.cursor);
@@ -150,11 +157,14 @@ export function Marketplace({
             listings?: ListingNotice[];
             hasMore?: boolean;
             nextCursor?: string | null;
+            sortMode?: SortMode;
+            hasInterestSignals?: boolean;
           }
         | null;
       if (!response.ok) {
-        throw new Error(payload?.error ?? "No pudimos cargar los avisos.");
+        throw new Error(payload?.error ?? "No pudimos cargar los artículos.");
       }
+
       const incoming = payload?.listings ?? [];
       if (append) {
         setListings((current) => {
@@ -167,12 +177,14 @@ export function Marketplace({
       setTotal(payload?.total ?? 0);
       setHasMore(payload?.hasMore ?? false);
       setNextCursor(payload?.nextCursor ?? null);
+      setSortMode(payload?.sortMode ?? nextSort);
+      setHasInterestSignals(payload?.hasInterestSignals ?? false);
     } catch (cause) {
       if (cause instanceof DOMException && cause.name === "AbortError") return;
       const message =
         cause instanceof Error
           ? cause.message
-          : "No pudimos cargar los avisos. Intenta de nuevo.";
+          : "No pudimos cargar los artículos. Intenta de nuevo.";
       if (append) setLoadMoreError(message);
       else setError(message);
     } finally {
@@ -186,181 +198,153 @@ export function Marketplace({
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setQuery(draftQuery);
-    void loadListings(draftQuery, category);
+    void loadListings(draftQuery, category, sortMode);
   }
 
   function selectCategory(nextCategory: string) {
     setCategory(nextCategory);
-    void loadListings(query, nextCategory);
+    void loadListings(query, nextCategory, sortMode);
+  }
+
+  function selectSort(nextSort: SortMode) {
+    if (nextSort === sortMode) return;
+    void loadListings(query, category, nextSort);
   }
 
   function clearFilters() {
     setDraftQuery("");
     setQuery("");
     setCategory("ALL");
-    void loadListings("", "ALL");
+    void loadListings("", "ALL", sortMode);
   }
 
   function loadMoreListings() {
     if (!nextCursor || !hasMore || loadingMore) return;
-    void loadListings(query, category, { append: true, cursor: nextCursor });
+    void loadListings(query, category, sortMode, { append: true, cursor: nextCursor });
   }
 
   const hasActiveFilters = Boolean(query.trim()) || category !== "ALL";
 
   return (
-    <>
-      <section className="lead-section page-width" aria-labelledby="lead-title">
-        <div className="lead-copy">
-          <h1 id="lead-title">
-            Lo que ya no usas puede servirle a alguien más.
-          </h1>
+    <section className="marketplace-section campus-marketplace page-width" id="avisos">
+      <header className="campus-marketplace-header">
+        <div>
+          <h1>Artículos de tu campus.</h1>
+          <p className="campus-name">{university.name}</p>
+        </div>
+        <div className="campus-marketplace-actions">
           <p>
-            Un mercadito hecho para encontrar y publicar artículos dentro de
-            una comunidad universitaria.
+            Pregunta por chat. La entrega y cualquier pago se acuerdan fuera de Mercadito.
           </p>
-          <div className="lead-actions">
-            <a className="button-ink" href="#avisos">
-              Explorar avisos
-              <ArrowDown aria-hidden="true" size={17} strokeWidth={1.8} />
-            </a>
-            <Link className="text-action" href="/publicar">
-              Publicar un artículo
-              <ArrowUpRight aria-hidden="true" size={17} strokeWidth={1.8} />
-            </Link>
-          </div>
-        </div>
-
-        <aside className="lead-print" aria-label="La gaceta del campus">
-          <div className="print-registration" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
-          <h2 className="print-title">EN COMÚN</h2>
-          <p>Una hoja abierta a lo que la comunidad comparte.</p>
-          <div className="print-rules" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
-          <a className="print-link" href="#avisos">
-            Ir al índice
-            <ArrowRight aria-hidden="true" size={16} strokeWidth={1.8} />
-          </a>
-        </aside>
-      </section>
-
-      <section className="marketplace-section page-width" id="avisos">
-        <div className="campus-line">
-          <div>
-            <p className="campus-name">
-              {university?.name ?? "Mercadito universitario"}
-            </p>
-            <p className="campus-access">
-              {university?.isDemo
-                ? "Edición de demostración"
-                : university?.isTest
-                  ? "Campus de prueba"
-                  : university
-                    ? "Comunidad universitaria"
-                    : "Aún no hay comunidades activas"}
-            </p>
-          </div>
-          {canSignIn ? (
-            <Link className="campus-login" href="/ingresar">
-              Entrar con mi universidad
-              <ArrowUpRight aria-hidden="true" size={16} strokeWidth={1.8} />
-            </Link>
-          ) : null}
-        </div>
-
-        {university?.isDemo ? (
-          <p className="demo-banner" role="note">
-            <span className="demo-mark" aria-hidden="true">D</span>
-            Estos avisos son ejemplos ficticios para mostrar cómo funciona el
-            mercadito.
-          </p>
-        ) : university?.isTest ? (
-          <p className="demo-banner" role="note">
-            <span className="demo-mark" aria-hidden="true">P</span>
-            UMAN es un campus de prueba. Usa artículos ficticios; los avisos
-            serán visibles para otras cuentas activas de esta comunidad.
-          </p>
-        ) : null}
-
-        <div className="listing-heading">
-          <div>
-            <h2>Avisos recientes</h2>
-            <p>
-              {total} {total === 1 ? "aviso" : "avisos"} en{" "}
-              {university?.name ?? "tu comunidad"}
-            </p>
-          </div>
-          <Link className="publish-link" href="/publicar">
-            Publicar un aviso
+          <Link className="button-ink" href="/publicar">
+            Publicar un artículo
             <ArrowUpRight aria-hidden="true" size={17} strokeWidth={1.8} />
           </Link>
         </div>
+      </header>
 
-        <form className="search-form" role="search" onSubmit={submitSearch}>
-          <label htmlFor="market-search">Buscar en los avisos</label>
-          <div className="search-row">
-            <div className="search-input-wrap">
-              <Search aria-hidden="true" size={19} strokeWidth={1.7} />
-              <input
-                id="market-search"
-                name="q"
-                type="search"
-                value={draftQuery}
-                onChange={(event) => setDraftQuery(event.target.value)}
-                placeholder="Libros, tecnología, ropa…"
-                autoComplete="off"
-              />
-            </div>
-            <button className="search-submit" type="submit" disabled={loading || !university}>
-              {loading ? "Buscando…" : "Buscar"}
-            </button>
+      {university.isTest ? (
+        <p className="demo-banner campus-test-banner" role="note">
+          <span className="demo-mark" aria-hidden="true">P</span>
+          UMAN es un campus de prueba. Usa artículos ficticios mientras recorres el mercadito.
+        </p>
+      ) : null}
+
+      <div className="listing-heading">
+        <div>
+          <h2>Encuentra algo para tu día.</h2>
+          <p>
+            {total} {total === 1 ? "artículo" : "artículos"} publicados en {university.name}
+          </p>
+        </div>
+      </div>
+
+      <form className="search-form" role="search" onSubmit={submitSearch}>
+        <label htmlFor="market-search">Buscar artículos</label>
+        <div className="search-row">
+          <div className="search-input-wrap">
+            <Search aria-hidden="true" size={19} strokeWidth={1.7} />
+            <input
+              id="market-search"
+              name="q"
+              type="search"
+              value={draftQuery}
+              onChange={(event) => setDraftQuery(event.target.value)}
+              placeholder="Comida, ropa, tecnología…"
+              autoComplete="off"
+            />
           </div>
-        </form>
+          <button className="search-submit" type="submit" disabled={loading}>
+            {loading ? "Buscando…" : "Buscar"}
+          </button>
+        </div>
+      </form>
 
+      <div className="marketplace-filters">
         <div className="category-tabs" role="group" aria-label="Filtrar por categoría">
           {categories.map((item) => (
             <button
-              className={
-                category === item.id ? "category-tab is-selected" : "category-tab"
-              }
+              className={category === item.id ? "category-tab is-selected" : "category-tab"}
               key={item.id}
               type="button"
               aria-pressed={category === item.id}
               onClick={() => selectCategory(item.id)}
-              disabled={!university || loading}
+              disabled={loading}
             >
               {item.label}
             </button>
           ))}
         </div>
+        <div className="sort-controls" role="group" aria-label="Ordenar artículos">
+          <span>Ordenar</span>
+          <button
+            className={sortMode === "INTEREST" ? "sort-button is-selected" : "sort-button"}
+            type="button"
+            aria-pressed={sortMode === "INTEREST"}
+            onClick={() => selectSort("INTEREST")}
+            disabled={loading || !hasInterestSignals}
+          >
+            Con más interés
+          </button>
+          <button
+            className={sortMode === "RECENT" ? "sort-button is-selected" : "sort-button"}
+            type="button"
+            aria-pressed={sortMode === "RECENT"}
+            onClick={() => selectSort("RECENT")}
+            disabled={loading}
+          >
+            Más recientes
+          </button>
+        </div>
+      </div>
 
-        {error ? (
-          <div className="result-message result-error" role="alert">
-            <p>{error}</p>
-            <button
-              type="button"
-              className="text-action"
-              onClick={() => void loadListings(query, category)}
-            >
-              Intentar de nuevo
-              <ArrowRight aria-hidden="true" size={16} />
-            </button>
-          </div>
-        ) : loading ? (
-          <div className="result-message" aria-live="polite">
-            <span className="loading-rule" />
-            <p>Buscando avisos…</p>
-          </div>
-        ) : listings.length ? (
-          <>
+      <p className="sort-context" aria-live="polite">
+        {sortMode === "INTEREST"
+          ? "Ordenados por conversaciones iniciadas; el contenido de los mensajes no se muestra."
+          : hasInterestSignals
+            ? "Ordenados por fecha de publicación."
+            : "Aún no hay suficiente actividad para marcar tendencias; mostramos lo más reciente."}
+      </p>
+
+      {error ? (
+        <div className="result-message result-error" role="alert">
+          <p>{error}</p>
+          <button
+            type="button"
+            className="text-action"
+            onClick={() => void loadListings(query, category, sortMode)}
+          >
+            Intentar de nuevo
+            <ArrowRight aria-hidden="true" size={16} />
+          </button>
+        </div>
+      ) : loading ? (
+        <div className="result-message" aria-live="polite">
+          <span className="loading-rule" />
+          <p>Buscando artículos…</p>
+        </div>
+      ) : listings.length ? (
+        <>
           <div className="notice-index" aria-live="polite">
             <div className="notice-columns" aria-hidden="true">
               <span>Índice</span>
@@ -381,19 +365,15 @@ export function Marketplace({
                       <span>{categoryNames[listing.category] ?? "Otros"}</span>
                       <span className="meta-separator" aria-hidden="true">·</span>
                       <span>{conditionNames[listing.condition] ?? "Condición no indicada"}</span>
-                      {listing.isDemo ? (
-                        <span className="notice-demo">Ejemplo</span>
-                      ) : null}
+                      {listing.isDemo ? <span className="notice-demo">Ejemplo</span> : null}
                     </span>
                   </span>
-                  <span className="notice-seller">
-                    {listing.seller.name ?? "Estudiante"}
-                  </span>
+                  <span className="notice-seller">{listing.seller.name ?? "Estudiante"}</span>
                   <span className="notice-price">
                     {formatPrice(listing.price, listing.currency)}
                   </span>
                   <span className="notice-disclosure">
-                    <span>Leer</span>
+                    <span>Ver</span>
                     <ChevronDown aria-hidden="true" size={17} strokeWidth={1.8} />
                   </span>
                 </summary>
@@ -403,7 +383,7 @@ export function Marketplace({
                       <img
                         className="notice-photo"
                         src={listing.imageUrl}
-                        alt={`Foto de ${listing.title}`}
+                        alt={"Foto de " + listing.title}
                         loading="lazy"
                         decoding="async"
                       />
@@ -434,7 +414,7 @@ export function Marketplace({
                     sellerId={listing.seller.id}
                     sellerName={listing.seller.name ?? "Estudiante"}
                     currentUserId={currentUserId}
-                    signedIn={signedIn}
+                    signedIn
                     isDemo={listing.isDemo}
                   />
                 </div>
@@ -444,7 +424,7 @@ export function Marketplace({
           {hasMore ? (
             <div className="notice-pagination" aria-busy={loadingMore}>
               <p className="notice-pagination-count" aria-live="polite" aria-atomic="true">
-                Mostrando {listings.length} de {total} avisos
+                Mostrando {listings.length} de {total} artículos
               </p>
               <button
                 className="button-ink"
@@ -452,7 +432,7 @@ export function Marketplace({
                 onClick={loadMoreListings}
                 disabled={loadingMore || !nextCursor}
               >
-                {loadingMore ? "Cargando…" : "Cargar más avisos"}
+                {loadingMore ? "Cargando…" : "Cargar más artículos"}
                 <ArrowDown aria-hidden="true" size={17} strokeWidth={1.8} />
               </button>
             </div>
@@ -460,69 +440,39 @@ export function Marketplace({
           {loadMoreError ? (
             <div className="result-message result-error" role="alert">
               <p>{loadMoreError}</p>
-              <button type="button" className="text-action" onClick={loadMoreListings}>
+              <button
+                type="button"
+                className="text-action"
+                onClick={loadMoreListings}
+              >
                 Intentar de nuevo
                 <ArrowRight aria-hidden="true" size={16} />
               </button>
             </div>
           ) : null}
-          </>
-        ) : (
-          <div className="result-message empty-message" role="status">
-            <p>
-              {!university
-                ? "Todavía no hay una comunidad para mostrar."
-                : hasActiveFilters
-                  ? "No encontramos avisos con esos filtros."
-                  : university.isDemo
-                    ? "Aún no hay ejemplos en esta gaceta."
-                    : "Aún no hay avisos publicados en este campus."}
-            </p>
-            <div className="empty-message-actions">
-              {hasActiveFilters && university ? (
-                <button type="button" className="text-action" onClick={clearFilters}>
-                  Quitar filtros
-                  <ArrowRight aria-hidden="true" size={16} />
-                </button>
-              ) : university ? (
-                <Link
-                  className="text-action"
-                  href={university.isDemo ? "/publicar?demo=1" : signedIn ? "/publicar" : "/ingresar"}
-                >
-                  {university.isDemo
-                    ? "Recorrer cómo publicar"
-                    : signedIn
-                      ? "Publicar el primer aviso"
-                      : "Iniciar sesión para publicar"}
-                  <ArrowRight aria-hidden="true" size={16} />
-                </Link>
-              ) : (
-                <Link className="text-action" href="/universidades">
-                  Conocer la integración
-                  <ArrowRight aria-hidden="true" size={16} />
-                </Link>
-              )}
-            </div>
+        </>
+      ) : (
+        <div className="result-message empty-message" role="status">
+          <p>
+            {hasActiveFilters
+              ? "No encontramos artículos con esos filtros."
+              : "Todavía no hay artículos publicados en este campus."}
+          </p>
+          <div className="empty-message-actions">
+            {hasActiveFilters ? (
+              <button type="button" className="text-action" onClick={clearFilters}>
+                Quitar filtros
+                <ArrowRight aria-hidden="true" size={16} />
+              </button>
+            ) : (
+              <Link className="text-action" href="/publicar">
+                Publicar el primer artículo
+                <ArrowRight aria-hidden="true" size={16} />
+              </Link>
+            )}
           </div>
-        )}
-
-        <section className="university-invitation" aria-labelledby="invitation-title">
-          <div>
-            <h2>¿Tu universidad todavía no aparece?</h2>
-            <p>
-              {applicationIntakeEnabled
-                ? "Comparte sus datos y el equipo revisará la integración antes de habilitar el acceso estudiantil."
-                : "La recepción de solicitudes se abrirá cuando publiquemos el aviso de privacidad y el canal de atención."}
-            </p>
-          </div>
-          <Link className="invitation-link" href="/universidades">
-            {applicationIntakeEnabled
-              ? "Solicitar integración"
-              : "Conocer la integración"}
-            <ArrowRight aria-hidden="true" size={17} strokeWidth={1.8} />
-          </Link>
-        </section>
-      </section>
-    </>
+        </div>
+      )}
+    </section>
   );
 }

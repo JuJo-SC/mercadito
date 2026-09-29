@@ -60,25 +60,10 @@ export async function GET(request: Request) {
   const cursorId = url.searchParams.get("cursor")?.trim();
   const category = url.searchParams.get("category");
   const query = url.searchParams.get("q")?.trim().slice(0, 80);
+  const requestedSort = url.searchParams.get("sort") === "INTEREST" ? "INTEREST" : "RECENT";
   const validCategory = Object.values(ListingCategory).includes(
     category as ListingCategory,
   );
-
-  const cursorAnchor = cursorId
-    ? await prisma.listing.findFirst({
-        where: {
-          id: cursorId,
-          universityId: university.id,
-        },
-        select: { id: true, createdAt: true },
-      })
-    : null;
-  if (cursorId && !cursorAnchor) {
-    return Response.json(
-      { error: "Actualiza los avisos para continuar." },
-      { status: 400, headers: privateNoStore },
-    );
-  }
 
   const where = {
     universityId: university.id,
@@ -94,44 +79,81 @@ export async function GET(request: Request) {
       : {}),
   };
 
-  const [total, listings] = await Promise.all([
+  const [total, interestedListingCount] = await Promise.all([
     prisma.listing.count({ where }),
-    prisma.listing.findMany({
-      where: cursorAnchor
-        ? {
-            ...where,
-            AND: [
-              {
-                OR: [
-                  { createdAt: { lt: cursorAnchor.createdAt } },
-                  { createdAt: cursorAnchor.createdAt, id: { lt: cursorAnchor.id } },
-                ],
-              },
-            ],
-          }
-        : where,
-      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-      skip: cursorAnchor ? undefined : (page - 1) * 24,
-      take: cursorAnchor ? 25 : 24,
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        price: true,
-        currency: true,
-        category: true,
-        condition: true,
-        imageUrl: true,
-        photo: { select: { listingId: true } },
-        isDemo: true,
-        createdAt: true,
-        seller: { select: { id: true, name: true } },
+    prisma.listing.count({
+      where: {
+        ...where,
+        conversations: { some: { universityId: university.id } },
       },
     }),
   ]);
+  const hasInterestSignals = interestedListingCount > 0;
+  const sortMode = requestedSort === "INTEREST" && hasInterestSignals
+    ? "INTEREST"
+    : "RECENT";
+
+  const cursorAnchor = cursorId
+    ? await prisma.listing.findFirst({
+        where: { id: cursorId, universityId: university.id },
+        select: { id: true, createdAt: true },
+      })
+    : null;
+  if (cursorId && !cursorAnchor) {
+    return Response.json(
+      { error: "Actualiza los artículos para continuar." },
+      { status: 400, headers: privateNoStore },
+    );
+  }
+
+  const recentWhere = cursorAnchor
+    ? {
+        ...where,
+        AND: [
+          {
+            OR: [
+              { createdAt: { lt: cursorAnchor.createdAt } },
+              { createdAt: cursorAnchor.createdAt, id: { lt: cursorAnchor.id } },
+            ],
+          },
+        ],
+      }
+    : where;
+
+  const listings = await prisma.listing.findMany({
+    where: sortMode === "INTEREST" ? where : recentWhere,
+    ...(sortMode === "INTEREST" && cursorId
+      ? { cursor: { id: cursorId }, skip: 1 }
+      : {}),
+    orderBy: sortMode === "INTEREST"
+      ? [
+          { conversations: { _count: "desc" } },
+          { createdAt: "desc" },
+          { id: "desc" },
+        ]
+      : [{ createdAt: "desc" }, { id: "desc" }],
+    skip: sortMode === "INTEREST"
+      ? cursorId ? 1 : (page - 1) * 24
+      : cursorAnchor ? undefined : (page - 1) * 24,
+    take: cursorId ? 25 : 24,
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      price: true,
+      currency: true,
+      category: true,
+      condition: true,
+      imageUrl: true,
+      photo: { select: { listingId: true } },
+      isDemo: true,
+      createdAt: true,
+      seller: { select: { id: true, name: true } },
+    },
+  });
 
   const pageListings = listings.slice(0, 24);
-  const hasMore = pageListings.length > 0 && (cursorAnchor ? listings.length > 24 : page * 24 < total);
+  const hasMore = pageListings.length > 0 && (cursorId ? listings.length > 24 : page * 24 < total);
   const nextCursor = hasMore ? pageListings.at(-1)?.id ?? null : null;
 
   return Response.json({
@@ -141,6 +163,8 @@ export async function GET(request: Request) {
     total,
     hasMore,
     nextCursor,
+    sortMode,
+    hasInterestSignals,
     listings: pageListings.map((listing) => ({
       id: listing.id,
       title: listing.title,
@@ -149,14 +173,13 @@ export async function GET(request: Request) {
       currency: listing.currency,
       category: listing.category,
       condition: listing.condition,
-      imageUrl: listing.photo ? `/api/listings/${encodeURIComponent(listing.id)}/photo` : null,
+      imageUrl: listing.photo ? "/api/listings/" + encodeURIComponent(listing.id) + "/photo" : null,
       isDemo: listing.isDemo,
       createdAt: listing.createdAt,
       seller: listing.seller,
     })),
   }, { headers: privateNoStore });
 }
-
 export async function POST(request: Request) {
   const student = await getActiveStudent();
   if (!student) {

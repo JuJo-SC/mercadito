@@ -3435,3 +3435,464 @@ select {
     transition: none;
   }
 }
+
+
+/* Separación de portada pública y catálogo universitario */
+.landing-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(17rem, 0.7fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 6rem);
+  padding-block: clamp(3.2rem, 8vw, 6.6rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing-copy {
+  min-width: 0;
+}
+
+.landing-copy h1 {
+  max-width: 12ch;
+  margin: 0;
+  font-family: var(--font-editorial), Georgia, serif;
+  font-size: clamp(3rem, 7vw, 5.8rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.landing-description {
+  max-width: 48ch;
+  margin: 1.25rem 0 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.45vw, 1.15rem);
+  line-height: 1.6;
+}
+
+.landing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.3rem;
+  margin-top: 1.6rem;
+}
+
+.landing-payment-note {
+  max-width: 47ch;
+  margin: 1.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.landing-catalog-sheet {
+  padding: 1.25rem clamp(1rem, 2.6vw, 1.8rem) 1rem;
+  border-top: 3px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper-alt);
+}
+
+.landing-sheet-heading {
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing-sheet-heading h2 {
+  margin: 0;
+  font-family: var(--font-editorial), Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.landing-category-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.landing-category-list li {
+  min-height: 47px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing-category-list li > strong {
+  font-family: var(--font-editorial), Georgia, serif;
+  font-size: 1.22rem;
+  font-weight: 500;
+}
+
+.landing-category-list li > span:last-child {
+  display: inline-flex;
+  color: var(--coral);
+}
+
+.landing-sheet-foot {
+  margin: 0;
+  padding-top: 0.85rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.landing-how {
+  display: grid;
+  grid-template-columns: minmax(13rem, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  padding-block: clamp(2.7rem, 6vw, 5.1rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+.landing-section-heading h2,
+.landing-university h2 {
+  max-width: 15ch;
+  margin: 0;
+  font-family: var(--font-editorial), Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  font-weight: 500;
+  letter-spacing: -0.028em;
+  line-height: 1.05;
+}
+
+.landing-section-heading > p:last-child {
+  max-width: 38ch;
+  margin: 0.8rem 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.landing-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.9rem, 2vw, 1.6rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.landing-steps li {
+  min-width: 0;
+  padding-top: 0.7rem;
+  border-top: 2px solid var(--ink);
+}
+
+.landing-steps li > span {
+  color: var(--coral);
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.landing-steps h3 {
+  margin: 1.1rem 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.landing-steps p {
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.landing-university {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-block: 2.2rem 3.2rem;
+}
+
+.landing-university h2 {
+  font-size: clamp(1.8rem, 3.3vw, 2.45rem);
+}
+
+.landing-integration-link {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 0.55rem;
+  border-bottom: 1px solid var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.landing-integration-link:hover {
+  border-color: var(--coral);
+  color: var(--error);
+}
+
+/* El catálogo es la primera vista del estudiante después del acceso. */
+.campus-marketplace {
+  padding-top: clamp(1.8rem, 4vw, 3.4rem);
+}
+
+.campus-marketplace-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.campus-marketplace-header h1 {
+  max-width: 15ch;
+  margin: 0;
+  font-family: var(--font-editorial), Georgia, serif;
+  font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.campus-marketplace .campus-name {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.campus-marketplace-actions {
+  max-width: 24rem;
+  display: grid;
+  justify-items: start;
+  gap: 0.75rem;
+}
+
+.campus-marketplace-actions p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.campus-marketplace-actions .button-ink {
+  min-height: 48px;
+}
+
+.campus-test-banner {
+  margin-top: 1rem;
+}
+
+.campus-marketplace .listing-heading {
+  margin-top: clamp(1.7rem, 3vw, 2.5rem);
+}
+
+.campus-marketplace .listing-heading h2 {
+  font-size: clamp(1.9rem, 3.8vw, 2.65rem);
+}
+
+.marketplace-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1.1rem 1.5rem;
+}
+
+.marketplace-filters .category-tabs {
+  min-width: 0;
+  margin-top: 1.15rem;
+}
+
+.sort-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: end;
+  gap: 0.15rem 0.9rem;
+  padding-bottom: 0.65rem;
+}
+
+.sort-controls > span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.sort-button {
+  min-height: 40px;
+  padding: 0.45rem 0;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sort-button:hover:not(:disabled) {
+  color: var(--ink);
+}
+
+.sort-button.is-selected {
+  border-bottom-color: var(--signal);
+  color: var(--ink);
+}
+
+.sort-context {
+  min-height: 1.3rem;
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 920px) {
+  .landing-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.75fr);
+    gap: 2rem;
+  }
+
+  .landing-how {
+    grid-template-columns: 1fr;
+    gap: 1.6rem;
+  }
+
+  .campus-marketplace-header {
+    align-items: start;
+  }
+
+  .marketplace-filters {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .sort-controls {
+    justify-content: start;
+    padding-bottom: 0.4rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .landing-hero {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding-block: 2.8rem;
+  }
+
+  .landing-copy h1 {
+    max-width: 11.5ch;
+    font-size: clamp(2.8rem, 11vw, 4rem);
+  }
+
+  .landing-catalog-sheet {
+    max-width: 34rem;
+  }
+
+  .landing-steps {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .landing-steps li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    column-gap: 0.6rem;
+    padding-top: 0.8rem;
+  }
+
+  .landing-steps li > span {
+    grid-row: span 2;
+  }
+
+  .landing-steps h3 {
+    margin: 0;
+  }
+
+  .landing-steps p {
+    margin-top: 0.25rem;
+  }
+
+  .landing-university {
+    align-items: start;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .campus-marketplace-header {
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .campus-marketplace-actions {
+    max-width: none;
+  }
+
+  .campus-marketplace .listing-heading {
+    margin-top: 1.8rem;
+  }
+}
+
+@media (max-width: 540px) {
+  .landing-hero {
+    gap: 1.6rem;
+    padding-block: 2.35rem;
+  }
+
+  .landing-copy h1 {
+    font-size: clamp(2.55rem, 12vw, 3.45rem);
+  }
+
+  .landing-actions {
+    align-items: start;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .landing-catalog-sheet {
+    padding-inline: 0.85rem;
+  }
+
+  .landing-sheet-heading {
+    font-size: 0.57rem;
+  }
+
+  .landing-category-list li {
+    min-height: 43px;
+  }
+
+  .landing-category-list li > strong {
+    font-size: 1.1rem;
+  }
+
+  .campus-marketplace {
+    padding-top: 1.3rem;
+  }
+
+  .campus-marketplace-header h1 {
+    font-size: 2.55rem;
+  }
+
+  .campus-marketplace-actions .button-ink {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .marketplace-filters .category-tabs {
+    gap: 0.85rem;
+  }
+
+  .sort-controls {
+    gap: 0.1rem 0.8rem;
+  }
+
+  .sort-controls > span {
+    flex-basis: 100%;
+  }
+
+  .sort-context {
+    max-width: 60ch;
+  }
+}

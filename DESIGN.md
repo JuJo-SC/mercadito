@@ -165,6 +165,12 @@ El contenido usa un ancho fluido con margen lateral adaptable y máximo de 80rem
 
 La interfaz admite un ancho mínimo de 320px. Hasta 760px la navegación y los formularios pasan a una composición compacta; hasta 540px baja ligeramente el cuerpo y se compacta la cabecera. En publicación, el recorrido Artículo → Detalles → Revisar mantiene los campos en contexto: la acción de Artículo sigue a categoría y condición, mientras las acciones posteriores pueden permanecer a mano sobre el borde inferior. Respeta el área segura inferior del dispositivo.
 
+## Navegación del producto
+
+La portada pública explica qué es Mercadito y cómo entrar; no contiene anuncios ni un catálogo. Después de validar la sesión y resolver la universidad desde los claims institucionales, el alumno llega a /mercadito. Allí la primera vista prioriza identidad del campus, publicación, búsqueda, categorías, orden y lista de artículos. En móvil, los controles preceden a los clasificados y se mantienen cómodos desde 320 px.
+
+El orden «Con más interés» usa conversaciones iniciadas como señal; no utiliza ni revela el contenido del chat. Sin actividad suficiente, el catálogo comienza por los avisos más recientes. Comida es una categoría publicable junto a ropa, tecnología, hogar, accesorios, libros, servicios y otros.
+
 ## Elevation & Depth
 
 El sistema es plano por defecto. Las reglas, el cambio tonal entre superficies y el espacio separan secciones; los artículos no flotan en tarjetas con sombra. La única sombra estructural observada acompaña el panel de instrucciones de instalación (`0 12px 24px rgba(24, 37, 45, 0.14)`).
