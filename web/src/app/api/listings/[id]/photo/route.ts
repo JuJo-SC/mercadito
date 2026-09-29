@@ -26,9 +26,16 @@ export async function GET(
     where: {
       id,
       universityId: student.universityId,
-      isDemo: false,
       university: { status: "ACTIVE", isDemo: false },
-      OR: [{ status: "PUBLISHED" }, { sellerId: student.id }],
+      AND: [
+        {
+          OR: [
+            { isDemo: false },
+            { isDemo: true, university: { isTest: true } },
+          ],
+        },
+        { OR: [{ status: "PUBLISHED" }, { sellerId: student.id }] },
+      ],
     },
     select: { photo: { select: { data: true } } },
   });
