@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StartConversationForm } from "@/components/start-conversation-form";
 import type { FormEvent } from "react";
 import Link from "next/link";
@@ -123,6 +123,49 @@ export function Marketplace({
   const detailDialogRef = useRef<HTMLDialogElement>(null);
   const [selectedListing, setSelectedListing] = useState<MarketplaceListing | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+
+  useEffect(() => {
+    if (!selectedListing) return;
+
+    const root = document.documentElement;
+    const body = document.body;
+    const scrollY = window.scrollY;
+    const previous = {
+      rootOverflow: root.style.overflow,
+      rootScrollBehavior: root.style.scrollBehavior,
+      bodyOverflow: body.style.overflow,
+      bodyPosition: body.style.position,
+      bodyTop: body.style.top,
+      bodyLeft: body.style.left,
+      bodyRight: body.style.right,
+      bodyWidth: body.style.width,
+      bodyPaddingRight: body.style.paddingRight,
+    };
+    const scrollbarWidth = window.innerWidth - root.clientWidth;
+
+    root.style.overflow = "hidden";
+    root.style.scrollBehavior = "auto";
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    body.style.width = "100%";
+    if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
+
+    return () => {
+      root.style.overflow = previous.rootOverflow;
+      body.style.overflow = previous.bodyOverflow;
+      body.style.position = previous.bodyPosition;
+      body.style.top = previous.bodyTop;
+      body.style.left = previous.bodyLeft;
+      body.style.right = previous.bodyRight;
+      body.style.width = previous.bodyWidth;
+      body.style.paddingRight = previous.bodyPaddingRight;
+      window.scrollTo(0, scrollY);
+      root.style.scrollBehavior = previous.rootScrollBehavior;
+    };
+  }, [selectedListing]);
 
   async function loadListings(
     nextQuery: string,
