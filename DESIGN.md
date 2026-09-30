@@ -119,7 +119,7 @@ Al seleccionar una publicación, el navegador abre un `<dialog>` modal centrado.
 
 ## Publicación de fotos
 
-Cada publicación permite hasta cinco fotos JPG, PNG o WebP. El formulario permite quitar fotos existentes, añadir otras y reconocer cuál será la principal. Cada archivo fuente pesa hasta 8 MB; la carga completa hasta 20 MB. El servidor corrige orientación, limita la imagen a 1440 px, la convierte a WebP con calidad 82 y guarda como máximo 1.2 MB por foto. En edición se conserva el orden de las fotos seleccionadas y las imágenes existentes permanecen en PostgreSQL.
+Cada publicación permite hasta cinco fotos JPG, PNG o WebP. El formulario permite quitar fotos existentes, añadir otras y reconocer cuál será la principal. Cada archivo fuente pesa hasta 8 MB; la carga completa hasta 20 MB. El servidor corrige orientación y convierte a WebP de hasta 1280 px con calidad inicial 78. Si supera el objetivo de 700 KB, ajusta progresivamente calidad y resolución; conserva un límite de 1.2 MB por foto para casos difíciles sin rechazar imágenes útiles. En edición se conserva el orden de las fotos seleccionadas y las imágenes existentes permanecen en PostgreSQL.
 
 El catálogo descarga únicamente la foto principal de cada tarjeta. Las imágenes restantes se solicitan al recorrer la galería del modal. Los datos de fotos se sirven con sesión del mismo campus y nunca se almacenan en la caché offline de la PWA.
 

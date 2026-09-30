@@ -6,7 +6,14 @@ import {
 } from "@/lib/listing-photo-limits";
 
 const MAX_REQUEST_BYTES = MAX_TOTAL_LISTING_PHOTO_BYTES + 1024 * 1024;
+const TARGET_OUTPUT_BYTES = 700_000;
 const MAX_OUTPUT_BYTES = 1_200_000;
+const WEBP_PRESETS = [
+  { side: 1280, quality: 78 },
+  { side: 1280, quality: 74 },
+  { side: 1200, quality: 72 },
+  { side: 1080, quality: 68 },
+] as const;
 const MAX_INPUT_PIXELS = 40_000_000;
 const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const ALLOWED_FORMATS = new Set(["jpeg", "png", "webp"]);
@@ -115,14 +122,22 @@ export async function parseListingPhotos(formData: FormData) {
         throw new ListingPhotoInputError("Cada archivo debe ser una foto fija y legible.");
       }
 
-      const output = await sharp(input, {
-        failOn: "error",
-        limitInputPixels: MAX_INPUT_PIXELS,
-      })
-        .rotate()
-        .resize({ width: 1440, height: 1440, fit: "inside", withoutEnlargement: true })
-        .webp({ quality: 82, effort: 4 })
-        .toBuffer({ resolveWithObject: true });
+      const encode = ({ side, quality }: (typeof WEBP_PRESETS)[number]) =>
+        sharp(input, {
+          failOn: "error",
+          limitInputPixels: MAX_INPUT_PIXELS,
+        })
+          .rotate()
+          .resize({ width: side, height: side, fit: "inside", withoutEnlargement: true })
+          .webp({ quality, effort: 6 })
+          .toBuffer({ resolveWithObject: true });
+
+      let output = await encode(WEBP_PRESETS[0]);
+      for (const preset of WEBP_PRESETS.slice(1)) {
+        if (output.info.size <= TARGET_OUTPUT_BYTES) break;
+        const candidate = await encode(preset);
+        if (candidate.info.size < output.info.size) output = candidate;
+      }
 
       if (output.info.size > MAX_OUTPUT_BYTES) {
         throw new ListingPhotoInputError("Una foto sigue siendo muy pesada después de optimizarla.", 413);

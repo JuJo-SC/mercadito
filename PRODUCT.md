@@ -40,7 +40,7 @@ La pertenencia a una universidad define el acceso al mercadito de esa comunidad.
 - Alcance confirmado para el MVP: publicar y explorar artículos, conversar por chat para coordinar el interés, sin procesar pagos.
 - Los estudiantes pueden consultar y editar sus propios avisos, cambiar su disponibilidad (publicado, apartado, vendido o archivado) dentro de su campus, y conversar con interesados.
 - El chat del MVP permite mensajes de texto entre estudiantes del mismo campus; no admite adjuntos.
-- Cada aviso puede incluir hasta cinco fotos JPG, PNG o WebP. Cada archivo de entrada pesa como máximo 8 MB; la suma de la carga no supera 20 MB. Las fotos se convierten a WebP de hasta 1440 px y 1.2 MB por imagen, se guardan como filas vinculadas al aviso y solo se entregan a estudiantes activos del mismo campus. El recorrido de demostración previsualiza las fotos, pero no guarda publicaciones.
+- Cada aviso puede incluir hasta cinco fotos JPG, PNG o WebP. Cada archivo de entrada pesa como máximo 8 MB; la suma de la carga no supera 20 MB. Las fotos se convierten a WebP de hasta 1280 px, con un objetivo de 700 KB y un límite de 1.2 MB por imagen, se guardan como filas vinculadas al aviso y solo se entregan a estudiantes activos del mismo campus. El recorrido de demostración previsualiza las fotos, pero no guarda publicaciones.
 - Si una navegación falla por red o disponibilidad, la PWA muestra una página estática; no almacena ni reenvía publicaciones, mensajes o datos privados.
 
 - Inferencia provisional a partir de «mercadito interno»: sin sesión solo se muestra el campus ficticio de demostración; una cuenta estudiantil activa solo accede al mercadito de su universidad.
