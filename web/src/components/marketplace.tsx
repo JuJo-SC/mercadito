@@ -6,11 +6,14 @@ import type { FormEvent } from "react";
 import Link from "next/link";
 import {
   ArrowDown,
-  Camera,
+  ArrowLeft,
   ArrowRight,
   ArrowUpRight,
-  ChevronDown,
+  Camera,
+  ChevronLeft,
+  ChevronRight,
   Search,
+  X,
 } from "lucide-react";
 
 type SortMode = "RECENT" | "INTEREST";
@@ -31,7 +34,7 @@ type MarketplaceListing = {
   currency: string;
   category: string;
   condition: string;
-  imageUrl: string | null;
+  imageUrls: string[];
   isDemo: boolean;
   createdAt: string;
   seller: { id: string; name: string | null };
@@ -117,6 +120,9 @@ export function Marketplace({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const currentRequest = useRef<AbortController | null>(null);
+  const detailDialogRef = useRef<HTMLDialogElement>(null);
+  const [selectedListing, setSelectedListing] = useState<MarketplaceListing | null>(null);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
 
   async function loadListings(
     nextQuery: string,
@@ -222,6 +228,21 @@ export function Marketplace({
   function loadMoreListings() {
     if (!nextCursor || !hasMore || loadingMore) return;
     void loadListings(query, category, sortMode, { append: true, cursor: nextCursor });
+  }
+
+  function openListing(listing: MarketplaceListing) {
+    setSelectedListing(listing);
+    setSelectedPhotoIndex(0);
+    if (detailDialogRef.current && !detailDialogRef.current.open) {
+      detailDialogRef.current.showModal();
+    }
+  }
+
+  function moveSelectedPhoto(direction: -1 | 1) {
+    if (!selectedListing || selectedListing.imageUrls.length < 2) return;
+    setSelectedPhotoIndex((current) =>
+      (current + direction + selectedListing.imageUrls.length) % selectedListing.imageUrls.length,
+    );
   }
 
   const hasActiveFilters = Boolean(query.trim()) || category !== "ALL";
@@ -348,89 +369,62 @@ export function Marketplace({
         <>
           <div className="product-grid" aria-live="polite">
             {listings.map((listing) => (
-              <details className="product-card" key={listing.id}>
-                <summary className="product-card-summary">
-                  <span className="product-card-media">
-                    {listing.imageUrl ? (
-                      <img
-                        className="product-card-image"
-                        src={listing.imageUrl}
-                        alt={"Foto de " + listing.title}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    ) : (
-                      <span className="product-card-no-image">
-                        <Camera aria-hidden="true" size={25} strokeWidth={1.5} />
-                        <span>Sin foto todavía</span>
-                      </span>
-                    )}
-                    {listing.imageUrl ? (
-                      <span className="product-card-photo-count">1 foto</span>
-                    ) : null}
-                    {listing.isDemo ? (
-                      <span className="product-card-demo">Ejemplo</span>
-                    ) : null}
-                  </span>
-                  <span className="product-card-copy">
-                    <span className="product-card-meta">
-                      <span className="product-card-category">
-                        {categoryNames[listing.category] ?? "Otros"}
-                      </span>
-                      <span className="product-card-separator" aria-hidden="true">·</span>
-                      <span className="product-card-condition">
-                        {conditionNames[listing.condition] ?? "Condición no indicada"}
-                      </span>
-                    </span>
-                    <span className="product-card-title">{listing.title}</span>
-                    <span className="product-card-price">
-                      {formatPrice(listing.price, listing.currency)}
-                    </span>
-                    <span className="product-card-seller">
-                      Por {listing.seller.name ?? "Estudiante"}
-                    </span>
-                    <span className="product-card-disclosure">
-                      <span className="product-disclosure-closed">Ver publicación</span>
-                      <span className="product-disclosure-open">Ocultar detalles</span>
-                      <ChevronDown aria-hidden="true" size={17} strokeWidth={1.8} />
-                    </span>
-                  </span>
-                </summary>
-                <div className="product-expanded">
-                  <div className="product-description">
-                    <p>{listing.description}</p>
-                    {listing.isDemo ? (
-                      <span className="product-demo-note">
-                        Publicación ficticia de demostración.
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="product-contact">
-                    <dl className="product-details">
-                      <div>
-                        <dt>Publicado por</dt>
-                        <dd>{listing.seller.name ?? "Estudiante"}</dd>
-                      </div>
-                      <div>
-                        <dt>Fecha de publicación</dt>
-                        <dd>{formatListingDate(listing.createdAt)}</dd>
-                      </div>
-                      <div>
-                        <dt>Precio indicado</dt>
-                        <dd>{formatPrice(listing.price, listing.currency)}</dd>
-                      </div>
-                    </dl>
-                    <StartConversationForm
-                      listingId={listing.id}
-                      sellerId={listing.seller.id}
-                      sellerName={listing.seller.name ?? "Estudiante"}
-                      currentUserId={currentUserId}
-                      signedIn
-                      isDemo={listing.isDemo}
+              <button
+                className="product-card"
+                key={listing.id}
+                type="button"
+                aria-haspopup="dialog"
+                aria-label={`Ver publicación: ${listing.title}, ${formatPrice(listing.price, listing.currency)}`}
+                onClick={() => openListing(listing)}
+              >
+                <span className="product-card-media">
+                  {listing.imageUrls[0] ? (
+                    <img
+                      className="product-card-image"
+                      src={listing.imageUrls[0]}
+                      alt={"Foto de " + listing.title}
+                      loading="lazy"
+                      decoding="async"
                     />
-                  </div>
-                </div>
-              </details>
+                  ) : (
+                    <span className="product-card-no-image">
+                      <Camera aria-hidden="true" size={28} strokeWidth={1.6} />
+                      <span>Sin foto</span>
+                    </span>
+                  )}
+                  {listing.imageUrls.length ? (
+                    <span className="product-card-photo-count">
+                      <Camera aria-hidden="true" size={13} strokeWidth={2} />
+                      {listing.imageUrls.length} {listing.imageUrls.length === 1 ? "foto" : "fotos"}
+                    </span>
+                  ) : null}
+                  {listing.isDemo ? (
+                    <span className="product-card-demo">Ejemplo</span>
+                  ) : null}
+                </span>
+                <span className="product-card-copy">
+                  <span className="product-card-meta">
+                    <span className="product-card-category">
+                      {categoryNames[listing.category] ?? "Otros"}
+                    </span>
+                    <span className="product-card-separator" aria-hidden="true">·</span>
+                    <span className="product-card-condition">
+                      {conditionNames[listing.condition] ?? "Condición no indicada"}
+                    </span>
+                  </span>
+                  <span className="product-card-title">{listing.title}</span>
+                  <span className="product-card-price">
+                    {formatPrice(listing.price, listing.currency)}
+                  </span>
+                  <span className="product-card-seller">
+                    Por {listing.seller.name ?? "Estudiante"}
+                  </span>
+                  <span className="product-card-disclosure">
+                    Ver detalles
+                    <ArrowRight aria-hidden="true" size={16} strokeWidth={1.8} />
+                  </span>
+                </span>
+              </button>
             ))}
           </div>
           {hasMore ? (
@@ -485,6 +479,139 @@ export function Marketplace({
           </div>
         </div>
       )}
+
+      <dialog
+        ref={detailDialogRef}
+        className="listing-detail-dialog"
+        aria-labelledby="listing-detail-title"
+        onClose={() => {
+          setSelectedListing(null);
+          setSelectedPhotoIndex(0);
+        }}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) event.currentTarget.close();
+        }}
+      >
+        {selectedListing ? (
+          <div className="listing-detail-shell">
+            <button
+              className="listing-detail-close"
+              type="button"
+              aria-label="Cerrar detalles"
+              onClick={() => detailDialogRef.current?.close()}
+            >
+              <X aria-hidden="true" size={19} strokeWidth={1.9} />
+            </button>
+            <div className="listing-detail-gallery" aria-label="Fotos del producto">
+              {selectedListing.imageUrls.length ? (
+                <>
+                  <div className="listing-detail-image-wrap">
+                    <img
+                      key={selectedListing.imageUrls[selectedPhotoIndex]}
+                      src={selectedListing.imageUrls[selectedPhotoIndex]}
+                      alt={`Foto ${selectedPhotoIndex + 1} de ${selectedListing.title}`}
+                      decoding="async"
+                    />
+                    {selectedListing.imageUrls.length > 1 ? (
+                      <div className="listing-gallery-arrows">
+                        <button
+                          type="button"
+                          aria-label="Ver foto anterior"
+                          onClick={() => moveSelectedPhoto(-1)}
+                        >
+                          <ChevronLeft aria-hidden="true" size={20} />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Ver foto siguiente"
+                          onClick={() => moveSelectedPhoto(1)}
+                        >
+                          <ChevronRight aria-hidden="true" size={20} />
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                  {selectedListing.imageUrls.length > 1 ? (
+                    <div className="listing-gallery-pagination">
+                      <span aria-live="polite">
+                        {selectedPhotoIndex + 1} de {selectedListing.imageUrls.length} fotos
+                      </span>
+                      <div role="group" aria-label="Elegir foto">
+                        {selectedListing.imageUrls.map((_, index) => (
+                          <button
+                            className={index === selectedPhotoIndex ? "is-selected" : ""}
+                            key={index}
+                            type="button"
+                            aria-label={`Mostrar foto ${index + 1} de ${selectedListing.imageUrls.length}`}
+                            aria-pressed={index === selectedPhotoIndex}
+                            onClick={() => setSelectedPhotoIndex(index)}
+                          >
+                            <span aria-hidden="true" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                </>
+              ) : (
+                <div className="listing-detail-no-image">
+                  <Camera aria-hidden="true" size={36} strokeWidth={1.5} />
+                  <span>Este artículo aún no tiene fotos.</span>
+                </div>
+              )}
+            </div>
+            <div className="listing-detail-info">
+              <div className="listing-detail-meta">
+                <span>{categoryNames[selectedListing.category] ?? "Otros"}</span>
+                <span aria-hidden="true">·</span>
+                <span>{conditionNames[selectedListing.condition] ?? "Condición no indicada"}</span>
+              </div>
+              <h2 id="listing-detail-title">{selectedListing.title}</h2>
+              <p className="listing-detail-price">
+                {formatPrice(selectedListing.price, selectedListing.currency)}
+              </p>
+              <dl className="listing-detail-facts">
+                <div>
+                  <dt>Condición</dt>
+                  <dd>{conditionNames[selectedListing.condition] ?? "No indicada"}</dd>
+                </div>
+                <div>
+                  <dt>Publicado por</dt>
+                  <dd>{selectedListing.seller.name ?? "Estudiante"}</dd>
+                </div>
+                <div>
+                  <dt>Fecha de publicación</dt>
+                  <dd>{formatListingDate(selectedListing.createdAt)}</dd>
+                </div>
+                <div>
+                  <dt>Campus</dt>
+                  <dd>{university.name}</dd>
+                </div>
+              </dl>
+              <section className="listing-detail-description">
+                <h3>Descripción</h3>
+                <p>{selectedListing.description}</p>
+              </section>
+              {selectedListing.isDemo ? (
+                <p className="listing-detail-demo-note" role="note">
+                  Publicación ficticia de demostración. No representa una oferta real.
+                </p>
+              ) : null}
+              <div className="listing-detail-contact">
+                <StartConversationForm
+                  listingId={selectedListing.id}
+                  sellerId={selectedListing.seller.id}
+                  sellerName={selectedListing.seller.name ?? "Estudiante"}
+                  currentUserId={currentUserId}
+                  signedIn
+                  isDemo={selectedListing.isDemo}
+                />
+                <p>La entrega y cualquier pago se acuerdan fuera de Mercadito.</p>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </dialog>
     </section>
   );
 }

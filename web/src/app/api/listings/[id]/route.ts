@@ -5,8 +5,9 @@ import { getActiveStudent } from "@/lib/require-student";
 import {
   ListingPhotoInputError,
   parseListingMultipart,
-  parseListingPhoto,
+  parseListingPhotos,
 } from "@/lib/listing-photo";
+import { MAX_LISTING_PHOTOS } from "@/lib/listing-photo-limits";
 
 const updateListingSchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED", "RESERVED", "SOLD", "ARCHIVED"]),
@@ -32,6 +33,33 @@ export const runtime = "nodejs";
 
 const privateNoStore = { "Cache-Control": "private, no-store" };
 
+function listingPhotoUrl(id: string, position: number) {
+  return `/api/listings/${encodeURIComponent(id)}/photo?position=${position}`;
+}
+
+function readKeptPhotoPositions(formData: FormData) {
+  const value = formData.get("keepPhotoPositions");
+  if (value === null) return formData.get("removePhoto") === "true" ? [] : null;
+  if (typeof value !== "string") {
+    throw new ListingPhotoInputError("No pudimos leer las fotos que quieres conservar.");
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    throw new ListingPhotoInputError("No pudimos leer las fotos que quieres conservar.");
+  }
+  if (
+    !Array.isArray(parsed) ||
+    parsed.length > MAX_LISTING_PHOTOS ||
+    parsed.some((position) => !Number.isInteger(position) || position < 0 || position >= MAX_LISTING_PHOTOS) ||
+    new Set(parsed).size !== parsed.length
+  ) {
+    throw new ListingPhotoInputError("Elige hasta 5 fotos válidas para la publicación.");
+  }
+  return parsed as number[];
+}
+
 export async function GET(
   _request: Request,
   context: RouteContext<"/api/listings/[id]">,
@@ -53,7 +81,7 @@ export async function GET(
       category: true,
       condition: true,
       imageUrl: true,
-      photo: { select: { listingId: true } },
+      photos: { select: { position: true }, orderBy: { position: "asc" } },
       isDemo: true,
       createdAt: true,
       university: { select: { name: true, slug: true, isDemo: true } },
@@ -78,11 +106,11 @@ export async function GET(
     }
   }
 
-  const { photo, ...listingData } = listing;
+  const { photos, ...listingData } = listing;
   return Response.json({
     listing: {
       ...listingData,
-      imageUrl: photo ? `/api/listings/${encodeURIComponent(listing.id)}/photo` : null,
+      imageUrls: photos.map(({ position }) => listingPhotoUrl(listing.id, position)),
       price: listing.price.toNumber(),
     },
   }, { headers: privateNoStore });
@@ -103,8 +131,8 @@ export async function PUT(
 
   const { id } = await context.params;
   let content: z.infer<typeof editListingSchema>;
-  let photo: Awaited<ReturnType<typeof parseListingPhoto>> = null;
-  let removePhoto = false;
+  let photos: Awaited<ReturnType<typeof parseListingPhotos>> = [];
+  let keepPhotoPositions: number[] | null = null;
   try {
     const formData = await parseListingMultipart(request);
     const rawPrice = formData.get("price");
@@ -122,14 +150,8 @@ export async function PUT(
       );
     }
     content = parsed.data;
-    photo = await parseListingPhoto(formData);
-    removePhoto = formData.get("removePhoto") === "true";
-    if (photo && removePhoto) {
-      return Response.json(
-        { error: "Elige entre reemplazar la foto o quitarla." },
-        { status: 400, headers: privateNoStore },
-      );
-    }
+    photos = await parseListingPhotos(formData);
+    keepPhotoPositions = readKeptPhotoPositions(formData);
   } catch (error) {
     if (error instanceof ListingPhotoInputError) {
       return Response.json(
@@ -151,13 +173,33 @@ export async function PUT(
       isDemo: false,
       university: { status: "ACTIVE", isDemo: false },
     },
-    select: { updatedAt: true },
+    select: {
+      updatedAt: true,
+      photos: { select: { position: true }, orderBy: { position: "asc" } },
+    },
   });
 
   if (!listing) {
     return Response.json(
       { error: "No encontramos esa publicación." },
       { status: 404, headers: privateNoStore },
+    );
+  }
+
+  const storedPositions = new Set(listing.photos.map(({ position }) => position));
+  if (keepPhotoPositions?.some((position) => !storedPositions.has(position))) {
+    return Response.json(
+      { error: "Las fotos cambiaron mientras editabas. Recarga la publicación e inténtalo de nuevo." },
+      { status: 409, headers: privateNoStore },
+    );
+  }
+  const keptPhotos = listing.photos.filter(({ position }) =>
+    keepPhotoPositions === null || keepPhotoPositions.includes(position),
+  );
+  if (keptPhotos.length + photos.length > MAX_LISTING_PHOTOS) {
+    return Response.json(
+      { error: "Una publicación puede tener hasta 5 fotos. Quita alguna para agregar otras." },
+      { status: 400, headers: privateNoStore },
     );
   }
 
@@ -175,14 +217,37 @@ export async function PUT(
     });
     if (result.count !== 1) return result;
 
-    if (photo) {
-      await transaction.listingPhoto.upsert({
+    await transaction.listingPhoto.deleteMany({
+      where: {
+        listingId: id,
+        ...(keptPhotos.length ? { position: { notIn: keptPhotos.map(({ position }) => position) } } : {}),
+      },
+    });
+    if (keptPhotos.length) {
+      await transaction.listingPhoto.updateMany({
         where: { listingId: id },
-        create: { listingId: id, ...photo },
-        update: photo,
+        data: { position: { increment: MAX_LISTING_PHOTOS } },
       });
-    } else if (removePhoto) {
-      await transaction.listingPhoto.deleteMany({ where: { listingId: id } });
+      for (const [position, photo] of keptPhotos.entries()) {
+        await transaction.listingPhoto.update({
+          where: {
+            listingId_position: {
+              listingId: id,
+              position: photo.position + MAX_LISTING_PHOTOS,
+            },
+          },
+          data: { position },
+        });
+      }
+    }
+    if (photos.length) {
+      await transaction.listingPhoto.createMany({
+        data: photos.map(({ position, ...photo }) => ({
+          listingId: id,
+          position: keptPhotos.length + position,
+          ...photo,
+        })),
+      });
     }
     return result;
   });
@@ -213,7 +278,7 @@ export async function PUT(
       status: true,
       createdAt: true,
       updatedAt: true,
-      photo: { select: { listingId: true } },
+      photos: { select: { position: true }, orderBy: { position: "asc" } },
     },
   });
 
@@ -224,11 +289,11 @@ export async function PUT(
     );
   }
 
-  const { photo: updatedPhoto, ...updatedListingData } = updatedListing;
+  const { photos: updatedPhotos, ...updatedListingData } = updatedListing;
   return Response.json({
     listing: {
       ...updatedListingData,
-      imageUrl: updatedPhoto ? `/api/listings/${encodeURIComponent(id)}/photo` : null,
+      imageUrls: updatedPhotos.map(({ position }) => listingPhotoUrl(id, position)),
       price: updatedListing.price.toNumber(),
     },
   }, { headers: privateNoStore });

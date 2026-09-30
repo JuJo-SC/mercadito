@@ -1,0 +1,3 @@
+export const MAX_LISTING_PHOTOS = 5;
+export const MAX_LISTING_PHOTO_BYTES = 8 * 1024 * 1024;
+export const MAX_TOTAL_LISTING_PHOTO_BYTES = 20 * 1024 * 1024;

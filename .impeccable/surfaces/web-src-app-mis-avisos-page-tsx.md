@@ -9,13 +9,11 @@ related_targets: ["web/src/components/manage-listings.tsx","web/src/app/globals.
 
 MODE: Operate
 
-SEED_KEY: dc2d0cbd (heredada de la dirección aprobada, scope direction, mode experience).
-
 ## Direction contract
 
 THESIS: El estudiante conserva el control de los clasificados que publica y puede reflejar con claridad cuándo están disponibles, apartados, vendidos o archivados.
 
-OWN-WORLD: Extiende La Gaceta de Intercambio: índice de filas planas, jerarquía editorial breve, reglas de tinta y estados textuales; la lima identifica disponibilidad publicada.
+OWN-WORLD: Hereda la interfaz clara de Mercadito: fondo gris suave, superficies blancas, tipografía del sistema y radios cómodos. Los estados de disponibilidad se escriben con palabras y el verde marca acciones.
 
 STORY: Desde la confirmación de publicación, el estudiante llega a su índice personal. Cada fila conserva título, precio, categoría, condición y fecha; sus acciones actualizan el estado sin borrar el aviso ni afectar a publicaciones ajenas. El índice vacío lleva a publicar el primer artículo. En UMAN, una franja lima recuerda que el campus es de prueba.
 
@@ -25,4 +23,4 @@ FORM: Página operativa /mis-avisos, accesible solo con sesión estudiantil acti
 
 OPEN: Este recorrido solo cambia disponibilidad; contacto, lugar de intercambio y pagos siguen pendientes.
 
-FINISH: build, review and document the inherited system extension without changing DESIGN.md.
+FINISH: revisar móvil y escritorio; mantener los tokens compartidos de DESIGN.md y su archivo de diseño sincronizados con la interfaz.

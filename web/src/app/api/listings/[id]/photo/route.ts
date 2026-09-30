@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getActiveStudent } from "@/lib/require-student";
+import { MAX_LISTING_PHOTOS } from "@/lib/listing-photo-limits";
 
 export const runtime = "nodejs";
 
@@ -10,7 +11,7 @@ const privateNoStore = {
 };
 
 export async function GET(
-  _request: Request,
+  request: Request,
   context: RouteContext<"/api/listings/[id]/photo">,
 ) {
   const student = await getActiveStudent();
@@ -18,6 +19,15 @@ export async function GET(
     return Response.json(
       { error: "Inicia sesión con tu cuenta institucional." },
       { status: 401, headers: privateNoStore },
+    );
+  }
+
+  const rawPosition = new URL(request.url).searchParams.get("position") ?? "0";
+  const position = Number(rawPosition);
+  if (!Number.isInteger(position) || position < 0 || position >= MAX_LISTING_PHOTOS) {
+    return Response.json(
+      { error: "No encontramos esa foto de la publicación." },
+      { status: 404, headers: privateNoStore },
     );
   }
 
@@ -37,21 +47,28 @@ export async function GET(
         { OR: [{ status: "PUBLISHED" }, { sellerId: student.id }] },
       ],
     },
-    select: { photo: { select: { data: true } } },
+    select: {
+      photos: {
+        where: { position },
+        select: { data: true, mimeType: true },
+        take: 1,
+      },
+    },
   });
 
-  if (!listing?.photo) {
+  const photo = listing?.photos[0];
+  if (!photo) {
     return Response.json(
-      { error: "No encontramos la foto de esta publicación." },
+      { error: "No encontramos esa foto de la publicación." },
       { status: 404, headers: privateNoStore },
     );
   }
 
-  const image = new Uint8Array(listing.photo.data);
+  const image = new Uint8Array(photo.data);
   return new Response(image, {
     headers: {
       ...privateNoStore,
-      "Content-Type": "image/webp",
+      "Content-Type": photo.mimeType,
       "Content-Length": String(image.byteLength),
     },
   });

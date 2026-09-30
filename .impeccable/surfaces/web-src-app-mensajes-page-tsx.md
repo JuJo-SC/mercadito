@@ -9,13 +9,11 @@ related_targets: ["web/src/app/mensajes/[id]/page.tsx", "web/src/components/conv
 
 MODE: Operate
 
-SEED_KEY: 41089191
-
 ## Direction contract
 
 THESIS: Cada conversación se encuentra por el siguiente turno y conserva el artículo a la vista para que ambas personas sepan qué intercambio están coordinando.
 
-OWN-WORLD: La Gaceta de Intercambio: papel cálido, tipografía editorial, tinta oscura, reglas finas y acento lima reservado a la pertenencia del campus de prueba. Los hilos se ordenan como correspondencia; las filas planas reemplazan tarjetas genéricas.
+OWN-WORLD: Hereda la interfaz clara de Mercadito: fondo gris suave, superficies blancas, tipografía del sistema, radios cómodos y verde para acciones. Las filas y el hilo mantienen la misma jerarquía compacta del catálogo.
 
 STORY: El interés empieza desde un aviso publicado con un primer mensaje de texto. La bandeja agrupa primero los hilos por responder, después los que esperan respuesta y deja al final los hilos sin mensaje inicial; dentro de cada grupo ordena por actividad reciente. Cada fila muestra quién inició la conversación, el artículo, el último mensaje y los mensajes sin leer. Al abrir un hilo, la referencia del artículo permanece fija arriba y debajo se leen los mensajes en orden cronológico. Un alumno solo inicia conversaciones dentro de su universidad y no puede escribir a su propio aviso.
 
@@ -25,4 +23,4 @@ FORM: El compositor acepta texto de hasta 2,000 caracteres, muestra su cuenta de
 
 SCOPE: Mensajería textual de interés y coordinación en un campus activo. Mercadito no procesa, recibe ni resguarda pagos. Si ambas personas lo deciden, pueden continuar fuera de la plataforma.
 
-FINISH: Ejecutar build y smoke test del servidor, detector Impeccable para los objetivos de UI cambiados y revisar las vistas reales móvil y escritorio una vez; corregir hallazgos visuales y confirmar en una segunda ronda si hubo cambios.
+FINISH: Revisar móvil y escritorio, ejecutar el detector de Impeccable en los objetivos UI modificados y actualizar los tokens compartidos cuando cambie el sistema visual.

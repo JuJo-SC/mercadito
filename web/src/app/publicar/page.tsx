@@ -44,7 +44,7 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
           category: true,
           condition: true,
           status: true,
-          photo: { select: { listingId: true } },
+          photos: { select: { position: true }, orderBy: { position: "asc" } },
         },
       })
     : null;
@@ -114,9 +114,9 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
               category: editableListing.category,
               condition: editableListing.condition,
               status: editableListing.status,
-              imageUrl: editableListing.photo
-                ? `/api/listings/${encodeURIComponent(editableListing.id)}/photo`
-                : null,
+              imageUrls: editableListing.photos.map(
+                ({ position }) => `/api/listings/${encodeURIComponent(editableListing.id)}/photo?position=${position}`,
+              ),
             }}
           />
         ) : editRequested && student ? (

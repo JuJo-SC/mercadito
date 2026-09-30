@@ -9,8 +9,8 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: "#faf9f4",
-    theme_color: "#18252d",
+    background_color: "#f5f5f7",
+    theme_color: "#f5f5f7",
     shortcuts: [
       {
         name: "Crear publicación",

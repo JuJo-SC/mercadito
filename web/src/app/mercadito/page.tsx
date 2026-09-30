@@ -27,7 +27,7 @@ export default async function MarketplacePage() {
     category: true,
     condition: true,
     imageUrl: true,
-    photo: { select: { listingId: true } },
+    photos: { select: { position: true }, orderBy: { position: "asc" as const } },
     isDemo: true,
     createdAt: true,
     seller: { select: { id: true, name: true } },
@@ -78,9 +78,9 @@ export default async function MarketplacePage() {
             currency: listing.currency,
             category: listing.category,
             condition: listing.condition,
-            imageUrl: listing.photo
-              ? "/api/listings/" + encodeURIComponent(listing.id) + "/photo"
-              : null,
+            imageUrls: listing.photos.map(
+              ({ position }) => `/api/listings/${encodeURIComponent(listing.id)}/photo?position=${position}`,
+            ),
             isDemo: listing.isDemo,
             createdAt: listing.createdAt.toISOString(),
             seller: listing.seller,

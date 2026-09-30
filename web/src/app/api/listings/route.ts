@@ -6,12 +6,16 @@ import { getActiveStudent } from "@/lib/require-student";
 import {
   ListingPhotoInputError,
   parseListingMultipart,
-  parseListingPhoto,
+  parseListingPhotos,
 } from "@/lib/listing-photo";
 
 export const runtime = "nodejs";
 
 const privateNoStore = { "Cache-Control": "private, no-store" };
+
+function listingPhotoUrl(id: string, position: number) {
+  return `/api/listings/${encodeURIComponent(id)}/photo?position=${position}`;
+}
 
 const createListingSchema = z.object({
   title: z.string().trim().min(4).max(90),
@@ -145,7 +149,7 @@ export async function GET(request: Request) {
       category: true,
       condition: true,
       imageUrl: true,
-      photo: { select: { listingId: true } },
+      photos: { select: { position: true }, orderBy: { position: "asc" } },
       isDemo: true,
       createdAt: true,
       seller: { select: { id: true, name: true } },
@@ -173,7 +177,7 @@ export async function GET(request: Request) {
       currency: listing.currency,
       category: listing.category,
       condition: listing.condition,
-      imageUrl: listing.photo ? "/api/listings/" + encodeURIComponent(listing.id) + "/photo" : null,
+      imageUrls: listing.photos.map(({ position }) => listingPhotoUrl(listing.id, position)),
       isDemo: listing.isDemo,
       createdAt: listing.createdAt,
       seller: listing.seller,
@@ -190,7 +194,7 @@ export async function POST(request: Request) {
   }
 
   let formData: FormData;
-  let photo: Awaited<ReturnType<typeof parseListingPhoto>>;
+  let photos: Awaited<ReturnType<typeof parseListingPhotos>>;
   try {
     formData = await parseListingMultipart(request);
     const rawPrice = formData.get("price");
@@ -210,14 +214,16 @@ export async function POST(request: Request) {
         { status: 400, headers: privateNoStore },
       );
     }
-    photo = await parseListingPhoto(formData);
+    photos = await parseListingPhotos(formData);
 
     const { publish, submissionId, ...content } = parsed.data;
-    const submissionHash = createHash("sha256")
-      .update(JSON.stringify({ ...content, publish }))
-      .update("\0")
-      .update(photo?.data ?? new Uint8Array())
-      .digest("hex");
+    const hash = createHash("sha256")
+      .update(JSON.stringify({ ...content, publish, photoCount: photos.length }))
+      .update("\0");
+    for (const photo of photos) {
+      hash.update(String(photo.position)).update("\0").update(photo.data);
+    }
+    const submissionHash = hash.digest("hex");
 
     const result = await prisma.$transaction(async (transaction) => {
       const createData = {
@@ -252,29 +258,38 @@ export async function POST(request: Request) {
               submissionId,
             },
           },
-          select: { ...select, submissionHash: true, photo: { select: { listingId: true } } },
+          select: {
+            ...select,
+            submissionHash: true,
+            photos: { select: { position: true }, orderBy: { position: "asc" } },
+          },
         });
         if (!stored) throw new Error("The listing submission could not be retrieved.");
 
-        const { submissionHash: storedHash, photo: storedPhoto, ...listing } = stored;
+        const { submissionHash: storedHash, photos: storedPhotos, ...listing } = stored;
         if (storedHash !== submissionHash) return { kind: "conflict" as const };
-        if (inserted.count === 0) return { kind: "replayed" as const, listing, hasPhoto: Boolean(storedPhoto) };
+        const imageUrls = storedPhotos.map(({ position }) => listingPhotoUrl(listing.id, position));
+        if (inserted.count === 0) return { kind: "replayed" as const, listing, imageUrls };
 
-        if (photo) {
-          await transaction.listingPhoto.create({
-            data: { listingId: listing.id, ...photo },
+        if (photos.length) {
+          await transaction.listingPhoto.createMany({
+            data: photos.map(({ position, ...photo }) => ({ listingId: listing.id, position, ...photo })),
           });
         }
-        return { kind: "created" as const, listing, hasPhoto: Boolean(photo) };
+        return { kind: "created" as const, listing, imageUrls };
       }
 
       const created = await transaction.listing.create({ data: createData, select });
-      if (photo) {
-        await transaction.listingPhoto.create({
-          data: { listingId: created.id, ...photo },
+      if (photos.length) {
+        await transaction.listingPhoto.createMany({
+          data: photos.map(({ position, ...photo }) => ({ listingId: created.id, position, ...photo })),
         });
       }
-      return { kind: "created" as const, listing: created, hasPhoto: Boolean(photo) };
+      return {
+        kind: "created" as const,
+        listing: created,
+        imageUrls: photos.map(({ position }) => listingPhotoUrl(created.id, position)),
+      };
     });
 
     if (result.kind === "conflict") {
@@ -289,9 +304,7 @@ export async function POST(request: Request) {
         listing: {
           ...result.listing,
           price: result.listing.price.toNumber(),
-          imageUrl: result.hasPhoto
-            ? "/api/listings/" + encodeURIComponent(result.listing.id) + "/photo"
-            : null,
+          imageUrls: result.imageUrls,
         },
       },
       {

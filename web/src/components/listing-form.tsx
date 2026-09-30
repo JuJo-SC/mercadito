@@ -2,6 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import {
+  MAX_LISTING_PHOTOS,
+  MAX_LISTING_PHOTO_BYTES,
+  MAX_TOTAL_LISTING_PHOTO_BYTES,
+} from "@/lib/listing-photo-limits";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -48,7 +53,7 @@ type EditableListing = {
   category: string;
   condition: string;
   status: "DRAFT" | "PUBLISHED" | "RESERVED" | "SOLD" | "ARCHIVED";
-  imageUrl: string | null;
+  imageUrls: string[];
 };
 
 const listingStatusLabels = {
@@ -107,25 +112,30 @@ export function ListingForm({
   const [error, setError] = useState("");
   const [submissionConflict, setSubmissionConflict] = useState(false);
   const [sent, setSent] = useState(false);
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [removePhoto, setRemovePhoto] = useState(false);
-  const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
-  const [publishedPhotoUrl, setPublishedPhotoUrl] = useState<string | null>(null);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [keptPhotoPositions, setKeptPhotoPositions] = useState<number[]>(() =>
+    listing?.imageUrls.map((_, position) => position) ?? [],
+  );
+  const [photoPreviewUrls, setPhotoPreviewUrls] = useState<string[]>([]);
+  const [publishedPhotoUrls, setPublishedPhotoUrls] = useState<string[] | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const submissionIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!photoFile) {
-      setPhotoPreviewUrl(null);
-      return;
-    }
-    const previewUrl = URL.createObjectURL(photoFile);
-    setPhotoPreviewUrl(previewUrl);
-    return () => URL.revokeObjectURL(previewUrl);
-  }, [photoFile]);
+    const previewUrls = photoFiles.map((file) => URL.createObjectURL(file));
+    setPhotoPreviewUrls(previewUrls);
+    return () => previewUrls.forEach((url) => URL.revokeObjectURL(url));
+  }, [photoFiles]);
 
-  const currentPhotoUrl = photoPreviewUrl ??
-    (removePhoto ? null : listing?.imageUrl ?? publishedPhotoUrl);
+  const storedPhotoUrls = listing?.imageUrls ?? publishedPhotoUrls ?? [];
+  const visibleStoredPhotos = storedPhotoUrls
+    .map((url, position) => ({ url, position }))
+    .filter(({ position }) => !listing || keptPhotoPositions.includes(position));
+  const currentPhotoUrls = [
+    ...visibleStoredPhotos.map(({ url }) => url),
+    ...photoPreviewUrls,
+  ];
 
   function updateDraft(field: keyof ListingDraft, value: string) {
     setDraft((current) => ({ ...current, [field]: value }));
@@ -205,8 +215,8 @@ export function ListingForm({
           // Keep the key in memory so a retry in this form remains idempotent.
         }
       }
-      if (photoFile) formData.set("photo", photoFile);
-      if (removePhoto) formData.set("removePhoto", "true");
+      if (listing) formData.set("keepPhotoPositions", JSON.stringify(keptPhotoPositions));
+      for (const photoFile of photoFiles) formData.append("photo", photoFile);
 
       const response = await fetch(
         listing ? `/api/listings/${encodeURIComponent(listing.id)}` : "/api/listings",
@@ -216,7 +226,7 @@ export function ListingForm({
         },
       );
       const result = (await response.json().catch(() => null)) as
-        | { error?: string; listing?: { imageUrl?: string | null } }
+        | { error?: string; listing?: { imageUrls?: string[] } }
         | null;
       if (!response.ok) {
         if (response.status === 409) setSubmissionConflict(true);
@@ -224,7 +234,7 @@ export function ListingForm({
           result?.error ?? "No pudimos guardar tu publicación. Revisa los datos e inténtalo de nuevo.",
         );
       }
-      if (result?.listing?.imageUrl) setPublishedPhotoUrl(result.listing.imageUrl);
+      if (result?.listing?.imageUrls) setPublishedPhotoUrls(result.listing.imageUrls);
       if (!editing && studentId) {
         try {
           sessionStorage.removeItem("mercadito:publish-attempt:" + studentId);
@@ -266,8 +276,9 @@ export function ListingForm({
     setError("");
     setSubmissionConflict(false);
     setSent(false);
-    setPhotoFile(null);
-    setRemovePhoto(false);
+    setPhotoFiles([]);
+    setKeptPhotoPositions([]);
+    setPublishedPhotoUrls(null);
   }
 
   const categoryLabel =
@@ -280,12 +291,17 @@ export function ListingForm({
   const preview = (
     <article className="product-preview" aria-label="Vista previa de la publicación">
       <div className="product-preview-media">
-        {currentPhotoUrl ? (
-          <img
-            className="product-preview-photo"
-            src={currentPhotoUrl}
-            alt={"Foto principal de " + (draft.title || "tu producto")}
-          />
+        {currentPhotoUrls[0] ? (
+          <>
+            <img
+              className="product-preview-photo"
+              src={currentPhotoUrls[0]}
+              alt={"Foto principal de " + (draft.title || "tu producto")}
+            />
+            {currentPhotoUrls.length > 1 ? (
+              <span className="product-preview-photo-count">{currentPhotoUrls.length} fotos</span>
+            ) : null}
+          </>
         ) : (
           <div className="product-preview-no-photo">
             <Camera aria-hidden="true" size={27} strokeWidth={1.5} />
@@ -486,52 +502,111 @@ export function ListingForm({
             </fieldset>
 
             <div className="listing-photo-field">
-              <label htmlFor="listing-photo">Foto principal <span>Opcional</span></label>
-              <p id="listing-photo-help">
-                Una foto clara ayuda a reconocer lo que ofreces. JPG, PNG o WebP; máximo 8 MB. Será la imagen principal en el catálogo.
-              </p>
-              {currentPhotoUrl ? (
-                <img
-                  className="listing-photo-preview"
-                  src={currentPhotoUrl}
-                  alt={`Foto principal de ${draft.title || "tu producto"}`}
-                />
+              <div className="listing-photo-heading">
+                <div>
+                  <label>Fotos del producto <span>Opcional</span></label>
+                  <p id="listing-photo-help">
+                    Agrega hasta 5 fotos JPG, PNG o WebP. Cada una puede pesar hasta 8 MB y juntas hasta 20 MB.
+                  </p>
+                </div>
+                <span className="listing-photo-count" aria-live="polite">
+                  {currentPhotoUrls.length} / {MAX_LISTING_PHOTOS}
+                </span>
+              </div>
+
+              {currentPhotoUrls.length ? (
+                <div className="listing-photo-thumbnails" aria-label="Fotos de la publicación">
+                  {visibleStoredPhotos.map(({ url, position }, index) => (
+                    <div className="listing-photo-thumb" key={`stored-${position}`}>
+                      <img
+                        src={url}
+                        alt={`Foto ${index + 1} de ${draft.title || "tu producto"}`}
+                      />
+                      <button
+                        className="listing-photo-remove"
+                        type="button"
+                        aria-label={`Quitar foto ${index + 1}`}
+                        onClick={() => setKeptPhotoPositions((current) =>
+                          current.filter((currentPosition) => currentPosition !== position),
+                        )}
+                      >
+                        <span aria-hidden="true">×</span>
+                      </button>
+                      {index === 0 ? <span className="listing-photo-primary">Principal</span> : null}
+                    </div>
+                  ))}
+                  {photoPreviewUrls.map((url, index) => (
+                    <div className="listing-photo-thumb" key={`${url}-${index}`}>
+                      <img
+                        src={url}
+                        alt={`Nueva foto ${index + 1} de ${draft.title || "tu producto"}`}
+                      />
+                      <button
+                        className="listing-photo-remove"
+                        type="button"
+                        aria-label={`Quitar foto ${visibleStoredPhotos.length + index + 1}`}
+                        onClick={() => setPhotoFiles((current) =>
+                          current.filter((_, currentIndex) => currentIndex !== index),
+                        )}
+                      >
+                        <span aria-hidden="true">×</span>
+                      </button>
+                      {visibleStoredPhotos.length + index === 0 ? (
+                        <span className="listing-photo-primary">Principal</span>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
               ) : null}
+
               <input
+                ref={photoInputRef}
                 className="listing-photo-input"
                 id="listing-photo"
                 name="photo"
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
-                aria-describedby="listing-photo-help"
+                multiple
+                aria-label="Elegir fotos del producto"
+                aria-describedby="listing-photo-help listing-photo-state"
                 onChange={(event) => {
-                  const selected = event.currentTarget.files?.[0] ?? null;
+                  const selected = Array.from(event.currentTarget.files ?? []);
                   event.currentTarget.value = "";
-                  if (!selected) return;
-                  if (selected.size > 8 * 1024 * 1024) {
-                    setError("La foto pesa más de 8 MB. Elige una imagen más ligera.");
+                  if (!selected.length) return;
+                  if (selected.some((file) => file.size > MAX_LISTING_PHOTO_BYTES)) {
+                    setError("Cada foto puede pesar hasta 8 MB. Elige archivos más ligeros.");
+                    return;
+                  }
+                  const remainingSlots = MAX_LISTING_PHOTOS - visibleStoredPhotos.length - photoFiles.length;
+                  if (selected.length > remainingSlots) {
+                    setError("Una publicación puede tener hasta 5 fotos. Quita alguna para agregar otras.");
+                    return;
+                  }
+                  const combinedBytes = [...photoFiles, ...selected]
+                    .reduce((sum, file) => sum + file.size, 0);
+                  if (combinedBytes > MAX_TOTAL_LISTING_PHOTO_BYTES) {
+                    setError("Las fotos pueden sumar hasta 20 MB. Elige archivos más ligeros.");
                     return;
                   }
                   setError("");
-                  setRemovePhoto(false);
-                  setPhotoFile(selected);
+                  setPhotoFiles((current) => [...current, ...selected]);
                 }}
               />
-              <span className="listing-photo-state" aria-live="polite">
-                {photoFile ? "Foto seleccionada: " + photoFile.name : currentPhotoUrl ? "Foto principal actual" : "Sin foto seleccionada"}
-              </span>
-              {currentPhotoUrl ? (
+              {currentPhotoUrls.length < MAX_LISTING_PHOTOS ? (
                 <button
-                  className="text-action listing-photo-remove"
+                  className="listing-photo-add"
                   type="button"
-                  onClick={() => {
-                    setPhotoFile(null);
-                    setRemovePhoto(true);
-                  }}
+                  onClick={() => photoInputRef.current?.click()}
                 >
-                  Quitar foto
+                  <Camera aria-hidden="true" size={18} strokeWidth={1.8} />
+                  {currentPhotoUrls.length ? "Agregar fotos" : "Elegir fotos"}
                 </button>
               ) : null}
+              <span className="listing-photo-state" id="listing-photo-state" aria-live="polite">
+                {currentPhotoUrls.length
+                  ? `${currentPhotoUrls.length} de ${MAX_LISTING_PHOTOS} fotos seleccionadas.`
+                  : "Sin fotos seleccionadas."}
+              </span>
             </div>
           </div>
         ) : null}

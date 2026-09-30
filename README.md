@@ -8,7 +8,7 @@ El MVP no procesa pagos. La comunidad coordina el intercambio directamente y las
 
 - Next.js App Router, React, TypeScript y Tailwind CSS.
 - PWA instalable desde el navegador, con un aviso estático ante fallos de conexión o disponibilidad; no almacena publicaciones ni conversaciones offline.
-- Cada publicación admite una foto opcional optimizada a WebP; la imagen solo se entrega a estudiantes autenticados del mismo campus.
+- Cada publicación admite hasta cinco fotos WebP optimizadas; cada archivo de entrada puede pesar hasta 8 MB y la carga total hasta 20 MB. Las imágenes solo se entregan a estudiantes autenticados del mismo campus.
 - Auth.js con Keycloak como intermediario OIDC para los proveedores institucionales.
 - PostgreSQL y Prisma ORM.
 - Docker Compose y Caddy para ejecución y HTTPS.

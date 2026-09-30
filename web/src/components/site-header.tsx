@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, LogOut } from "lucide-react";
+import { ArrowRight, LogOut, Store } from "lucide-react";
 import { signOut } from "@/auth";
 import { InstallButton } from "@/components/install-button";
 import {
@@ -35,10 +35,7 @@ export function SiteHeader({
         <div className="site-header-inner page-width">
           <Link className="brand-lockup" href="/" aria-label="Mercadito, inicio">
             <span className="brand-symbol" aria-hidden="true">
-              <span className="brand-symbol-head" />
-              <span className="brand-symbol-rule" />
-              <span className="brand-symbol-row" />
-              <span className="brand-symbol-dot" />
+              <Store aria-hidden="true" size={21} strokeWidth={1.9} />
             </span>
             <span className="brand-copy">
               <span className="brand-name">Mercadito</span>
