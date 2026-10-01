@@ -294,7 +294,7 @@ export function Marketplace({
     <section className="marketplace-section campus-marketplace page-width" id="productos">
       <header className="campus-marketplace-header">
         <div>
-          <h1>Mercadito de tu campus.</h1>
+          <h1>Mercadito</h1>
           <p className="campus-name">{university.name}</p>
         </div>
         <div className="campus-marketplace-actions">
@@ -315,213 +315,222 @@ export function Marketplace({
         </p>
       ) : null}
 
-      <div className="listing-heading">
-        <div>
-          <h2>Encuentra algo para tu día.</h2>
-          <p>
-            {total} {total === 1 ? "publicación" : "publicaciones"}
-          </p>
-        </div>
-      </div>
-
-      <form className="search-form" role="search" onSubmit={submitSearch}>
-        <label htmlFor="market-search">Buscar publicaciones</label>
-        <div className="search-row">
-          <div className="search-input-wrap">
-            <Search aria-hidden="true" size={19} strokeWidth={1.7} />
-            <input
-              id="market-search"
-              name="q"
-              type="search"
-              value={draftQuery}
-              onChange={(event) => setDraftQuery(event.target.value)}
-              placeholder="Comida, ropa, libros, tecnología…"
-              autoComplete="off"
-            />
-          </div>
-          <button className="search-submit" type="submit" disabled={loading}>
-            {loading ? "Buscando…" : "Buscar"}
-          </button>
-        </div>
-      </form>
-
-      <div className="marketplace-filters">
-        <div className="category-tabs" role="group" aria-label="Filtrar por categoría">
-          {categories.map((item) => (
-            <button
-              className={category === item.id ? "category-tab is-selected" : "category-tab"}
-              key={item.id}
-              type="button"
-              aria-pressed={category === item.id}
-              onClick={() => selectCategory(item.id)}
-              disabled={loading}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-        <div className="sort-controls" role="group" aria-label="Ordenar publicaciones">
-          <span>Ordenar</span>
-          <button
-            className={sortMode === "INTEREST" ? "sort-button is-selected" : "sort-button"}
-            type="button"
-            aria-pressed={sortMode === "INTEREST"}
-            onClick={() => selectSort("INTEREST")}
-            disabled={loading || !hasInterestSignals}
-          >
-            Con más interés
-          </button>
-          <button
-            className={sortMode === "RECENT" ? "sort-button is-selected" : "sort-button"}
-            type="button"
-            aria-pressed={sortMode === "RECENT"}
-            onClick={() => selectSort("RECENT")}
-            disabled={loading}
-          >
-            Más recientes
-          </button>
-        </div>
-      </div>
-
-      <p className="sort-context" aria-live="polite">
-        {sortMode === "INTEREST"
-          ? "Ordenados por conversaciones iniciadas; el contenido de los mensajes no se muestra."
-          : hasInterestSignals
-            ? "Ordenados por fecha de publicación."
-            : "Aún no hay suficiente actividad para marcar tendencias; mostramos lo más reciente."}
-      </p>
-
-      {error ? (
-        <div className="result-message result-error" role="alert">
-          <p>{error}</p>
-          <button
-            type="button"
-            className="text-action"
-            onClick={() => void loadListings(query, category, sortMode)}
-          >
-            Intentar de nuevo
-            <ArrowRight aria-hidden="true" size={16} />
-          </button>
-        </div>
-      ) : loading ? (
-        <div className="result-message" aria-live="polite">
-          <span className="loading-rule" />
-          <p>Buscando publicaciones…</p>
-        </div>
-      ) : listings.length ? (
-        <>
-          <div className="product-grid" aria-live="polite">
-            {listings.map((listing) => (
-              <button
-                className="product-card"
-                key={listing.id}
-                type="button"
-                aria-haspopup="dialog"
-                aria-label={`Ver publicación: ${listing.title}, ${formatPrice(listing.price, listing.currency)}`}
-                onClick={() => openListing(listing)}
-              >
-                <span className="product-card-media">
-                  {listing.imageUrls[0] ? (
-                    <img
-                      className="product-card-image"
-                      src={listing.imageUrls[0]}
-                      alt={"Foto de " + listing.title}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ) : (
-                    <span className="product-card-no-image">
-                      <Camera aria-hidden="true" size={28} strokeWidth={1.6} />
-                      <span>Sin foto</span>
-                    </span>
-                  )}
-                  {listing.imageUrls.length ? (
-                    <span className="product-card-photo-count">
-                      <Camera aria-hidden="true" size={13} strokeWidth={2} />
-                      {listing.imageUrls.length} {listing.imageUrls.length === 1 ? "foto" : "fotos"}
-                    </span>
-                  ) : null}
-                  {listing.isDemo ? (
-                    <span className="product-card-demo">Ejemplo</span>
-                  ) : null}
-                </span>
-                <span className="product-card-copy">
-                  <span className="product-card-meta">
-                    <span className="product-card-category">
-                      {categoryNames[listing.category] ?? "Otros"}
-                    </span>
-                    <span className="product-card-separator" aria-hidden="true">·</span>
-                    <span className="product-card-condition">
-                      {conditionNames[listing.condition] ?? "Condición no indicada"}
-                    </span>
-                  </span>
-                  <span className="product-card-title">{listing.title}</span>
-                  <span className="product-card-price">
-                    {formatPrice(listing.price, listing.currency)}
-                  </span>
-                  <span className="product-card-seller">
-                    Por {listing.seller.name ?? "Estudiante"}
-                  </span>
-                  <span className="product-card-disclosure">
-                    Ver detalles
-                    <ArrowRight aria-hidden="true" size={16} strokeWidth={1.8} />
-                  </span>
-                </span>
-              </button>
-            ))}
-          </div>
-          {hasMore ? (
-            <div className="product-pagination" aria-busy={loadingMore}>
-              <p className="product-pagination-count" aria-live="polite" aria-atomic="true">
-                Mostrando {listings.length} de {total} publicaciones
-              </p>
-              <button
-                className="button-ink"
-                type="button"
-                onClick={loadMoreListings}
-                disabled={loadingMore || !nextCursor}
-              >
-                {loadingMore ? "Cargando…" : "Cargar más publicaciones"}
-                <ArrowDown aria-hidden="true" size={17} strokeWidth={1.8} />
+      <div className="marketplace-layout">
+        <aside className="marketplace-sidebar" aria-label="Buscar y filtrar publicaciones">
+          <form className="search-form" role="search" onSubmit={submitSearch}>
+            <label htmlFor="market-search">Buscar publicaciones</label>
+            <div className="search-row">
+              <div className="search-input-wrap">
+                <Search aria-hidden="true" size={19} strokeWidth={1.7} />
+                <input
+                  id="market-search"
+                  name="q"
+                  type="search"
+                  value={draftQuery}
+                  onChange={(event) => setDraftQuery(event.target.value)}
+                  placeholder="Comida, ropa, libros, tecnología…"
+                  autoComplete="off"
+                />
+              </div>
+              <button className="search-submit" type="submit" disabled={loading}>
+                {loading ? "Buscando…" : "Buscar"}
               </button>
             </div>
-          ) : null}
-          {loadMoreError ? (
+          </form>
+
+          <div className="marketplace-filters">
+            <div className="marketplace-category-section">
+              <h2 className="marketplace-sidebar-heading">Categorías</h2>
+              <div className="category-tabs" role="group" aria-label="Filtrar por categoría">
+                {categories.map((item) => (
+                  <button
+                    className={category === item.id ? "category-tab is-selected" : "category-tab"}
+                    key={item.id}
+                    type="button"
+                    aria-pressed={category === item.id}
+                    onClick={() => selectCategory(item.id)}
+                    disabled={loading}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="sort-controls" role="group" aria-label="Ordenar publicaciones">
+              <span>Ordenar</span>
+              <button
+                className={sortMode === "INTEREST" ? "sort-button is-selected" : "sort-button"}
+                type="button"
+                aria-pressed={sortMode === "INTEREST"}
+                onClick={() => selectSort("INTEREST")}
+                disabled={loading || !hasInterestSignals}
+              >
+                Con más interés
+              </button>
+              <button
+                className={sortMode === "RECENT" ? "sort-button is-selected" : "sort-button"}
+                type="button"
+                aria-pressed={sortMode === "RECENT"}
+                onClick={() => selectSort("RECENT")}
+                disabled={loading}
+              >
+                Más recientes
+              </button>
+            </div>
+          </div>
+
+          <p className="sort-context" aria-live="polite">
+            {sortMode === "INTEREST"
+              ? "Ordenados por conversaciones iniciadas; el contenido de los mensajes no se muestra."
+              : hasInterestSignals
+                ? "Ordenados por fecha de publicación."
+                : "Aún no hay suficiente actividad para marcar tendencias; mostramos lo más reciente."}
+          </p>
+        </aside>
+        <div className="marketplace-results">
+          <div className="listing-heading">
+            <div>
+              <h2>Encuentra algo para tu día.</h2>
+              <p>
+                {total} {total === 1 ? "publicación" : "publicaciones"}
+              </p>
+            </div>
+          </div>
+
+          {error ? (
             <div className="result-message result-error" role="alert">
-              <p>{loadMoreError}</p>
+              <p>{error}</p>
               <button
                 type="button"
                 className="text-action"
-                onClick={loadMoreListings}
+                onClick={() => void loadListings(query, category, sortMode)}
               >
                 Intentar de nuevo
                 <ArrowRight aria-hidden="true" size={16} />
               </button>
             </div>
-          ) : null}
-        </>
-      ) : (
-        <div className="result-message empty-message" role="status">
-          <p>
-            {hasActiveFilters
-              ? "No encontramos publicaciones con esos filtros."
-              : "Todavía no hay publicaciones en este campus."}
-          </p>
-          <div className="empty-message-actions">
-            {hasActiveFilters ? (
-              <button type="button" className="text-action" onClick={clearFilters}>
-                Quitar filtros
-                <ArrowRight aria-hidden="true" size={16} />
-              </button>
-            ) : (
-              <Link className="text-action" href="/publicar">
-                Crear la primera publicación
-                <ArrowRight aria-hidden="true" size={16} />
-              </Link>
-            )}
-          </div>
+          ) : loading ? (
+            <div className="result-message" aria-live="polite">
+              <span className="loading-rule" />
+              <p>Buscando publicaciones…</p>
+            </div>
+          ) : listings.length ? (
+            <>
+              <div className="product-grid" aria-live="polite">
+                {listings.map((listing) => (
+                  <button
+                    className="product-card"
+                    key={listing.id}
+                    type="button"
+                    aria-haspopup="dialog"
+                    aria-label={`Ver publicación: ${listing.title}, ${formatPrice(listing.price, listing.currency)}`}
+                    onClick={() => openListing(listing)}
+                  >
+                    <span className="product-card-media">
+                      {listing.imageUrls[0] ? (
+                        <img
+                          className="product-card-image"
+                          src={listing.imageUrls[0]}
+                          alt={"Foto de " + listing.title}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <span className="product-card-no-image">
+                          <Camera aria-hidden="true" size={28} strokeWidth={1.6} />
+                          <span>Sin foto</span>
+                        </span>
+                      )}
+                      {listing.imageUrls.length ? (
+                        <span className="product-card-photo-count">
+                          <Camera aria-hidden="true" size={13} strokeWidth={2} />
+                          {listing.imageUrls.length} {listing.imageUrls.length === 1 ? "foto" : "fotos"}
+                        </span>
+                      ) : null}
+                      {listing.isDemo ? (
+                        <span className="product-card-demo">Ejemplo</span>
+                      ) : null}
+                    </span>
+                    <span className="product-card-copy">
+                      <span className="product-card-meta">
+                        <span className="product-card-category">
+                          {categoryNames[listing.category] ?? "Otros"}
+                        </span>
+                        <span className="product-card-separator" aria-hidden="true">·</span>
+                        <span className="product-card-condition">
+                          {conditionNames[listing.condition] ?? "Condición no indicada"}
+                        </span>
+                      </span>
+                      <span className="product-card-title">{listing.title}</span>
+                      <span className="product-card-price">
+                        {formatPrice(listing.price, listing.currency)}
+                      </span>
+                      <span className="product-card-seller">
+                        Por {listing.seller.name ?? "Estudiante"}
+                      </span>
+                      <span className="product-card-disclosure">
+                        Ver detalles
+                        <ArrowRight aria-hidden="true" size={16} strokeWidth={1.8} />
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+              {hasMore ? (
+                <div className="product-pagination" aria-busy={loadingMore}>
+                  <p className="product-pagination-count" aria-live="polite" aria-atomic="true">
+                    Mostrando {listings.length} de {total} publicaciones
+                  </p>
+                  <button
+                    className="button-ink"
+                    type="button"
+                    onClick={loadMoreListings}
+                    disabled={loadingMore || !nextCursor}
+                  >
+                    {loadingMore ? "Cargando…" : "Cargar más publicaciones"}
+                    <ArrowDown aria-hidden="true" size={17} strokeWidth={1.8} />
+                  </button>
+                </div>
+              ) : null}
+              {loadMoreError ? (
+                <div className="result-message result-error" role="alert">
+                  <p>{loadMoreError}</p>
+                  <button
+                    type="button"
+                    className="text-action"
+                    onClick={loadMoreListings}
+                  >
+                    Intentar de nuevo
+                    <ArrowRight aria-hidden="true" size={16} />
+                  </button>
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <div className="result-message empty-message" role="status">
+              <p>
+                {hasActiveFilters
+                  ? "No encontramos publicaciones con esos filtros."
+                  : "Todavía no hay publicaciones en este campus."}
+              </p>
+              <div className="empty-message-actions">
+                {hasActiveFilters ? (
+                  <button type="button" className="text-action" onClick={clearFilters}>
+                    Quitar filtros
+                    <ArrowRight aria-hidden="true" size={16} />
+                  </button>
+                ) : (
+                  <Link className="text-action" href="/publicar">
+                    Crear la primera publicación
+                    <ArrowRight aria-hidden="true" size={16} />
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
+
         </div>
-      )}
+      </div>
 
       <dialog
         ref={detailDialogRef}
