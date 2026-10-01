@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Search,
+  Store,
   X,
 } from "lucide-react";
 
@@ -309,14 +310,31 @@ export function Marketplace({
       </header>
 
       {university.isTest ? (
-        <p className="demo-banner campus-test-banner" role="note">
+        <p className="demo-banner campus-test-banner campus-test-banner-top" role="note">
           <span className="demo-mark" aria-hidden="true">P</span>
           UMAN es un campus de prueba. Recorre publicaciones de ejemplo mientras conoces el mercadito.
         </p>
       ) : null}
 
       <div className="marketplace-layout">
-        <aside className="marketplace-sidebar" aria-label="Buscar y filtrar publicaciones">
+        <aside className="marketplace-sidebar" aria-label="Mercadito, campus y filtros">
+          <div className="marketplace-sidebar-identity">
+            <h1 className="marketplace-sidebar-title">
+              <Link className="brand-lockup marketplace-sidebar-brand" href="/" aria-label="Mercadito, inicio">
+                <span className="brand-symbol" aria-hidden="true">
+                  <Store aria-hidden="true" size={21} strokeWidth={1.9} />
+                </span>
+                <span className="brand-name">Mercadito</span>
+              </Link>
+            </h1>
+            <p className="campus-name">{university.name}</p>
+          </div>
+          {university.isTest ? (
+            <p className="demo-banner campus-test-banner campus-test-banner-sidebar" role="note">
+              <span className="demo-mark" aria-hidden="true">P</span>
+              UMAN es un campus de prueba. Recorre publicaciones de ejemplo mientras conoces el mercadito.
+            </p>
+          ) : null}
           <form className="search-form" role="search" onSubmit={submitSearch}>
             <label htmlFor="market-search">Buscar publicaciones</label>
             <div className="search-row">
@@ -386,6 +404,15 @@ export function Marketplace({
                 ? "Ordenados por fecha de publicación."
                 : "Aún no hay suficiente actividad para marcar tendencias; mostramos lo más reciente."}
           </p>
+          <div className="marketplace-sidebar-publish">
+            <Link className="button-ink" href="/publicar">
+              Publicar un producto
+              <ArrowUpRight aria-hidden="true" size={17} strokeWidth={1.8} />
+            </Link>
+            <p className="marketplace-sidebar-disclosure">
+              Pregunta por chat. La entrega y cualquier pago se acuerdan fuera de Mercadito.
+            </p>
+          </div>
         </aside>
         <div className="marketplace-results">
           <div className="listing-heading">

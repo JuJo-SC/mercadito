@@ -5915,3 +5915,136 @@ select {
     font-size: 0.78rem;
   }
 }
+
+
+/* Ajuste de escritorio: identidad y acciones viven junto a los filtros. */
+.marketplace-sidebar-identity,
+.campus-test-banner-sidebar,
+.marketplace-sidebar-publish {
+  display: none;
+}
+
+@media (min-width: 1021px) {
+  body:has(.campus-marketplace) .site-header-inner {
+    width: min(calc(100% - clamp(2rem, 4vw, 4rem)), 112rem);
+    min-height: 76px;
+  }
+
+  body:has(.campus-marketplace) .site-header .brand-lockup {
+    display: none;
+  }
+
+  .campus-marketplace.page-width {
+    width: min(calc(100% - clamp(2rem, 4vw, 4rem)), 112rem);
+  }
+
+  .campus-marketplace {
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+
+  .campus-marketplace-header,
+  .campus-marketplace > .campus-test-banner-top {
+    display: none;
+  }
+
+  .marketplace-layout {
+    grid-template-columns: minmax(248px, 280px) minmax(0, 1fr);
+    gap: clamp(1.5rem, 2vw, 2rem);
+  }
+
+  .marketplace-sidebar {
+    gap: 0.95rem;
+    padding: 1.05rem;
+  }
+
+  .marketplace-sidebar-identity {
+    display: grid;
+    gap: 0.55rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .marketplace-sidebar-title {
+    margin: 0;
+    font-size: inherit;
+    line-height: 1;
+  }
+
+  .marketplace-sidebar-brand {
+    gap: 0.7rem;
+  }
+
+  .marketplace-sidebar-brand .brand-symbol {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 11px;
+  }
+
+  .marketplace-sidebar-brand .brand-name {
+    font-size: 1.5rem;
+  }
+
+  .marketplace-sidebar .campus-name {
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+
+  .marketplace-sidebar .campus-test-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.7rem;
+    border-radius: 12px;
+    background: var(--signal-soft);
+    color: var(--ink);
+    font-size: 0.74rem;
+    line-height: 1.4;
+  }
+
+  .marketplace-sidebar .demo-mark {
+    width: 21px;
+    height: 21px;
+    border-color: rgba(22, 125, 98, 0.35);
+    color: var(--signal);
+  }
+
+  .marketplace-sidebar-publish {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 0.3rem;
+    padding-top: 0.95rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .marketplace-sidebar-publish .button-ink {
+    width: 100%;
+    min-height: 46px;
+    justify-content: center;
+  }
+
+  .marketplace-sidebar-disclosure {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.45;
+  }
+
+  .marketplace-results .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1.25rem 1rem;
+    margin-top: 0.8rem;
+  }
+}
+
+@media (max-width: 1020px) {
+  .marketplace-sidebar-identity,
+  .campus-test-banner-sidebar,
+  .marketplace-sidebar-publish {
+    display: none;
+  }
+}
