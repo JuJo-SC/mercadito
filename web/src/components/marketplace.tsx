@@ -10,7 +10,6 @@ import {
   ArrowRight,
 
   Camera,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Search,
@@ -116,6 +115,29 @@ export function Marketplace({
   const [loadMoreError, setLoadMoreError] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const filterToggleRef = useRef<HTMLButtonElement>(null);
+  const filterDialogRef = useRef<HTMLDialogElement>(null);
+  const showFilterResults = useRef(false);
+  const [mobileFilters, setMobileFilters] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 760px)");
+    const update = () => {
+      setMobileFilters(media.matches);
+      if (!media.matches) {
+        filterDialogRef.current?.close();
+        setFiltersOpen(false);
+      }
+    };
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    const dialog = filterDialogRef.current;
+    if (mobileFilters && filtersOpen && dialog && !dialog.open) dialog.showModal();
+    if (!filtersOpen && dialog?.open) dialog.close();
+  }, [filtersOpen, mobileFilters]);
   const [draftQuery, setDraftQuery] = useState("");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("ALL");
@@ -129,7 +151,7 @@ export function Marketplace({
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
 
   useEffect(() => {
-    if (!selectedListing) return;
+    if (!selectedListing && !filtersOpen) return;
 
     const root = document.documentElement;
     const body = document.body;
@@ -166,10 +188,12 @@ export function Marketplace({
       body.style.right = previous.bodyRight;
       body.style.width = previous.bodyWidth;
       body.style.paddingRight = previous.bodyPaddingRight;
-      window.scrollTo(0, scrollY);
+      window.scrollTo(0, showFilterResults.current ? 0 : scrollY);
+      showFilterResults.current = false;
+      if (filtersOpen) filterToggleRef.current?.focus({ preventScroll: true });
       root.style.scrollBehavior = previous.rootScrollBehavior;
     };
-  }, [selectedListing]);
+  }, [selectedListing, filtersOpen]);
 
   async function loadListings(
     nextQuery: string,
@@ -249,19 +273,16 @@ export function Marketplace({
     }
   }
 
-  function closeFilters() {
+  function closeFilters(revealResults = false) {
+    showFilterResults.current = filtersOpen && revealResults;
     setFiltersOpen(false);
-    if (window.matchMedia("(max-width: 760px)").matches) {
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-      filterToggleRef.current?.focus({ preventScroll: true });
-    }
   }
 
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setQuery(draftQuery);
     void loadListings(draftQuery, category, sortMode);
-    closeFilters();
+    closeFilters(true);
   }
 
   function selectCategory(nextCategory: string) {
@@ -304,6 +325,100 @@ export function Marketplace({
   const activeFilterCount = Number(Boolean(query.trim())) + Number(category !== "ALL");
   const hasActiveFilters = activeFilterCount > 0;
 
+  const filterContent = (
+    <>
+      {university.isTest ? (
+        <p className="demo-banner campus-test-banner campus-test-banner-sidebar" role="note">
+          <span className="demo-mark" aria-hidden="true">P</span>
+          UMAN es un campus de prueba. Recorre publicaciones de ejemplo mientras conoces el mercadito.
+        </p>
+      ) : null}
+      <form className="search-form" role="search" onSubmit={submitSearch}>
+        <label htmlFor="market-search">Buscar publicaciones</label>
+        <div className="search-row">
+          <div className="search-input-wrap">
+            <Search aria-hidden="true" size={19} strokeWidth={1.7} />
+            <input
+              id="market-search"
+              name="q"
+              type="search"
+              value={draftQuery}
+              onChange={(event) => setDraftQuery(event.target.value)}
+              placeholder="Comida, ropa, libros, tecnología…"
+              autoComplete="off"
+            />
+          </div>
+          <button className="search-submit" type="submit" disabled={loading}>
+            {loading ? "Buscando…" : "Buscar"}
+          </button>
+        </div>
+      </form>
+
+      <div className="marketplace-filters">
+        <div className="marketplace-category-section">
+          <h2 className="marketplace-sidebar-heading">Categorías</h2>
+          <div className="category-tabs" role="group" aria-label="Filtrar por categoría">
+            {categories.map((item) => (
+              <button
+                className={category === item.id ? "category-tab is-selected" : "category-tab"}
+                key={item.id}
+                type="button"
+                aria-pressed={category === item.id}
+                onClick={() => selectCategory(item.id)}
+                disabled={loading}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="sort-controls" role="group" aria-label="Ordenar publicaciones">
+          <span>Ordenar</span>
+          <button
+            className={sortMode === "INTEREST" ? "sort-button is-selected" : "sort-button"}
+            type="button"
+            aria-pressed={sortMode === "INTEREST"}
+            onClick={() => selectSort("INTEREST")}
+            disabled={loading || !hasInterestSignals}
+          >
+            Con más interés
+          </button>
+          <button
+            className={sortMode === "RECENT" ? "sort-button is-selected" : "sort-button"}
+            type="button"
+            aria-pressed={sortMode === "RECENT"}
+            onClick={() => selectSort("RECENT")}
+            disabled={loading}
+          >
+            Más recientes
+          </button>
+        </div>
+      </div>
+
+      <p className="sort-context" aria-live="polite">
+        {sortMode === "INTEREST"
+          ? "Ordenados por conversaciones iniciadas; el contenido de los mensajes no se muestra."
+          : hasInterestSignals
+            ? "Ordenados por fecha de publicación."
+            : "Aún no hay suficiente actividad para marcar tendencias; mostramos lo más reciente."}
+      </p>
+      <p className="marketplace-sidebar-disclosure">
+        Pregunta por chat. La entrega y cualquier pago se acuerdan fuera de Mercadito.
+      </p>
+      <div className="marketplace-filter-actions">
+        {hasActiveFilters ? (
+          <button className="marketplace-filter-reset" type="button" onClick={clearFilters} disabled={loading}>
+            Limpiar filtros
+          </button>
+        ) : null}
+        <button className="marketplace-filter-done" type="button" onClick={() => closeFilters(true)}>
+          Ver productos
+          <ArrowRight aria-hidden="true" size={16} />
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <section className="marketplace-section campus-marketplace page-width" id="productos">
 
@@ -315,132 +430,50 @@ export function Marketplace({
       ) : null}
 
       <div className="marketplace-layout">
-        <aside
-          className="marketplace-sidebar"
-          aria-label="Filtros de publicaciones"
-          onKeyDown={(event) => {
-            if (event.key === "Escape" && filtersOpen) {
-              event.preventDefault();
-              closeFilters();
-            }
-          }}
-        >
+        <aside className="marketplace-sidebar" aria-label="Filtros de publicaciones">
           <button
             className="marketplace-filter-toggle"
             ref={filterToggleRef}
             type="button"
+            aria-label="Buscar y filtrar"
+            aria-haspopup="dialog"
             aria-expanded={filtersOpen}
             aria-controls="marketplace-filter-panel"
-            onClick={() => {
-              if (filtersOpen) closeFilters();
-              else setFiltersOpen(true);
-            }}
+            onClick={() => setFiltersOpen(true)}
           >
             <Search aria-hidden="true" size={19} strokeWidth={1.7} />
-            <span>Buscar y filtrar</span>
+            <span>Filtros</span>
             {activeFilterCount > 0 ? (
               <span className="marketplace-filter-count" aria-label={activeFilterCount + " filtros activos"}>
                 {activeFilterCount}
               </span>
             ) : null}
-            <ChevronDown className="marketplace-filter-chevron" aria-hidden="true" size={19} strokeWidth={1.7} />
           </button>
-          <div
-            className={"marketplace-filter-panel" + (filtersOpen ? " is-open" : "")}
-            id="marketplace-filter-panel"
-            role="region"
-            aria-label="Buscar y filtrar publicaciones"
-          >
-            {university.isTest ? (
-              <p className="demo-banner campus-test-banner campus-test-banner-sidebar" role="note">
-                <span className="demo-mark" aria-hidden="true">P</span>
-                UMAN es un campus de prueba. Recorre publicaciones de ejemplo mientras conoces el mercadito.
-              </p>
-            ) : null}
-            <form className="search-form" role="search" onSubmit={submitSearch}>
-              <label htmlFor="market-search">Buscar publicaciones</label>
-              <div className="search-row">
-                <div className="search-input-wrap">
-                  <Search aria-hidden="true" size={19} strokeWidth={1.7} />
-                  <input
-                    id="market-search"
-                    name="q"
-                    type="search"
-                    value={draftQuery}
-                    onChange={(event) => setDraftQuery(event.target.value)}
-                    placeholder="Comida, ropa, libros, tecnología…"
-                    autoComplete="off"
-                  />
+          {mobileFilters ? (
+            <dialog
+              ref={filterDialogRef}
+              className="marketplace-filter-panel marketplace-filter-drawer"
+              id="marketplace-filter-panel"
+              aria-labelledby="marketplace-filter-title"
+              onCancel={(event) => { event.preventDefault(); closeFilters(); }}
+              onClose={() => setFiltersOpen(false)}
+              onClick={(event) => { if (event.target === event.currentTarget) closeFilters(); }}
+            >
+              <div className="marketplace-filter-drawer-content">
+                <div className="marketplace-filter-header">
+                  <h2 id="marketplace-filter-title">Buscar y filtrar</h2>
+                  <button type="button" aria-label="Cerrar filtros" onClick={() => closeFilters()} autoFocus>
+                    <X aria-hidden="true" size={21} strokeWidth={1.7} />
+                  </button>
                 </div>
-                <button className="search-submit" type="submit" disabled={loading}>
-                  {loading ? "Buscando…" : "Buscar"}
-                </button>
+                {filterContent}
               </div>
-            </form>
-
-            <div className="marketplace-filters">
-              <div className="marketplace-category-section">
-                <h2 className="marketplace-sidebar-heading">Categorías</h2>
-                <div className="category-tabs" role="group" aria-label="Filtrar por categoría">
-                  {categories.map((item) => (
-                    <button
-                      className={category === item.id ? "category-tab is-selected" : "category-tab"}
-                      key={item.id}
-                      type="button"
-                      aria-pressed={category === item.id}
-                      onClick={() => selectCategory(item.id)}
-                      disabled={loading}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="sort-controls" role="group" aria-label="Ordenar publicaciones">
-                <span>Ordenar</span>
-                <button
-                  className={sortMode === "INTEREST" ? "sort-button is-selected" : "sort-button"}
-                  type="button"
-                  aria-pressed={sortMode === "INTEREST"}
-                  onClick={() => selectSort("INTEREST")}
-                  disabled={loading || !hasInterestSignals}
-                >
-                  Con más interés
-                </button>
-                <button
-                  className={sortMode === "RECENT" ? "sort-button is-selected" : "sort-button"}
-                  type="button"
-                  aria-pressed={sortMode === "RECENT"}
-                  onClick={() => selectSort("RECENT")}
-                  disabled={loading}
-                >
-                  Más recientes
-                </button>
-              </div>
+            </dialog>
+          ) : (
+            <div className="marketplace-filter-panel" id="marketplace-filter-panel" role="region" aria-label="Buscar y filtrar publicaciones">
+              {filterContent}
             </div>
-
-            <p className="sort-context" aria-live="polite">
-              {sortMode === "INTEREST"
-                ? "Ordenados por conversaciones iniciadas; el contenido de los mensajes no se muestra."
-                : hasInterestSignals
-                  ? "Ordenados por fecha de publicación."
-                  : "Aún no hay suficiente actividad para marcar tendencias; mostramos lo más reciente."}
-            </p>
-            <p className="marketplace-sidebar-disclosure">
-              Pregunta por chat. La entrega y cualquier pago se acuerdan fuera de Mercadito.
-            </p>
-            <div className="marketplace-filter-actions">
-              {hasActiveFilters ? (
-                <button className="marketplace-filter-reset" type="button" onClick={clearFilters} disabled={loading}>
-                  Limpiar filtros
-                </button>
-              ) : null}
-              <button className="marketplace-filter-done" type="button" onClick={closeFilters}>
-                Ver productos
-                <ArrowRight aria-hidden="true" size={16} />
-              </button>
-            </div>
-          </div>
+          )}
         </aside>
         <div className="marketplace-results">
           <div className="listing-heading">
