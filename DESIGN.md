@@ -113,6 +113,8 @@ La pila del sistema usa SF Pro en dispositivos Apple y sus equivalentes nativos 
 
 La portada pública explica el servicio y no muestra anuncios. El portal autenticado muestra el nombre del campus, la acción para publicar, el aviso de campus de prueba, búsqueda, filtros, orden y catálogo.
 
+En móvil, un botón de «Buscar y filtrar» abre una cortina desplegable por encima de los productos. Empieza cerrada y reúne búsqueda, categorías, orden y los avisos completos. Al enviar una búsqueda o elegir «Ver productos», se cierra conservando las selecciones y vuelve al inicio del catálogo. Un contador indica filtros activos, y se pueden limpiar desde la cortina. Escape la cierra y devuelve el foco al botón. El catálogo muestra una indicación breve de campus de prueba junto al total. En escritorio, los controles permanecen en la barra lateral.
+
 Las tarjetas forman tres columnas amplias, dos en tablet y dos compactas en móvil. La primera foto usa carga diferida; el contador solo aparece cuando existe una imagen. Fotos, precio, condición y estado permanecen legibles con texto.
 
 Al seleccionar una publicación, el navegador abre un `<dialog>` modal centrado. Escritorio reparte fotos y datos en dos columnas. Móvil presenta una hoja a pantalla completa, con la galería arriba y los datos desplazables debajo. Escape, botón de cierre, flechas y puntos permiten salir y recorrer las fotos. La ficha informa título, precio, categoría, condición, descripción, campus, vendedor y fecha; las publicaciones ficticias mantienen su etiqueta.

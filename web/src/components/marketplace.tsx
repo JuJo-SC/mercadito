@@ -10,6 +10,7 @@ import {
   ArrowRight,
 
   Camera,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Search,
@@ -113,6 +114,8 @@ export function Marketplace({
   const [nextCursor, setNextCursor] = useState(initialListings.at(-1)?.id ?? null);
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filterToggleRef = useRef<HTMLButtonElement>(null);
   const [draftQuery, setDraftQuery] = useState("");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("ALL");
@@ -246,10 +249,19 @@ export function Marketplace({
     }
   }
 
+  function closeFilters() {
+    setFiltersOpen(false);
+    if (window.matchMedia("(max-width: 760px)").matches) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      filterToggleRef.current?.focus({ preventScroll: true });
+    }
+  }
+
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setQuery(draftQuery);
     void loadListings(draftQuery, category, sortMode);
+    closeFilters();
   }
 
   function selectCategory(nextCategory: string) {
@@ -289,7 +301,8 @@ export function Marketplace({
     );
   }
 
-  const hasActiveFilters = Boolean(query.trim()) || category !== "ALL";
+  const activeFilterCount = Number(Boolean(query.trim())) + Number(category !== "ALL");
+  const hasActiveFilters = activeFilterCount > 0;
 
   return (
     <section className="marketplace-section campus-marketplace page-width" id="productos">
@@ -302,93 +315,140 @@ export function Marketplace({
       ) : null}
 
       <div className="marketplace-layout">
-        <aside className="marketplace-sidebar" aria-label="Filtros de publicaciones">
+        <aside
+          className="marketplace-sidebar"
+          aria-label="Filtros de publicaciones"
+          onKeyDown={(event) => {
+            if (event.key === "Escape" && filtersOpen) {
+              event.preventDefault();
+              closeFilters();
+            }
+          }}
+        >
+          <button
+            className="marketplace-filter-toggle"
+            ref={filterToggleRef}
+            type="button"
+            aria-expanded={filtersOpen}
+            aria-controls="marketplace-filter-panel"
+            onClick={() => {
+              if (filtersOpen) closeFilters();
+              else setFiltersOpen(true);
+            }}
+          >
+            <Search aria-hidden="true" size={19} strokeWidth={1.7} />
+            <span>Buscar y filtrar</span>
+            {activeFilterCount > 0 ? (
+              <span className="marketplace-filter-count" aria-label={activeFilterCount + " filtros activos"}>
+                {activeFilterCount}
+              </span>
+            ) : null}
+            <ChevronDown className="marketplace-filter-chevron" aria-hidden="true" size={19} strokeWidth={1.7} />
+          </button>
+          <div
+            className={"marketplace-filter-panel" + (filtersOpen ? " is-open" : "")}
+            id="marketplace-filter-panel"
+            role="region"
+            aria-label="Buscar y filtrar publicaciones"
+          >
+            {university.isTest ? (
+              <p className="demo-banner campus-test-banner campus-test-banner-sidebar" role="note">
+                <span className="demo-mark" aria-hidden="true">P</span>
+                UMAN es un campus de prueba. Recorre publicaciones de ejemplo mientras conoces el mercadito.
+              </p>
+            ) : null}
+            <form className="search-form" role="search" onSubmit={submitSearch}>
+              <label htmlFor="market-search">Buscar publicaciones</label>
+              <div className="search-row">
+                <div className="search-input-wrap">
+                  <Search aria-hidden="true" size={19} strokeWidth={1.7} />
+                  <input
+                    id="market-search"
+                    name="q"
+                    type="search"
+                    value={draftQuery}
+                    onChange={(event) => setDraftQuery(event.target.value)}
+                    placeholder="Comida, ropa, libros, tecnología…"
+                    autoComplete="off"
+                  />
+                </div>
+                <button className="search-submit" type="submit" disabled={loading}>
+                  {loading ? "Buscando…" : "Buscar"}
+                </button>
+              </div>
+            </form>
 
-          {university.isTest ? (
-            <p className="demo-banner campus-test-banner campus-test-banner-sidebar" role="note">
-              <span className="demo-mark" aria-hidden="true">P</span>
-              UMAN es un campus de prueba. Recorre publicaciones de ejemplo mientras conoces el mercadito.
+            <div className="marketplace-filters">
+              <div className="marketplace-category-section">
+                <h2 className="marketplace-sidebar-heading">Categorías</h2>
+                <div className="category-tabs" role="group" aria-label="Filtrar por categoría">
+                  {categories.map((item) => (
+                    <button
+                      className={category === item.id ? "category-tab is-selected" : "category-tab"}
+                      key={item.id}
+                      type="button"
+                      aria-pressed={category === item.id}
+                      onClick={() => selectCategory(item.id)}
+                      disabled={loading}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="sort-controls" role="group" aria-label="Ordenar publicaciones">
+                <span>Ordenar</span>
+                <button
+                  className={sortMode === "INTEREST" ? "sort-button is-selected" : "sort-button"}
+                  type="button"
+                  aria-pressed={sortMode === "INTEREST"}
+                  onClick={() => selectSort("INTEREST")}
+                  disabled={loading || !hasInterestSignals}
+                >
+                  Con más interés
+                </button>
+                <button
+                  className={sortMode === "RECENT" ? "sort-button is-selected" : "sort-button"}
+                  type="button"
+                  aria-pressed={sortMode === "RECENT"}
+                  onClick={() => selectSort("RECENT")}
+                  disabled={loading}
+                >
+                  Más recientes
+                </button>
+              </div>
+            </div>
+
+            <p className="sort-context" aria-live="polite">
+              {sortMode === "INTEREST"
+                ? "Ordenados por conversaciones iniciadas; el contenido de los mensajes no se muestra."
+                : hasInterestSignals
+                  ? "Ordenados por fecha de publicación."
+                  : "Aún no hay suficiente actividad para marcar tendencias; mostramos lo más reciente."}
             </p>
-          ) : null}
-          <form className="search-form" role="search" onSubmit={submitSearch}>
-            <label htmlFor="market-search">Buscar publicaciones</label>
-            <div className="search-row">
-              <div className="search-input-wrap">
-                <Search aria-hidden="true" size={19} strokeWidth={1.7} />
-                <input
-                  id="market-search"
-                  name="q"
-                  type="search"
-                  value={draftQuery}
-                  onChange={(event) => setDraftQuery(event.target.value)}
-                  placeholder="Comida, ropa, libros, tecnología…"
-                  autoComplete="off"
-                />
-              </div>
-              <button className="search-submit" type="submit" disabled={loading}>
-                {loading ? "Buscando…" : "Buscar"}
-              </button>
-            </div>
-          </form>
-
-          <div className="marketplace-filters">
-            <div className="marketplace-category-section">
-              <h2 className="marketplace-sidebar-heading">Categorías</h2>
-              <div className="category-tabs" role="group" aria-label="Filtrar por categoría">
-                {categories.map((item) => (
-                  <button
-                    className={category === item.id ? "category-tab is-selected" : "category-tab"}
-                    key={item.id}
-                    type="button"
-                    aria-pressed={category === item.id}
-                    onClick={() => selectCategory(item.id)}
-                    disabled={loading}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="sort-controls" role="group" aria-label="Ordenar publicaciones">
-              <span>Ordenar</span>
-              <button
-                className={sortMode === "INTEREST" ? "sort-button is-selected" : "sort-button"}
-                type="button"
-                aria-pressed={sortMode === "INTEREST"}
-                onClick={() => selectSort("INTEREST")}
-                disabled={loading || !hasInterestSignals}
-              >
-                Con más interés
-              </button>
-              <button
-                className={sortMode === "RECENT" ? "sort-button is-selected" : "sort-button"}
-                type="button"
-                aria-pressed={sortMode === "RECENT"}
-                onClick={() => selectSort("RECENT")}
-                disabled={loading}
-              >
-                Más recientes
+            <p className="marketplace-sidebar-disclosure">
+              Pregunta por chat. La entrega y cualquier pago se acuerdan fuera de Mercadito.
+            </p>
+            <div className="marketplace-filter-actions">
+              {hasActiveFilters ? (
+                <button className="marketplace-filter-reset" type="button" onClick={clearFilters} disabled={loading}>
+                  Limpiar filtros
+                </button>
+              ) : null}
+              <button className="marketplace-filter-done" type="button" onClick={closeFilters}>
+                Ver productos
+                <ArrowRight aria-hidden="true" size={16} />
               </button>
             </div>
           </div>
-
-          <p className="sort-context" aria-live="polite">
-            {sortMode === "INTEREST"
-              ? "Ordenados por conversaciones iniciadas; el contenido de los mensajes no se muestra."
-              : hasInterestSignals
-                ? "Ordenados por fecha de publicación."
-                : "Aún no hay suficiente actividad para marcar tendencias; mostramos lo más reciente."}
-          </p>
-          <p className="marketplace-sidebar-disclosure">
-            Pregunta por chat. La entrega y cualquier pago se acuerdan fuera de Mercadito.
-          </p>
         </aside>
         <div className="marketplace-results">
           <div className="listing-heading">
             <div>
               <h1>Encuentra algo para tu día.</h1>
-              <p>
-                {total} {total === 1 ? "publicación" : "publicaciones"}
+              <p className="listing-meta">
+                <span>{total} {total === 1 ? "publicación" : "publicaciones"}</span>
+                {university.isTest ? <span className="mobile-campus-note">Campus de prueba</span> : null}
               </p>
             </div>
           </div>
