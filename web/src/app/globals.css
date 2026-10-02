@@ -5917,10 +5917,8 @@ select {
 }
 
 
-/* Ajuste de escritorio: identidad y acciones viven junto a los filtros. */
-.marketplace-sidebar-identity,
-.campus-test-banner-sidebar,
-.marketplace-sidebar-publish {
+/* En escritorio, el lateral conserva filtros y la identidad vive en la cabecera. */
+.campus-test-banner-sidebar {
   display: none;
 }
 
@@ -5930,9 +5928,6 @@ select {
     min-height: 76px;
   }
 
-  body:has(.campus-marketplace) .site-header .brand-lockup {
-    display: none;
-  }
 
   .campus-marketplace.page-width {
     width: min(calc(100% - clamp(2rem, 4vw, 4rem)), 112rem);
@@ -5943,7 +5938,6 @@ select {
     padding-bottom: 2rem;
   }
 
-  .campus-marketplace-header,
   .campus-marketplace > .campus-test-banner-top {
     display: none;
   }
@@ -5958,34 +5952,6 @@ select {
     padding: 1.05rem;
   }
 
-  .marketplace-sidebar-identity {
-    display: grid;
-    gap: 0.55rem;
-    padding-bottom: 0.9rem;
-    border-bottom: 1px solid var(--rule);
-  }
-
-  .marketplace-sidebar-title {
-    margin: 0;
-    font-size: inherit;
-    line-height: 1;
-  }
-
-  .marketplace-sidebar-brand {
-    gap: 0.7rem;
-  }
-
-  .marketplace-sidebar-brand .brand-symbol {
-    display: grid;
-    width: 40px;
-    height: 40px;
-    place-items: center;
-    border-radius: 11px;
-  }
-
-  .marketplace-sidebar-brand .brand-name {
-    font-size: 1.5rem;
-  }
 
   .marketplace-sidebar .campus-name {
     color: var(--muted);
@@ -6013,19 +5979,6 @@ select {
     color: var(--signal);
   }
 
-  .marketplace-sidebar-publish {
-    display: grid;
-    gap: 0.6rem;
-    margin-top: 0.3rem;
-    padding-top: 0.95rem;
-    border-top: 1px solid var(--rule);
-  }
-
-  .marketplace-sidebar-publish .button-ink {
-    width: 100%;
-    min-height: 46px;
-    justify-content: center;
-  }
 
   .marketplace-sidebar-disclosure {
     margin: 0;
@@ -6042,9 +5995,56 @@ select {
 }
 
 @media (max-width: 1020px) {
-  .marketplace-sidebar-identity,
   .campus-test-banner-sidebar,
-  .marketplace-sidebar-publish {
+  .marketplace-sidebar-disclosure {
     display: none;
+  }
+}
+
+.site-header {
+  transition: transform 180ms ease;
+}
+
+.site-header.is-scroll-hidden {
+  transform: translateY(calc(-100% - 2px));
+  pointer-events: none;
+}
+
+.brand-campus-name {
+  display: block;
+  max-width: min(44ch, 32vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.campus-marketplace .listing-heading h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.5vw, 1.9rem);
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+}
+
+@media (max-width: 760px) {
+  .brand-campus-name {
+    max-width: min(54vw, calc(100vw - 11.3rem));
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    font-size: 0.62rem;
+    line-height: 1.1;
+  }
+}
+
+@media (max-width: 360px) {
+  .brand-campus-name {
+    max-width: calc(100vw - 11.3rem);
+    font-size: 0.58rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header {
+    transition: none;
   }
 }

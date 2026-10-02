@@ -20,6 +20,9 @@ export async function getActiveStudent() {
       universityId: true,
       role: true,
       status: true,
+      university: {
+        select: { name: true },
+      },
     },
   });
 }

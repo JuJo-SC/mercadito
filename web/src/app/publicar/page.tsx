@@ -63,7 +63,7 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
 
   return (
     <>
-      <SiteHeader signedIn={Boolean(student)} userName={student?.name} unreadMessageCount={unreadMessageCount} />
+      <SiteHeader signedIn={Boolean(student)} userName={student?.name} universityName={student?.university.name} unreadMessageCount={unreadMessageCount} />
       <main className="form-page page-width publish-page">
         <Link className="back-link" href={editRequested ? "/mis-avisos" : demoMode ? "/publicar" : student ? "/mercadito" : "/"}>
           <ArrowRight aria-hidden="true" size={16} />

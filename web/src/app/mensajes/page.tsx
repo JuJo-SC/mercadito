@@ -28,7 +28,7 @@ export default async function MessagesPage() {
 
   return (
     <>
-      <SiteHeader signedIn userName={student.name} unreadMessageCount={unreadMessageCount} />
+      <SiteHeader signedIn userName={student.name} universityName={student.university.name} unreadMessageCount={unreadMessageCount} />
       <main className="messages-page page-width">
         <Link className="back-link" href="/">
           <ArrowRight aria-hidden="true" size={16} />

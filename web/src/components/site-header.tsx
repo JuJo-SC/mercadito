@@ -3,6 +3,10 @@ import { ArrowRight, LogOut, Store } from "lucide-react";
 import { signOut } from "@/auth";
 import { InstallButton } from "@/components/install-button";
 import {
+  DashboardNavigationLink,
+  SiteHeaderFrame,
+} from "@/components/site-header-interactions";
+import {
   UnreadMessagesNavLink,
   UnreadMessagesProvider,
 } from "@/components/unread-messages-navigation";
@@ -10,6 +14,7 @@ import {
 type SiteHeaderProps = {
   signedIn?: boolean;
   userName?: string | null;
+  universityName?: string | null;
   unreadMessageCount?: number;
   excludeUnreadConversationId?: string;
 };
@@ -22,6 +27,7 @@ async function leaveAccount() {
 export function SiteHeader({
   signedIn = false,
   userName,
+  universityName,
   unreadMessageCount = 0,
   excludeUnreadConversationId,
 }: SiteHeaderProps) {
@@ -31,30 +37,39 @@ export function SiteHeader({
       initialUnreadCount={unreadMessageCount}
       excludeConversationId={excludeUnreadConversationId}
     >
-      <header className="site-header">
+      <SiteHeaderFrame>
         <div className="site-header-inner page-width">
-          <Link className="brand-lockup" href="/" aria-label="Mercadito, inicio">
+          <DashboardNavigationLink
+            className="brand-lockup"
+            href="/"
+            aria-label={universityName ? "Mercadito, " + universityName + ", inicio" : "Mercadito, inicio"}
+          >
             <span className="brand-symbol" aria-hidden="true">
               <Store aria-hidden="true" size={21} strokeWidth={1.9} />
             </span>
             <span className="brand-copy">
               <span className="brand-name">Mercadito</span>
-              <span className="brand-description">Mercado del campus</span>
+              <span
+                className={universityName ? "brand-description brand-campus-name" : "brand-description"}
+                title={universityName ?? "Mercado del campus"}
+              >
+                {universityName ?? "Mercado del campus"}
+              </span>
             </span>
-          </Link>
+          </DashboardNavigationLink>
 
           <nav className="primary-navigation" aria-label="Navegación principal">
             {signedIn ? (
               <>
-                <Link href="/mercadito">Mercadito</Link>
-                <Link href="/publicar">Publicar</Link>
-                <Link href="/mis-avisos">Mis publicaciones</Link>
+                <DashboardNavigationLink href="/mercadito">Mercadito</DashboardNavigationLink>
+                <DashboardNavigationLink href="/publicar">Publicar</DashboardNavigationLink>
+                <DashboardNavigationLink href="/mis-avisos">Mis publicaciones</DashboardNavigationLink>
                 <UnreadMessagesNavLink />
               </>
             ) : (
-              <Link href="/#como-funciona">Cómo funciona</Link>
+              <DashboardNavigationLink href="/#como-funciona">Cómo funciona</DashboardNavigationLink>
             )}
-            <Link href="/universidades">Universidades</Link>
+            <DashboardNavigationLink href="/universidades">Universidades</DashboardNavigationLink>
           </nav>
 
           <div className="header-actions">
@@ -91,20 +106,20 @@ export function SiteHeader({
         >
           {signedIn ? (
             <>
-              <Link href="/mercadito">Mercadito</Link>
+              <DashboardNavigationLink href="/mercadito">Mercadito</DashboardNavigationLink>
               <UnreadMessagesNavLink />
-              <Link href="/mis-avisos">Mis publicaciones</Link>
-              <Link href="/publicar">Publicar</Link>
+              <DashboardNavigationLink href="/mis-avisos">Mis publicaciones</DashboardNavigationLink>
+              <DashboardNavigationLink href="/publicar">Publicar</DashboardNavigationLink>
             </>
           ) : (
             <>
-              <Link href="/#como-funciona">Cómo funciona</Link>
-              <Link href="/universidades">Universidades</Link>
-              <Link href="/ingresar?returnTo=%2Fmercadito">Entrar</Link>
+              <DashboardNavigationLink href="/#como-funciona">Cómo funciona</DashboardNavigationLink>
+              <DashboardNavigationLink href="/universidades">Universidades</DashboardNavigationLink>
+              <DashboardNavigationLink href="/ingresar?returnTo=%2Fmercadito">Entrar</DashboardNavigationLink>
             </>
           )}
         </nav>
-      </header>
+      </SiteHeaderFrame>
     </UnreadMessagesProvider>
   );
 }

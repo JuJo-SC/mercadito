@@ -17,7 +17,9 @@ OWN-WORLD: Interfaz clara de app nativa: fondo gris muy tenue, superficies blanc
 
 STORY: La comunidad autenticada entra a su campus, busca productos, filtra por categoría o fecha y abre un aviso cuando quiere ver todas sus características. La ficha muestra galería, descripción, vendedor, campus, condición, fecha y precio; desde allí puede iniciar conversación. Mercadito no procesa pagos.
 
-FIRST VIEWPORT: Encabezado compacto, campus y acción para publicar, aviso de prueba cuando corresponde, búsqueda y categorías antes de la cuadrícula. En 320px siguen visibles dos tarjetas con imagen, título, condición y precio.
+FIRST VIEWPORT: Cabecera compacta con marca y universidad a la izquierda y opciones de catálogo/publicación junto a ella. La identidad no se repite en la barra lateral. El aviso de prueba, búsqueda y categorías preceden a la cuadrícula. En 320px siguen visibles dos tarjetas con imagen, título, condición y precio.
+
+NAVIGATION: Al elegir una sección desde la cabecera, la página abre desde arriba. La cabecera se oculta al bajar y reaparece al subir, tanto en escritorio como en móvil.
 
 FORM: Tarjetas de catálogo con foto principal de carga diferida. Un `<dialog>` modal protege el foco y deja recorrer hasta cinco fotos con flechas o indicadores; en teléfono se convierte en una hoja de pantalla completa. Los estados de error, carga y catálogo vacío ofrecen una acción de recuperación.
 

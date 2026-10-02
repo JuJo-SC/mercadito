@@ -49,7 +49,7 @@ export default async function MyListingsPage() {
 
   return (
     <>
-      <SiteHeader signedIn={Boolean(student)} userName={student?.name} unreadMessageCount={unreadMessageCount} />
+      <SiteHeader signedIn={Boolean(student)} userName={student?.name} universityName={student?.university.name} unreadMessageCount={unreadMessageCount} />
       <main className="form-page page-width seller-page">
         <Link className="back-link" href="/">
           <ArrowRight aria-hidden="true" size={16} />

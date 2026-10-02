@@ -64,6 +64,7 @@ export default async function MarketplacePage() {
       <SiteHeader
         signedIn
         userName={student.name}
+        universityName={student.university.name}
         unreadMessageCount={unreadMessageCount}
       />
       <main>

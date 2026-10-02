@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-30T04:14:43Z",
+  "generatedAt": "2026-10-02T05:14:38Z",
   "title": "Sistema visual de Mercadito",
   "extensions": {
     "colorMeta": {
@@ -161,6 +161,11 @@
         "name": "card-hover",
         "value": "180ms ease",
         "purpose": "Elevación sutil al señalar una publicación."
+      },
+      {
+        "name": "header-scroll",
+        "value": "180ms ease",
+        "purpose": "Ocultar la cabecera al bajar y mostrarla al subir."
       }
     ],
     "breakpoints": [
@@ -183,6 +188,14 @@
     ]
   },
   "components": [
+    {
+      "name": "Cabecera de campus",
+      "kind": "navigation",
+      "refersTo": "site-header",
+      "description": "Marca, universidad y navegación en una sola cabecera adaptable.",
+      "html": "<header class=\"site-header\"><a class=\"brand-lockup\">Mercadito · universidad</a><nav>Publicar · Mis publicaciones</nav></header>",
+      "css": ".site-header{position:sticky;top:0;transition:transform 180ms ease}.site-header.is-scroll-hidden{transform:translateY(-100%);pointer-events:none}"
+    },
     {
       "name": "Acción principal",
       "kind": "button",

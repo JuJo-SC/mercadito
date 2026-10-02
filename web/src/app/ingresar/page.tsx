@@ -55,7 +55,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
 
   return (
     <>
-      <SiteHeader signedIn={Boolean(student)} userName={student?.name} unreadMessageCount={unreadMessageCount} />
+      <SiteHeader signedIn={Boolean(student)} userName={student?.name} universityName={student?.university.name} unreadMessageCount={unreadMessageCount} />
       <main className="form-page page-width">
         <Link className="back-link" href="/">
           <ArrowRight aria-hidden="true" size={16} />

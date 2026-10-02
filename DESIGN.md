@@ -107,7 +107,7 @@ La pila del sistema usa SF Pro en dispositivos Apple y sus equivalentes nativos 
 - Botones: 12–13px, al menos 44px de zona interactiva.
 - Tarjetas: 16px, borde tenue y sombra corta que aparece al pasar el cursor.
 - Ficha de detalle: 25px en escritorio; ocupa la pantalla del teléfono como una hoja modal.
-- Cabecera fija con vidrio translúcido para mantener navegación disponible al desplazarse.
+- Cabecera adhesiva translúcida con la marca y la universidad asociada. Se oculta al bajar para dar visibilidad a los productos y reaparece al subir.
 
 ## Catálogo
 
@@ -125,7 +125,7 @@ El catálogo descarga únicamente la foto principal de cada tarjeta. Las imágen
 
 ## Navegación y superficies compartidas
 
-El encabezado alinea el símbolo de Mercadito, los enlaces del producto y el acceso a la cuenta. En teléfono, una fila compacta da acceso a las tareas principales. Formularios, bandeja de mensajes, acceso institucional y pie de página usan el mismo fondo claro, la misma tipografía y radios suaves.
+El encabezado alinea el símbolo y nombre de Mercadito, la universidad asociada, las opciones del catálogo y el acceso a la cuenta. El campus aparece aquí, sin repetirse en la barra lateral. Publicar se mantiene como opción del encabezado sin añadir otro botón al costado. En escritorio y móvil, la cabecera se oculta al bajar y reaparece al subir; al abrir una sección desde su navegación, la página empieza arriba. En teléfono, una fila compacta da acceso a las tareas principales. Formularios, bandeja de mensajes, acceso institucional y pie de página usan el mismo fondo claro, la misma tipografía y radios suaves.
 
 ## Accesibilidad y adaptación
 

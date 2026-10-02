@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { DashboardNavigationLink } from "@/components/site-header-interactions";
 
 type UnreadMessagesContextValue = number;
 const UnreadMessagesContext = createContext<UnreadMessagesContextValue>(0);
@@ -85,13 +85,13 @@ export function UnreadMessagesNavLink() {
     : "Mensajes";
 
   return (
-    <Link className="messages-nav-link" href="/mensajes" aria-label={label}>
+    <DashboardNavigationLink className="messages-nav-link" href="/mensajes" aria-label={label}>
       <span>Mensajes</span>
       {unreadMessageCount > 0 ? (
         <span className="messages-unread-count" aria-hidden="true">
           {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
         </span>
       ) : null}
-    </Link>
+    </DashboardNavigationLink>
   );
 }
