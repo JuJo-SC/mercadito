@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { RouteScrollReset } from "@/components/route-scroll-reset";
 
 export const metadata: Metadata = {
   title: {
@@ -35,8 +36,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es-MX">
-      <body>{children}</body>
+    <html lang="es-MX" data-scroll-behavior="smooth">
+      <body>
+        <RouteScrollReset />
+        {children}
+      </body>
     </html>
   );
 }

@@ -4,18 +4,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { ComponentProps, ReactNode } from "react";
 
-type DashboardNavigationLinkProps = Omit<ComponentProps<typeof Link>, "onNavigate">;
-
-function scrollToTop() {
-  const root = document.documentElement;
-  const previousScrollBehavior = root.style.scrollBehavior;
-  root.style.scrollBehavior = "auto";
-  window.scrollTo(0, 0);
-  root.style.scrollBehavior = previousScrollBehavior;
-}
+type DashboardNavigationLinkProps = Omit<ComponentProps<typeof Link>, "onNavigate" | "scroll">;
 
 export function DashboardNavigationLink(props: DashboardNavigationLinkProps) {
-  return <Link {...props} onNavigate={scrollToTop} />;
+  // RouteScrollReset positions the destination after it has rendered.
+  // Next's automatic element selection can otherwise jump past the page intro.
+  return <Link {...props} scroll={false} />;
 }
 
 export function SiteHeaderFrame({ children }: { children: ReactNode }) {
