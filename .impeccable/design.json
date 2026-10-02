@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-02T06:47:01.366482+00:00",
+  "generatedAt": "2026-10-02T07:06:31.862105+00:00",
   "title": "Sistema visual de Mercadito",
   "extensions": {
     "colorMeta": {
@@ -191,6 +191,17 @@
       "presentation": "native dialog, right side sheet",
       "dismiss": "preserve catalog scroll",
       "apply": "show results from top"
+    },
+    "taskPages": {
+      "headingDesktop": "1.35rem",
+      "headingMobile": "1.15rem",
+      "information": "native details, closed initially",
+      "testCampus": "compact visible note"
+    },
+    "desktopCatalogFilters": {
+      "position": "fixed",
+      "overflow": "independent vertical scroll",
+      "header": "follow visibility"
     }
   },
   "components": [

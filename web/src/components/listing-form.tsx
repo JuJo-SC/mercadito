@@ -407,17 +407,7 @@ export function ListingForm({
       >
         <div className="form-section-heading publish-step-heading">
           <h2 id="listing-step-title" ref={headingRef} tabIndex={-1}>
-            {step === 0
-              ? editing
-                ? "¿Qué producto o servicio quieres actualizar?"
-                : "¿Qué producto o servicio quieres ofrecer?"
-              : step === 1
-                ? editing
-                  ? "Ajusta el precio y el contexto."
-                  : "Ponle precio y contexto."
-                : editing
-                  ? "Revisa los cambios antes de guardar."
-                  : "Revisa tu publicación."}
+            {step === 0 ? "Datos del producto" : step === 1 ? "Precio y descripción" : "Revisar publicación"}
           </h2>
           <p>
             {step === 0

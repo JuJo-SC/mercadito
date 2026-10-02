@@ -113,7 +113,7 @@ La pila del sistema usa SF Pro en dispositivos Apple y sus equivalentes nativos 
 
 La portada pública explica el servicio y no muestra anuncios. El portal autenticado muestra el nombre del campus, la acción para publicar, el aviso de campus de prueba, búsqueda, filtros, orden y catálogo.
 
-En móvil, un botón verde de «Filtros» permanece fijo en el costado inferior derecho, incluso después de recorrer el catálogo. Abre un panel desde la derecha con búsqueda, categorías, orden y avisos completos. El panel tiene desplazamiento independiente y protege el foco mediante un diálogo nativo. Cerrar o Escape recupera la posición del catálogo; buscar o elegir «Ver productos» vuelve al inicio de los resultados. El contador indica filtros activos. El catálogo conserva una indicación breve de campus de prueba junto al total. En escritorio, los controles permanecen en la barra lateral.
+En móvil, un botón verde de «Filtros» permanece fijo en el costado inferior derecho, incluso después de recorrer el catálogo. Abre un panel desde la derecha con búsqueda, categorías, orden y avisos completos. El panel tiene desplazamiento independiente y protege el foco mediante un diálogo nativo. Cerrar o Escape recupera la posición del catálogo; buscar o elegir «Ver productos» vuelve al inicio de los resultados. El contador indica filtros activos. El catálogo conserva una indicación breve de campus de prueba junto al total. En escritorio, la barra lateral permanece fija durante todo el recorrido del catálogo, incluso junto a las últimas publicaciones. Su contenido puede desplazarse de forma independiente cuando supera la altura disponible, y se acomoda a la cabecera al ocultarse o reaparecer.
 
 Las tarjetas forman tres columnas amplias, dos en tablet y dos compactas en móvil. La primera foto usa carga diferida; el contador solo aparece cuando existe una imagen. Fotos, precio, condición y estado permanecen legibles con texto.
 
@@ -128,6 +128,8 @@ El catálogo descarga únicamente la foto principal de cada tarjeta. Las imágen
 ## Navegación y superficies compartidas
 
 El encabezado alinea el símbolo y nombre de Mercadito, la universidad asociada, las opciones del catálogo y el acceso a la cuenta. El campus aparece aquí, sin repetirse en la barra lateral. Publicar se mantiene como opción del encabezado sin añadir otro botón al costado. En escritorio y móvil, la cabecera se oculta al bajar y reaparece al subir; al abrir una sección desde su navegación, la página empieza arriba. En teléfono, una fila compacta da acceso a las tareas principales. Formularios, bandeja de mensajes, acceso institucional y pie de página usan el mismo fondo claro, la misma tipografía y radios suaves.
+
+Mensajes, Mis publicaciones y Publicar usan títulos breves en una línea, con un tamaño de 1.35rem en escritorio y 1.15rem en móvil. La explicación y los avisos completos se consultan desde «Información», mediante un desplegable nativo. El campus de prueba mantiene una indicación breve visible. Las conversaciones, las publicaciones y los campos del formulario aparecen inmediatamente después; los títulos de los pasos de publicación también son compactos.
 
 ## Accesibilidad y adaptación
 

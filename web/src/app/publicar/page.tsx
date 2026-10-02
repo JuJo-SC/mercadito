@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TaskPageHeading } from "@/components/task-page-heading";
 import { ArrowRight, LockKeyhole } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getActiveStudent } from "@/lib/require-student";
@@ -64,19 +65,12 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
   return (
     <>
       <SiteHeader signedIn={Boolean(student)} userName={student?.name} universityName={student?.university.name} unreadMessageCount={unreadMessageCount} />
-      <main className="form-page page-width publish-page">
-        <Link className="back-link" href={editRequested ? "/mis-avisos" : demoMode ? "/publicar" : student ? "/mercadito" : "/"}>
-          <ArrowRight aria-hidden="true" size={16} />
-          {editRequested ? "Volver a Mis publicaciones" : demoMode ? "Salir del recorrido" : student ? "Volver al mercadito" : "Volver al inicio"}
-        </Link>
-        <div className="form-intro">
-          <h1>
-            {demoMode
-              ? "Arma una publicación para tu campus."
-              : editRequested
-                ? "Edita tu publicación."
-                : "Crea una publicación para tu campus."}
-          </h1>
+      <main className="form-page page-width publish-page task-page">
+        <TaskPageHeading
+          title={demoMode ? "Probar publicación" : editRequested ? "Editar publicación" : "Publicar producto"}
+          testCampus={Boolean(student && university?.isTest)}
+          demo={demoMode}
+        >
           <p>
             {demoMode
               ? "Recorre los pasos de publicación y revisa cómo se verá tu publicación en el mercadito."
@@ -84,22 +78,16 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
                 ? "Corrige los datos de la publicación. Guardar conserva su disponibilidad actual."
                 : "Describe lo que ofreces con claridad. Solo estudiantes activos de tu universidad podrán ver esta publicación."}
           </p>
-        </div>
-
-        {student && university?.isTest ? (
-          <p className="demo-banner publish-demo-note" role="note">
-            <span className="demo-mark" aria-hidden="true">P</span>
-            Estás en el campus de prueba UMAN. Usa datos ficticios; las cuentas
-            activas de UMAN podrán ver la publicación.
-          </p>
-        ) : null}
+          {student && university?.isTest ? <p>Estás en el campus de prueba UMAN. Usa datos ficticios; las cuentas activas de UMAN podrán ver la publicación.</p> : null}
+          {demoMode ? <p>Recorrido de demostración. Lo que escribas no se envía ni se guarda.</p> : null}
+          <Link className="back-link" href={editRequested ? "/mis-avisos" : demoMode ? "/publicar" : student ? "/mercadito" : "/"}>
+            <ArrowRight aria-hidden="true" size={16} />
+            {editRequested ? "Volver a Mis publicaciones" : demoMode ? "Salir del recorrido" : student ? "Volver al mercadito" : "Volver al inicio"}
+          </Link>
+        </TaskPageHeading>
 
         {demoMode ? (
           <>
-            <p className="demo-banner publish-demo-note" role="note">
-              <span className="demo-mark" aria-hidden="true">D</span>
-              Recorrido de demostración. Lo que escribas no se envía ni se guarda.
-            </p>
             <ListingForm universityName="Comunidad de demostración" demo />
           </>
         ) : editRequested && student && university && editableListing ? (

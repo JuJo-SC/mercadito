@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TaskPageHeading } from "@/components/task-page-heading";
 import { ArrowRight } from "lucide-react";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -29,29 +30,14 @@ export default async function MessagesPage() {
   return (
     <>
       <SiteHeader signedIn userName={student.name} universityName={student.university.name} unreadMessageCount={unreadMessageCount} />
-      <main className="messages-page page-width">
-        <Link className="back-link" href="/">
-          <ArrowRight aria-hidden="true" size={16} />
-          Volver al mercadito
-        </Link>
-        <div className="messages-intro">
-          <h1>La correspondencia del campus.</h1>
-          <p>
-            Retoma cada intercambio desde la publicación que lo inició. Puedes
-            coordinar aquí y decidir con la otra persona si continúan por otro medio.
-          </p>
-        </div>
+      <main className="messages-page page-width task-page">
+        <TaskPageHeading title="Mensajes" testCampus={Boolean(university?.isTest)}>
+          <p>Retoma cada intercambio desde la publicación que lo inició. Puedes coordinar aquí y decidir con la otra persona si continúan por otro medio.</p>
+          {university?.isTest ? <p>Campus de prueba {university.name}. Escribe solo mensajes ficticios.</p> : null}
+          <p>Mercadito no procesa ni resguarda pagos. Cualquier pago se acuerda fuera de la plataforma.</p>
+          <Link className="back-link" href="/mercadito"><ArrowRight aria-hidden="true" size={16} />Volver al mercadito</Link>
+        </TaskPageHeading>
 
-        {university?.isTest ? (
-          <p className="demo-banner messages-test-note" role="note">
-            <span className="demo-mark" aria-hidden="true">P</span>
-            Campus de prueba {university.name}. Escribe solo mensajes ficticios.
-          </p>
-        ) : null}
-
-        <p className="messages-payment-note">
-          Mercadito no procesa ni resguarda pagos. Cualquier pago se acuerda fuera de la plataforma.
-        </p>
         <ConversationInbox
           initialConversations={conversations}
           currentUserId={student.id}
