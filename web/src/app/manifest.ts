@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: "/",
     name: "Mercadito universitario",
     short_name: "Mercadito",
-    description: "Compra y vende dentro de cada comunidad universitaria.",
+    description: "Compra y vende entre estudiantes de tu universidad.",
     start_url: "/",
     scope: "/",
     display: "standalone",

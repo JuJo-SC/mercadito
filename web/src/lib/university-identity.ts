@@ -1,5 +1,6 @@
 import type { University } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { activeUniversitySlug } from "@/lib/active-community";
 
 type IdentityProfile = Record<string, unknown>;
 
@@ -25,6 +26,7 @@ export async function resolveActiveStudent(
   if (
     !university ||
     university.status !== "ACTIVE" ||
+    university.slug !== activeUniversitySlug ||
     university.isDemo ||
     !university.studentStatusClaim ||
     university.studentStatusValue === null

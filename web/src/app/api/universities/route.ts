@@ -1,23 +1,11 @@
-import { prisma } from "@/lib/prisma";
-import { getActiveStudent } from "@/lib/require-student";
+import { getActiveCommunity } from "@/lib/active-community";
 
 export const runtime = "nodejs";
 
 export async function GET() {
-  const student = await getActiveStudent();
-  const universities = await prisma.university.findMany({
-    where: student
-      ? { id: student.universityId, status: "ACTIVE", isDemo: false }
-      : { status: "ACTIVE", isDemo: true },
-    orderBy: { name: "asc" },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      isDemo: true,
-      isTest: true,
-    },
-  });
-
-  return Response.json({ universities });
+  const community = await getActiveCommunity();
+  return Response.json(
+    { universities: community ? [community] : [] },
+    { headers: { "Cache-Control": "no-store" } },
+  );
 }

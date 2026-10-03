@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, LogOut, Store } from "lucide-react";
 import { signOut } from "@/auth";
+import { activeUniversityName } from "@/lib/active-community";
 import { InstallButton } from "@/components/install-button";
 import {
   DashboardNavigationLink,
@@ -27,7 +28,7 @@ async function leaveAccount() {
 export function SiteHeader({
   signedIn = false,
   userName,
-  universityName,
+  universityName = activeUniversityName,
   unreadMessageCount = 0,
   excludeUnreadConversationId,
 }: SiteHeaderProps) {
@@ -69,7 +70,6 @@ export function SiteHeader({
             ) : (
               <DashboardNavigationLink href="/#como-funciona">Cómo funciona</DashboardNavigationLink>
             )}
-            <DashboardNavigationLink href="/universidades">Universidades</DashboardNavigationLink>
           </nav>
 
           <div className="header-actions">
@@ -114,8 +114,7 @@ export function SiteHeader({
           ) : (
             <>
               <DashboardNavigationLink href="/#como-funciona">Cómo funciona</DashboardNavigationLink>
-              <DashboardNavigationLink href="/universidades">Universidades</DashboardNavigationLink>
-              <DashboardNavigationLink href="/ingresar?returnTo=%2Fmercadito">Entrar</DashboardNavigationLink>
+                <DashboardNavigationLink href="/ingresar?returnTo=%2Fmercadito">Entrar</DashboardNavigationLink>
             </>
           )}
         </nav>
@@ -130,12 +129,12 @@ export function SiteFooter() {
       <div className="page-width footer-inner">
         <Link className="footer-brand" href="/">
           <span>Mercadito</span>
-          <span>Mercado del campus</span>
+          <span>{activeUniversityName}</span>
         </Link>
-        <p>Compra y vende dentro de tu comunidad.</p>
+        <p>Compra y vende entre estudiantes de {activeUniversityName}.</p>
         <nav aria-label="Enlaces al pie">
-          <Link href="/universidades">Integrar una universidad</Link>
-          <Link href="/ingresar?returnTo=%2Fmercadito">Acceso institucional</Link>
+          <Link href="/#como-funciona">Cómo funciona</Link>
+          <Link href="/ingresar?returnTo=%2Fmercadito">Entrar a {activeUniversityName}</Link>
         </nav>
         <span className="footer-mark">M · MX</span>
       </div>

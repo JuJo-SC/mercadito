@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { z } from "zod";
 import { ListingCategory } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { activeUniversitySlug, getActiveCommunity } from "@/lib/active-community";
 import { getActiveStudent } from "@/lib/require-student";
 import {
   ListingPhotoInputError,
@@ -29,34 +30,19 @@ const createListingSchema = z.object({
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const slug = url.searchParams.get("university")?.trim().toLowerCase();
-  if (!slug) {
-    return Response.json(
-      { error: "Indica la universidad que quieres explorar." },
-      { status: 400, headers: privateNoStore },
-    );
-  }
-
-  const university = await prisma.university.findFirst({
-    where: { slug, status: "ACTIVE" },
-    select: { id: true, name: true, slug: true, isDemo: true },
-  });
-
-  if (!university) {
+  const requestedUniversity = url.searchParams.get("university")?.trim().toLowerCase();
+  const student = await getActiveStudent();
+  const university = await getActiveCommunity();
+  if (
+    !student ||
+    !university ||
+    student.universityId !== university.id ||
+    (requestedUniversity && requestedUniversity !== activeUniversitySlug)
+  ) {
     return Response.json(
       { error: "No encontramos esa comunidad." },
       { status: 404, headers: privateNoStore },
     );
-  }
-
-  if (!university.isDemo) {
-    const student = await getActiveStudent();
-    if (!student || student.universityId !== university.id) {
-      return Response.json(
-        { error: "No encontramos esa comunidad." },
-        { status: 404, headers: privateNoStore },
-      );
-    }
   }
 
   const rawPage = Number.parseInt(url.searchParams.get("page") ?? "1", 10);

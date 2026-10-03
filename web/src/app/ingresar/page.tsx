@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, LockKeyhole } from "lucide-react";
 import { signIn } from "@/auth";
-import { prisma } from "@/lib/prisma";
+import { activeUniversityName, getActiveCommunity } from "@/lib/active-community";
 import { getActiveStudent } from "@/lib/require-student";
 import { countUnreadMessagesForStudent } from "@/lib/conversations";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
@@ -38,18 +38,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   const unreadMessageCountPromise = student
     ? countUnreadMessagesForStudent(student.id, student.universityId)
     : Promise.resolve(0);
-  const availableUniversity = student
-    ? true
-    : (await prisma.university.count({
-        where: { status: "ACTIVE", isDemo: false },
-      })) > 0;
-  const testUniversity = student
-    ? null
-    : await prisma.university.findFirst({
-        where: { status: "ACTIVE", isDemo: false, isTest: true },
-        orderBy: { name: "asc" },
-        select: { name: true },
-      });
+  const community = await getActiveCommunity();
 
   const unreadMessageCount = await unreadMessageCountPromise;
 
@@ -62,68 +51,58 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           Volver al mercadito
         </Link>
         <div className="form-intro">
-          <h1>Tu universidad abre la puerta.</h1>
+          <h1>Entra al mercadito de {activeUniversityName}.</h1>
           <p>
-            El acceso se comprueba con la identidad institucional y pertenece a
-            una sola comunidad universitaria.
+            Publica, explora y conversa dentro de la comunidad de {activeUniversityName}.
+            Solo las cuentas autorizadas pueden acceder al catálogo.
           </p>
         </div>
 
-        {testUniversity ? (
+        {community?.isTest ? (
           <p className="demo-banner auth-test-note" role="note">
             <span className="demo-mark" aria-hidden="true">P</span>
-            {testUniversity.name} es un campus de prueba. Usa una cuenta de
+            {activeUniversityName} es un campus de prueba. Usa una cuenta de
             prueba y datos ficticios; no hay un proveedor institucional conectado.
           </p>
         ) : null}
 
         {student ? (
           <section className="auth-notice" role="status">
-            <p className="auth-notice-title">Tu sesión institucional está activa.</p>
-            <p>Tu universidad ya está asociada a esta sesión.</p>
+            <p className="auth-notice-title">Tu sesión está activa.</p>
+            <p>Tu cuenta pertenece a la comunidad de {activeUniversityName}.</p>
             <Link className="button-ink" href="/mercadito">
               Ir a mi mercadito
               <ArrowRight aria-hidden="true" size={17} />
             </Link>
           </section>
-        ) : availableUniversity ? (
+        ) : community ? (
           <section className="auth-panel">
             <div className="auth-panel-heading">
               <LockKeyhole aria-hidden="true" size={22} strokeWidth={1.7} />
-              <h2>Inicia con la cuenta de tu campus</h2>
+              <h2>{community.isTest ? "Usa tu cuenta de prueba" : "Usa tu cuenta institucional"}</h2>
             </div>
             <p>
-              Se abrirá el proveedor institucional que tiene registrada tu
-              universidad. Mercadito no recibe tu contraseña.
+              {community.isTest
+                ? `Se abrirá el acceso de ${activeUniversityName} con las cuentas de prueba proporcionadas para este recorrido.`
+                : `Se abrirá el acceso institucional de ${activeUniversityName}. Mercadito no recibe tu contraseña.`}
             </p>
             <form action={startInstitutionalLogin}>
               <input type="hidden" name="returnTo" value={returnTo} />
               <button className="button-ink form-submit" type="submit">
-                Continuar con mi universidad
+                Continuar con {activeUniversityName}
                 <ArrowRight aria-hidden="true" size={17} />
               </button>
             </form>
           </section>
         ) : (
           <section className="auth-notice">
-            <p className="auth-notice-title">
-              La primera integración universitaria está pendiente.
-            </p>
-            <p>
-              Cuando una universidad configure su identidad institucional, sus
-              alumnos podrán entrar desde aquí. Mientras tanto puedes solicitar
-              integrar tu campus.
-            </p>
-            <Link className="button-ink" href="/universidades">
-              Solicitar integración
-              <ArrowRight aria-hidden="true" size={17} />
-            </Link>
+            <p className="auth-notice-title">El acceso a {activeUniversityName} está en preparación.</p>
+            <p>Vuelve más tarde. El catálogo estará disponible cuando se habilite el acceso de esta comunidad.</p>
           </section>
         )}
 
         <p className="form-footnote">
-          Las publicaciones reales de un campus solo aparecen después de verificar la
-          pertenencia a esa comunidad.
+          Los productos y las conversaciones de {activeUniversityName} solo están disponibles para las cuentas autorizadas de esta comunidad.
         </p>
       </main>
       <SiteFooter />

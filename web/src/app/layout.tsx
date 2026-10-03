@@ -4,11 +4,11 @@ import { RouteScrollReset } from "@/components/route-scroll-reset";
 
 export const metadata: Metadata = {
   title: {
-    default: "Mercadito — Mercado del campus",
+    default: "Mercadito — Comunidad universitaria",
     template: "%s — Mercadito",
   },
   description:
-    "Un mercadito universitario para explorar productos y publicar dentro de cada comunidad.",
+    "Compra y vende entre estudiantes de una sola universidad, con acceso reservado a su comunidad.",
   applicationName: "Mercadito",
   manifest: "/manifest.webmanifest",
   appleWebApp: {

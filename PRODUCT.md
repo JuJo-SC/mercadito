@@ -13,12 +13,12 @@ Delegado y aceptado por la persona usuaria: Next.js con TypeScript y Tailwind, P
 ## Users
 
 - Confirmado: estudiantes que inician sesión con una cuenta institucional.
-- Confirmado: universidades que solicitan registrar su comunidad.
+- Etapa actual confirmada: una sola comunidad universitaria, UMAN como campus de prueba.
 - Inferencia a partir del pedido de una PWA: el uso desde teléfonos móviles es prioritario.
 
 ## Product Purpose
 
-Un espacio de compra y venta para la comunidad de una universidad. La persona usuaria quiere que cada universidad pueda registrarse y que sus alumnos accedan con su cuenta institucional.
+Un espacio de compra y venta para estudiantes de una sola universidad. En esta etapa UMAN es la única comunidad habilitada, con cuentas y datos de prueba. Después se configurará una universidad real; la incorporación de varias universidades queda para una mejora futura.
 
 ## Positioning
 
@@ -27,14 +27,14 @@ La pertenencia a una universidad define el acceso al mercadito de esa comunidad.
 ## Operating Context
 
 - Confirmado: los alumnos usan sus credenciales institucionales para iniciar sesión.
-- Confirmado: una universidad puede solicitar su registro.
+- Confirmado: las opciones de registrar o elegir otras universidades se retiran durante esta etapa.
 - Inferencia provisional: descubrimiento y publicación de artículos ocurren principalmente desde el teléfono y dentro de la comunidad universitaria.
 - Confirmado: el comprador y el vendedor podrán iniciar la coordinación mediante chat dentro de Mercadito; si ambos lo deciden, podrán continuar por otro medio.
 - Confirmado: Mercadito será intermediario y no procesará, recibirá ni resguardará pagos; cualquier pago se acordará fuera de la plataforma.
 
 ## Capabilities and Constraints
 
-- Requerido: registro de universidades, acceso institucional de alumnos y experiencia web instalable en dispositivos móviles.
+- Requerido en esta etapa: una universidad configurada, acceso restringido a sus cuentas autorizadas y experiencia web instalable en dispositivos móviles. El registro de otras universidades está cerrado tanto en la interfaz como en la API.
 - Elección de stack: Keycloak aceptará proveedores institucionales OIDC o SAML y ofrecerá OIDC a la aplicación.
 - Dato pendiente: cada universidad debe facilitar los datos de su proveedor de identidad y aclarar qué información permite verificar que alguien es alumno activo.
 - Alcance confirmado para el MVP: publicar y explorar artículos, conversar por chat para coordinar el interés, sin procesar pagos.
@@ -43,20 +43,20 @@ La pertenencia a una universidad define el acceso al mercadito de esa comunidad.
 - Cada aviso puede incluir hasta cinco fotos JPG, PNG o WebP. Cada archivo de entrada pesa como máximo 8 MB; la suma de la carga no supera 20 MB. Las fotos se convierten a WebP de hasta 1280 px, con un objetivo de 700 KB y un límite de 1.2 MB por imagen, se guardan como filas vinculadas al aviso y solo se entregan a estudiantes activos del mismo campus. El recorrido de demostración previsualiza las fotos, pero no guarda publicaciones.
 - Si una navegación falla por red o disponibilidad, la PWA muestra una página estática; no almacena ni reenvía publicaciones, mensajes o datos privados.
 
-- Inferencia provisional a partir de «mercadito interno»: sin sesión solo se muestra el campus ficticio de demostración; una cuenta estudiantil activa solo accede al mercadito de su universidad.
+- Confirmado: sin sesión se muestra una portada informativa, sin productos. Una cuenta estudiantil activa solo puede acceder si pertenece a la única universidad configurada. Los antiguos registros de demostración se conservan, pero no se exponen en el catálogo público.
 
 ## Evidence on Hand
 
 El brief de producto proviene de la persona usuaria. Aún no hay proveedor institucional conectado ni catálogo real. El servidor tiene UMAN como campus de prueba (isTest) y cuentas locales sintéticas de Keycloak para recorrer la publicación; no verifican matrícula. Sus anuncios de muestra y fotografías se identifican como contenido ficticio. Las credenciales no deben guardarse en Git.
 
-## Pendiente antes de recibir solicitudes reales
+## Pendiente antes de recibir alumnos reales
 
-Aún se necesita el aviso de privacidad aprobado por quien operará el servicio, con identidad de la persona responsable, finalidades, conservación y medios de contacto para ejercer derechos. La interfaz explica el propósito del formulario, pero no sustituye ese aviso.
+Aún se necesita el aviso de privacidad aprobado por quien operará el servicio, con identidad de la persona responsable, finalidades, conservación y medios de contacto para ejercer derechos. El registro de universidades está cerrado en esta etapa; antes del piloto real se necesita el aviso aplicable a las cuentas y los datos estudiantiles.
 
 ## Flujo del estudiante
 
-1. La portada pública explica el servicio y la integración universitaria; no mezcla anuncios con información institucional.
-2. Al iniciar sesión, Keycloak entrega los claims que permiten asociar la cuenta con una universidad activa. El correo por sí solo no determina el campus.
+1. La portada pública presenta el mercadito de la universidad configurada y su condición de prueba cuando corresponde. No muestra productos ni ofrece integrar otras comunidades.
+2. Al iniciar sesión, Keycloak entrega los claims que permiten asociar la cuenta con la universidad activa configurada. Otra universidad se rechaza, incluso con claims válidos. El correo por sí solo no determina el campus.
 3. El alumno entra a /mercadito, donde ve el catálogo de su universidad, busca por texto o categoría y compara publicaciones.
 4. El catálogo empieza por publicaciones con más conversaciones iniciadas cuando hay actividad suficiente; si no, muestra las más recientes. Mercadito no procesa pagos.
 
@@ -68,3 +68,7 @@ Las cuentas UMAN son sintéticas para recorrido de prueba. Sus correos se mantie
 - La verificación institucional debe depender del proveedor de identidad configurado, no únicamente del sufijo del correo.
 - Las tareas principales deben ser cómodas en una pantalla móvil.
 - No presentar datos de demostración como ofertas reales.
+
+## Configuración de esta etapa
+
+`ACTIVE_UNIVERSITY_SLUG` y `ACTIVE_UNIVERSITY_NAME` se definen fuera de Git. Por defecto se usa UMAN. Cambiar a una universidad real requiere su propio registro e identidad institucional, conservando las cuentas y publicaciones de prueba aisladas. El modelo por campus se mantiene para una mejora futura; no existe selección ni recepción de solicitudes de otras universidades en el producto actual.

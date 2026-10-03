@@ -4,7 +4,7 @@
 
 La aplicación autentica a estudiantes mediante OIDC contra el realm mercadito de Keycloak. Keycloak puede federar proveedores institucionales OIDC o SAML y traducir sus datos al perfil que recibe la aplicación. Aún no hay un proveedor institucional real conectado.
 
-UMAN es un campus de prueba con cuentas sintéticas locales. Sirve para recorrer el flujo, pero no verifica matrícula. La recepción de solicitudes universitarias continúa deshabilitada hasta contar con el aviso de privacidad aprobado y el canal de atención.
+UMAN es un campus de prueba con cuentas sintéticas locales. Sirve para recorrer el flujo, pero no verifica matrícula. UMAN es la única comunidad admitida por `ACTIVE_UNIVERSITY_SLUG=uman`. El registro de otras universidades está cerrado durante esta etapa. Para pasar al piloto real, seguir [comunidad-unica.md](comunidad-unica.md).
 
 ## Contrato de identidad que consume la aplicación
 
@@ -19,7 +19,7 @@ Después de la autenticación federada, el perfil OIDC que Keycloak entrega al c
 
 El claim de estatus puede ser texto, booleano o número; la aplicación compara su representación textual. Por ejemplo, un booleano true corresponde al valor de texto "true". Los claims deben llegar como valores planos; objetos o arreglos anidados no se interpretan como estatus.
 
-La aplicación rechaza el acceso si falta cualquiera de estos datos, el claim institucional no coincide, el estudiante no está activo, la universidad no está activa o la cuenta pertenece a un registro de demostración. No usar el dominio del correo como sustituto del claim de matrícula.
+La aplicación rechaza el acceso si falta cualquiera de estos datos, el claim institucional no coincide, el estudiante no está activo, la universidad no está activa, su slug no coincide con ACTIVE_UNIVERSITY_SLUG o la cuenta pertenece a un registro de demostración. No usar el dominio del correo como sustituto del claim de matrícula.
 
 En el primer acceso válido, la aplicación permite que Auth.js cree la cuenta local con el campus resuelto por los claims y el rol de estudiante activo. Si el correo ya pertenece a otra cuenta local, el inicio se rechaza para evitar vincular identidades solo por correo; la resolución queda a cargo del operador.
 
@@ -40,7 +40,7 @@ Recibir la información por un canal institucional verificado y no solicitar con
 ## Configuración en Keycloak
 
 1. En el realm mercadito, agregar un proveedor bajo **Identity Providers**. Para OIDC se requiere el flujo de código de autorización; se puede importar el discovery document. Para SAML, importar el descriptor de la institución.
-2. Usar un alias único por campus. Si hay varias universidades, dejar que el usuario elija su proveedor en Keycloak en vez de forzar un proveedor predeterminado.
+2. Usar un alias para la única universidad configurada. Para el piloto real, ofrecer su proveedor institucional y conservar las cuentas sintéticas aisladas. La selección entre varias universidades queda fuera del alcance actual.
 3. Copiar desde la pantalla de Keycloak la URL de retorno o los datos del Service Provider que debe registrar la institución. No confundir el callback institucional hacia Keycloak con el callback de la aplicación hacia Keycloak.
 4. Agregar *identity provider mappers* para trasladar el identificador institucional y el estatus de alumno al usuario federado de Keycloak. Si la institución no entrega university_id, el valor se puede asignar por proveedor únicamente cuando la vinculación de ese proveedor con la institución haya sido verificada por el operador.
 5. Configurar los *protocol mappers* o *client scopes* del cliente mercadito-web para que university_id, el claim de estatus, sub y email estén disponibles en el perfil OIDC que consume la app.
@@ -73,7 +73,7 @@ Repetir la prueba tras cambiar o renovar metadatos, certificados o claims. No ac
 ## Pendientes de operación
 
 - Aún falta el proveedor y los claims de una universidad piloto real.
-- Aún falta el aviso de privacidad aprobado y el canal de atención para abrir solicitudes.
+- Aún falta el aviso de privacidad aprobado y el canal de atención para recibir alumnos reales. Las solicitudes de otras universidades están cerradas.
 - El portal actual no incluye una consola para aprobar solicitudes ni activar universidades; la activación es una tarea operativa controlada.
 - Los cinco usuarios UMAN son sintéticos y no deben reutilizarse como cuentas reales.
 

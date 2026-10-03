@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { activeUniversitySlug } from "@/lib/active-community";
 
 export async function getActiveStudent() {
   const session = await auth();
@@ -12,7 +13,7 @@ export async function getActiveStudent() {
       role: "STUDENT",
       status: "ACTIVE",
       isDemo: false,
-      university: { status: "ACTIVE", isDemo: false },
+      university: { slug: activeUniversitySlug, status: "ACTIVE", isDemo: false },
     },
     select: {
       id: true,

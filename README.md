@@ -1,6 +1,6 @@
 # Mercadito
 
-Mercadito es una aplicación web progresiva para descubrir y publicar artículos entre comunidades universitarias. La instalación contempla varias universidades: cada cuenta, publicación y consulta pertenece a un campus activo.
+Mercadito es una aplicación web progresiva para descubrir y publicar artículos entre estudiantes de una sola universidad. La comunidad habilitada en esta etapa es UMAN, con cuentas y datos de prueba. Cada cuenta, publicación y consulta conserva su vínculo con el campus para permitir una ampliación futura.
 
 El MVP no procesa pagos. La comunidad coordina el intercambio directamente y las ofertas de demostración se identifican como ficticias; no representan inventario ni ventas reales.
 
@@ -36,7 +36,16 @@ Keycloak expone los metadatos del realm desplegado en estos endpoints públicos:
 
 Estos describen el realm de Keycloak de Mercadito; no sustituyen la URL de metadatos OIDC/SAML ni los claims que debe proporcionar cada universidad. Ambos endpoints se verificaron por HTTPS y devuelven metadatos válidos.
 
-La recepción de solicitudes universitarias está deshabilitada hasta publicar el aviso de privacidad aprobado y el canal de atención. La página no envía ni almacena datos mientras está cerrada; la API devuelve 503 y solo se habilita con ENABLE_UNIVERSITY_APPLICATIONS=true en /srv/secrets/mercadito/app.env. Una solicitud habilitada pasaría a revisión y no activaría automáticamente una universidad ni sus cuentas. La vista pública muestra únicamente datos ficticios de demostración; una sesión estudiantil activa solo puede consultar las publicaciones de su propia universidad.
+## Una sola comunidad
+
+La configuración en `/srv/secrets/mercadito/app.env` define la única comunidad admitida:
+
+- `ACTIVE_UNIVERSITY_SLUG=uman`: slug exacto del registro University permitido.
+- `ACTIVE_UNIVERSITY_NAME=UMAN`: nombre corto visible en la portada y el acceso.
+
+El servidor aplica esta restricción en el inicio de sesión, en las sesiones existentes y en las consultas de productos, fotos, publicaciones y mensajes. Una cuenta de otro campus no puede usar estos recorridos aunque tenga una sesión anterior. La portada pública no entrega productos. `/api/universities` devuelve únicamente los datos públicos del campus configurado; `/universidades` redirige al acceso. El registro de otras comunidades está cerrado: `/api/universities/register` devuelve 403 aunque la antigua variable `ENABLE_UNIVERSITY_APPLICATIONS` estuviera habilitada.
+
+Para pasar de UMAN a una universidad real, seguir [docs/comunidad-unica.md](docs/comunidad-unica.md). Se cambia la configuración y se conecta la identidad real; no se deben reutilizar las cuentas sintéticas ni cambiarles el campus. El modelo conserva los registros existentes, pero solo admite el campus configurado.
 
 ## Despliegue en el servidor
 
@@ -48,7 +57,7 @@ Los archivos de entorno viven fuera del repositorio, en /srv/secrets/mercadito/:
 - keycloak.env: conexión de Keycloak a su base de datos y credenciales de administración inicial.
 - app.env: conexión de la aplicación, Auth.js y cliente OIDC de Keycloak.
 
-Mantener los tres archivos con permisos restrictivos. Nunca guardar valores secretos en Git. Antes de recibir solicitudes reales, completar y publicar el aviso de privacidad aprobado por la persona responsable del servicio. La API mantiene deshabilitada la recepción hasta que la variable ENABLE_UNIVERSITY_APPLICATIONS=true esté definida en /srv/secrets/mercadito/app.env; mantenerla en false mientras falte ese aviso o el canal de atención.
+Mantener los tres archivos con permisos restrictivos. Nunca guardar valores secretos en Git. Antes de recibir alumnos reales, completar y publicar el aviso de privacidad aprobado por la persona responsable del servicio. El registro público de otras universidades permanece cerrado durante esta etapa.
 
 Con los secretos, DNS y configuración de Caddy listos, desde la carpeta del proyecto:
 
@@ -62,7 +71,7 @@ Antes de habilitar un campus real, registrar en Keycloak su proveedor institucio
 
 ## Datos de demostración
 
-La base inicial contiene una comunidad y publicaciones sintéticas de demostración. En el servidor UMAN está registrada por separado como campus de prueba, con cuentas locales de Keycloak para revisar el flujo de publicación. isDemo distingue los ejemplos públicos e isTest identifica campus de prueba; la interfaz debe etiquetar ambos. No guardar las credenciales de prueba en este repositorio.
+La base inicial contiene una comunidad y publicaciones sintéticas de demostración. En el servidor UMAN está registrada por separado como campus de prueba, con cuentas locales de Keycloak para revisar el flujo de publicación. isDemo distingue los ejemplos sintéticos e isTest identifica campus de prueba; la interfaz debe etiquetar ambos. El antiguo campus demo permanece guardado, pero no es accesible desde la web ni la API de productos. No guardar las credenciales de prueba en este repositorio.
 
 ## Desarrollo y cambios
 
