@@ -1,0 +1,11 @@
+# Replace this placeholder outside Git, in /srv/secrets/ssh-access/restrictions.yaml.
+restrictions:
+  - name: SSH administration only
+    match:
+      - !PathPrefix "^REPLACE_WITH_PRIVATE_RANDOM_PREFIX$"
+    allow:
+      - !Tunnel
+        protocol: [Tcp]
+        port: [22]
+        host: '^172\.18\.0\.1$'
+        cidr: [172.18.0.1/32]

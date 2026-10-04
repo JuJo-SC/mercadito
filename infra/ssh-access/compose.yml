@@ -1,0 +1,33 @@
+name: ssh-access
+services:
+  tunnel:
+    image: ghcr.io/erebe/wstunnel:v11.0.0@sha256:e0714a3b3309f331b72293a08d6e60b5e519b1e21b27380d49679e1c2fde58b5
+    container_name: ssh-access
+    restart: unless-stopped
+    command: [/home/app/wstunnel, server, --log-lvl, WARN, --restrict-config, /run/secrets/restrictions.yaml, 'ws://0.0.0.0:8080']
+    volumes:
+      - /srv/secrets/ssh-access/restrictions.yaml:/run/secrets/restrictions.yaml:ro
+    user: "1000:1000"
+    group_add: ["1001"]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=16m']
+    mem_limit: 256m
+    pids_limit: 64
+    healthcheck:
+      test:
+        - CMD
+        - /usr/bin/timeout
+        - '4'
+        - /bin/bash
+        - -c
+        - 'exec 3<>/dev/tcp/172.18.0.1/22; IFS= read -r banner <&3; [[ $$banner == SSH-2.0-* ]] && exec 4<>/dev/tcp/127.0.0.1/8080'
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks: [edge]
+networks:
+  edge:
+    external: true

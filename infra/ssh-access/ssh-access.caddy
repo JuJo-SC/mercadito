@@ -1,0 +1,17 @@
+ssh.291006.xyz {
+    header {
+        -Server
+        X-Content-Type-Options nosniff
+        Cache-Control no-store
+    }
+    @websocket {
+        header Connection *Upgrade*
+        header Upgrade websocket
+    }
+    handle @websocket {
+        reverse_proxy ssh-access:8080
+    }
+    handle {
+        respond "Acceso administrativo por SSH sobre HTTPS" 200
+    }
+}
