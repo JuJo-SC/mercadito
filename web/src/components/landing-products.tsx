@@ -1,17 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { ImageIcon, Pause, Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, ImageIcon, Pause, Play } from "lucide-react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 type Product = {
   id: string; title: string; image: string | null; price: string; isDemo: boolean;
 };
 
+function subscribeDesktop(callback: () => void) {
+  const query = window.matchMedia("(min-width: 761px)");
+  query.addEventListener("change", callback);
+  return () => query.removeEventListener("change", callback);
+}
+
 export function LandingProducts({ products }: { products: Product[] }) {
   const viewport = useRef<HTMLDivElement>(null);
   const group = useRef<HTMLDivElement>(null);
   const interacting = useRef(false);
+  const desktop = useSyncExternalStore(
+    subscribeDesktop,
+    () => window.matchMedia("(min-width: 761px)").matches,
+    () => false,
+  );
+  const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
 
@@ -25,6 +37,14 @@ export function LandingProducts({ products }: { products: Product[] }) {
 
   useEffect(() => {
     if (paused || reducedMotion || products.length < 2) return;
+    if (desktop) {
+      const timer = window.setInterval(() => {
+        if (!interacting.current && !document.hidden) {
+          setActiveIndex((index) => (index + 1) % products.length);
+        }
+      }, 5000);
+      return () => window.clearInterval(timer);
+    }
     let frame = 0;
     let previous = 0;
     let position = viewport.current?.scrollLeft ?? 0;
@@ -43,7 +63,7 @@ export function LandingProducts({ products }: { products: Product[] }) {
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [paused, reducedMotion, products.length]);
+  }, [paused, reducedMotion, products.length, desktop]);
 
   const renderProduct = (product: Product, duplicate = false) => (
     <Link
@@ -70,7 +90,7 @@ export function LandingProducts({ products }: { products: Product[] }) {
   );
 
   return (
-    <section className="landing-products page-width" aria-labelledby="preview-title">
+    <section className="landing-products" aria-labelledby="preview-title">
       <div className="landing-products-heading">
         <h2 id="preview-title">Descubre lo que hay</h2>
         {products.length > 1 && !reducedMotion && (
@@ -82,7 +102,32 @@ export function LandingProducts({ products }: { products: Product[] }) {
           </button>
         )}
       </div>
-      {products.length ? (
+      {products.length && desktop ? (
+        <div className="landing-product-showcase"
+          onPointerEnter={() => { interacting.current = true; }}
+          onPointerLeave={() => { interacting.current = false; }}
+          onFocusCapture={() => { interacting.current = true; }}
+          onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) interacting.current = false; }}>
+          <div className="landing-single-product" key={products[activeIndex % products.length].id}>
+            {renderProduct(products[activeIndex % products.length])}
+          </div>
+          {products.length > 1 && (
+            <div className="landing-product-controls">
+              <button type="button" className="landing-motion-toggle" aria-label="Producto anterior"
+                onClick={() => setActiveIndex((index) => (index - 1 + products.length) % products.length)}>
+                <ChevronLeft aria-hidden="true" size={18} />
+              </button>
+              <span aria-label={`Producto ${activeIndex + 1} de ${products.length}`}>
+                {activeIndex + 1} / {products.length}
+              </span>
+              <button type="button" className="landing-motion-toggle" aria-label="Siguiente producto"
+                onClick={() => setActiveIndex((index) => (index + 1) % products.length)}>
+                <ChevronRight aria-hidden="true" size={18} />
+              </button>
+            </div>
+          )}
+        </div>
+      ) : products.length ? (
         <div ref={viewport} className="landing-product-viewport" tabIndex={0} aria-label="Productos. Desliza para ver más."
           onPointerEnter={(event) => { if (event.pointerType === "mouse") interacting.current = true; }}
           onPointerLeave={() => { interacting.current = false; }}

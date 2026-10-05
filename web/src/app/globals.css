@@ -6562,3 +6562,24 @@ select {
   .landing-home .landing-how { grid-template-columns: 1fr; gap: 1.1rem; padding-block: 1.4rem; }
   .landing-home .landing-steps { grid-template-columns: 1fr; gap: 1rem; }
 }
+
+/* En escritorio, el adelanto vuelve al costado de la introducción. */
+.landing-intro { min-width: 0; }
+.landing-product-showcase { min-width: 0; }
+.landing-single-product .landing-product { width: 100%; }
+.landing-single-product .landing-product-info h3 { white-space: normal; min-height: 2.8em; }
+.landing-product-controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 0.65rem; }
+.landing-product-controls .landing-motion-toggle { min-width: 44px; }
+.landing-product-controls > span { color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+@media (min-width: 761px) {
+  .landing-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 380px); align-items: center; gap: clamp(2rem, 6vw, 6rem); padding-block: 2.5rem; }
+  .landing-home .landing-intro .landing-hero { flex-direction: column; align-items: flex-start; justify-content: center; padding-block: 0; gap: 1.5rem; }
+  .landing-intro .landing-copy h1 { max-width: 20ch; }
+  .landing-intro .landing-description { max-width: 38ch; }
+  .landing-intro .landing-products { padding-bottom: 0; min-width: 0; }
+  .landing-single-product { animation: landing-product-reveal 280ms ease-out; }
+}
+@keyframes landing-product-reveal { from { opacity: 0.5; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .landing-single-product { animation: none; }
+}

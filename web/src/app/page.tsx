@@ -18,7 +18,8 @@ export default async function Home() {
     <>
       <SiteHeader />
       <main className="landing-home">
-        <section className="landing-hero page-width" aria-labelledby="landing-title">
+        <div className="landing-intro page-width">
+        <section className="landing-hero" aria-labelledby="landing-title">
           <div className="landing-copy">
             <h1 id="landing-title">Tu campus. Tu mercadito.</h1>
             <p className="landing-description">Compra y vende entre estudiantes de {activeUniversityName}.</p>
@@ -29,6 +30,7 @@ export default async function Home() {
         </section>
 
         <LandingProducts products={products} />
+        </div>
 
         <section className="landing-how page-width" id="como-funciona" aria-labelledby="how-title">
           <div className="landing-section-heading">
