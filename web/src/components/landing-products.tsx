@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ChevronLeft, ChevronRight, ImageIcon, Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
@@ -66,11 +65,10 @@ export function LandingProducts({ products }: { products: Product[] }) {
   }, [paused, reducedMotion, products.length, desktop]);
 
   const renderProduct = (product: Product, duplicate = false) => (
-    <Link
+    <a
       key={product.id}
       className="landing-product"
       href="/ingresar?returnTo=%2Fmercadito"
-      prefetch={false}
       tabIndex={duplicate ? -1 : 0}
       aria-label={`${product.title}, ${product.price}${product.isDemo ? ", producto de ejemplo" : ""}. Entrar para continuar`}
     >
@@ -86,7 +84,7 @@ export function LandingProducts({ products }: { products: Product[] }) {
         <h3>{product.title}</h3>
         <p>{product.price}<span>MXN</span></p>
       </div>
-    </Link>
+    </a>
   );
 
   return (
