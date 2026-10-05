@@ -8,7 +8,7 @@ El MVP no procesa pagos. La comunidad coordina el intercambio directamente y las
 
 - Next.js App Router, React, TypeScript y Tailwind CSS.
 - PWA instalable desde el navegador, con un aviso estático ante fallos de conexión o disponibilidad; no almacena publicaciones ni conversaciones offline.
-- Cada publicación admite hasta cinco fotos WebP con compresión adaptativa; cada archivo de entrada puede pesar hasta 8 MB y la carga total hasta 20 MB. Las imágenes solo se entregan a estudiantes autenticados del mismo campus.
+- Cada publicación admite hasta cinco fotos WebP con compresión adaptativa; cada archivo de entrada puede pesar hasta 8 MB y la carga total hasta 20 MB. Las fotos originales solo se entregan a estudiantes autenticados del mismo campus; la portada pública muestra miniaturas reducidas de hasta ocho anuncios publicados.
 - Auth.js con Keycloak como intermediario OIDC para los proveedores institucionales.
 - PostgreSQL y Prisma ORM.
 - Docker Compose y Caddy para ejecución y HTTPS.
@@ -43,7 +43,7 @@ La configuración en `/srv/secrets/mercadito/app.env` define la única comunidad
 - `ACTIVE_UNIVERSITY_SLUG=uman`: slug exacto del registro University permitido.
 - `ACTIVE_UNIVERSITY_NAME=UMAN`: nombre corto visible en la portada y el acceso.
 
-El servidor aplica esta restricción en el inicio de sesión, en las sesiones existentes y en las consultas de productos, fotos, publicaciones y mensajes. Una cuenta de otro campus no puede usar estos recorridos aunque tenga una sesión anterior. La portada pública no entrega productos. `/api/universities` devuelve únicamente los datos públicos del campus configurado; `/universidades` redirige al acceso. El registro de otras comunidades está cerrado: `/api/universities/register` devuelve 403 aunque la antigua variable `ENABLE_UNIVERSITY_APPLICATIONS` estuviera habilitada.
+El servidor aplica esta restricción en el inicio de sesión, en las sesiones existentes y en las consultas de productos, fotos, publicaciones y mensajes. Una cuenta de otro campus no puede usar estos recorridos aunque tenga una sesión anterior. La portada pública muestra foto reducida, título y precio de hasta ocho anuncios publicados del campus activo, sin vendedores, descripciones ni conversaciones. Las tarjetas llevan a /ingresar; el catálogo y las fotos originales requieren sesión. `/api/universities` devuelve únicamente los datos públicos del campus configurado; `/universidades` redirige al acceso. El registro de otras comunidades está cerrado: `/api/universities/register` devuelve 403 aunque la antigua variable `ENABLE_UNIVERSITY_APPLICATIONS` estuviera habilitada.
 
 Para pasar de UMAN a una universidad real, seguir [docs/comunidad-unica.md](docs/comunidad-unica.md). Se cambia la configuración y se conecta la identidad real; no se deben reutilizar las cuentas sintéticas ni cambiarles el campus. El modelo conserva los registros existentes, pero solo admite el campus configurado.
 

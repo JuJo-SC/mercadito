@@ -40,10 +40,10 @@ La pertenencia a una universidad define el acceso al mercadito de esa comunidad.
 - Alcance confirmado para el MVP: publicar y explorar artículos, conversar por chat para coordinar el interés, sin procesar pagos.
 - Los estudiantes pueden consultar y editar sus propios avisos, cambiar su disponibilidad (publicado, apartado, vendido o archivado) dentro de su campus, y conversar con interesados.
 - El chat del MVP permite mensajes de texto entre estudiantes del mismo campus; no admite adjuntos.
-- Cada aviso puede incluir hasta cinco fotos JPG, PNG o WebP. Cada archivo de entrada pesa como máximo 8 MB; la suma de la carga no supera 20 MB. Las fotos se convierten a WebP de hasta 1280 px, con un objetivo de 700 KB y un límite de 1.2 MB por imagen, se guardan como filas vinculadas al aviso y solo se entregan a estudiantes activos del mismo campus. El recorrido de demostración previsualiza las fotos, pero no guarda publicaciones.
+- Cada aviso puede incluir hasta cinco fotos JPG, PNG o WebP. Cada archivo de entrada pesa como máximo 8 MB; la suma de la carga no supera 20 MB. Las fotos se convierten a WebP de hasta 1280 px, con un objetivo de 700 KB y un límite de 1.2 MB por imagen, se guardan como filas vinculadas al aviso y sus originales solo se entregan a estudiantes activos del mismo campus; la portada puede mostrar miniaturas reducidas de anuncios publicados. El recorrido de demostración previsualiza las fotos, pero no guarda publicaciones.
 - Si una navegación falla por red o disponibilidad, la PWA muestra una página estática; no almacena ni reenvía publicaciones, mensajes o datos privados.
 
-- Confirmado: sin sesión se muestra una portada informativa, sin productos. Una cuenta estudiantil activa solo puede acceder si pertenece a la única universidad configurada. Los antiguos registros de demostración se conservan, pero no se exponen en el catálogo público.
+- Actualizado por petición del usuario: sin sesión se muestran nombre, precio y miniatura de hasta ocho productos publicados de la comunidad activa. Las tarjetas llevan al acceso; no se exponen vendedores, conversaciones ni fotos originales. Una cuenta estudiantil activa solo puede acceder si pertenece a la única universidad configurada. Los antiguos registros de demostración se conservan, pero no se exponen en el catálogo público.
 
 ## Evidence on Hand
 
@@ -55,7 +55,7 @@ Aún se necesita el aviso de privacidad aprobado por quien operará el servicio,
 
 ## Flujo del estudiante
 
-1. La portada pública presenta el mercadito de la universidad configurada y su condición de prueba cuando corresponde. No muestra productos ni ofrece integrar otras comunidades.
+1. La portada pública presenta el mercadito de la universidad configurada y su condición de prueba cuando corresponde. Muestra una vista previa de productos publicados con desplazamiento suave, pausa y alternativa sin movimiento. No ofrece integrar otras comunidades.
 2. Al iniciar sesión, Keycloak entrega los claims que permiten asociar la cuenta con la universidad activa configurada. Otra universidad se rechaza, incluso con claims válidos. El correo por sí solo no determina el campus.
 3. El alumno entra a /mercadito, donde ve el catálogo de su universidad, busca por texto o categoría y compara publicaciones.
 4. El catálogo empieza por publicaciones con más conversaciones iniciadas cuando hay actividad suficiente; si no, muestra las más recientes. Mercadito no procesa pagos.

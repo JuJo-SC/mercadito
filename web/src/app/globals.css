@@ -6512,3 +6512,53 @@ select {
   .campus-marketplace .marketplace-sidebar { width: 220px; }
   body:has(.campus-marketplace) .site-footer .footer-inner { padding-left: 244px; }
 }
+
+/* Portada: una introducción breve y productos desde el primer vistazo. */
+.landing-home .landing-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-block: 2.25rem 1.5rem;
+  border: 0;
+}
+.landing-home .landing-copy h1 {
+  max-width: none;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.landing-home .landing-description { margin-top: 0.65rem; font-size: 1rem; line-height: 1.5; }
+.landing-home .landing-hero > .button-ink { flex-shrink: 0; }
+.landing-products { padding-bottom: 2rem; }
+.landing-products-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.85rem; }
+.landing-products-heading h2 { margin: 0; font-size: 1.1rem; font-weight: 650; letter-spacing: -0.02em; }
+.landing-motion-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; min-height: 44px; padding: 0.5rem 0.65rem; background: var(--surface); color: var(--ink); border: 1px solid var(--rule); border-radius: 12px; font: inherit; font-size: 0.8rem; cursor: pointer; }
+.landing-motion-toggle:hover { background: var(--paper-quiet); }
+.landing-product-viewport { overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--signal) var(--paper-quiet); border-radius: 16px; overscroll-behavior-x: contain; }
+.landing-product-track { display: flex; width: max-content; padding-block: 2px 0.7rem; }
+.landing-product-group { display: flex; gap: 1rem; padding-right: 1rem; }
+.landing-product { display: block; width: 230px; flex: 0 0 230px; border-radius: 16px; overflow: hidden; background: var(--surface); text-decoration: none; color: var(--ink); }
+.landing-product:hover .landing-product-info h3 { color: var(--signal); }
+.landing-product:focus-visible, .landing-motion-toggle:focus-visible, .landing-product-viewport:focus-visible { outline: 3px solid var(--coral); outline-offset: 3px; }
+.landing-product-photo { position: relative; aspect-ratio: 4 / 3; background: var(--paper-quiet); display: grid; place-items: center; color: var(--muted); }
+.landing-product-photo img { width: 100%; height: 100%; object-fit: cover; }
+.landing-product-example { position: absolute; bottom: 0.5rem; left: 0.5rem; padding: 0.22rem 0.5rem; border-radius: 6px; background: var(--surface); color: var(--ink); font-size: 0.7rem; font-weight: 600; }
+.landing-product-info { padding: 0.8rem 0.85rem; }
+.landing-product-info h3 { margin: 0; font-size: 0.88rem; font-weight: 550; line-height: 1.4; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.landing-product-info p { margin: 0.4rem 0 0; font-size: 1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.landing-product-info p span { margin-left: 0.35rem; font-size: 0.7rem; font-weight: 400; color: var(--muted); }
+.landing-preview-note, .landing-preview-empty { margin: 0.8rem 0 0; color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
+.landing-home .landing-how { padding-block: 1.75rem; gap: 2rem; grid-template-columns: 0.5fr 1.5fr; border-top: 1px solid var(--rule); border-bottom: 0; }
+.landing-home .landing-section-heading h2 { font-size: 1.25rem; letter-spacing: -0.02em; }
+.landing-home .landing-steps li { display: block; padding: 0; border: 0; }
+.landing-home .landing-steps h3 { margin: 0; font-size: 0.95rem; }
+.landing-test-disclosure { padding-block: 0.8rem 1.5rem; margin-block: 0; color: var(--muted); font-size: 0.78rem; line-height: 1.5; }
+@media (max-width: 760px) {
+  .landing-home .landing-hero { flex-direction: column; align-items: flex-start; gap: 1rem; padding-block: 1.5rem 1rem; }
+  .landing-product { width: 192px; flex-basis: 192px; }
+  .landing-product-group { gap: 0.75rem; padding-right: 0.75rem; }
+  .landing-products { padding-bottom: 1.3rem; }
+  .landing-home .landing-how { grid-template-columns: 1fr; gap: 1.1rem; padding-block: 1.4rem; }
+  .landing-home .landing-steps { grid-template-columns: 1fr; gap: 1rem; }
+}
