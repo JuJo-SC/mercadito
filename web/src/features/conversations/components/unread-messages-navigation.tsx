@@ -23,9 +23,11 @@ export function UnreadMessagesProvider({
   const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
   const requestInFlight = useRef(false);
 
-  useEffect(() => {
+  const [previousInitialCount, setPreviousInitialCount] = useState(initialUnreadCount);
+  if (previousInitialCount !== initialUnreadCount) {
+    setPreviousInitialCount(initialUnreadCount);
     setUnreadCount(initialUnreadCount);
-  }, [initialUnreadCount]);
+  }
 
   useEffect(() => {
     if (!active) return;

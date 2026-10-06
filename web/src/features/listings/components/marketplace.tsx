@@ -6,7 +6,6 @@ import type { FormEvent } from "react";
 import Link from "next/link";
 import {
   ArrowDown,
-  ArrowLeft,
   ArrowRight,
 
   Camera,
@@ -156,6 +155,7 @@ export function Marketplace({
     const root = document.documentElement;
     const body = document.body;
     const scrollY = window.scrollY;
+    const filterToggle = filterToggleRef.current;
     const previous = {
       rootOverflow: root.style.overflow,
       rootScrollBehavior: root.style.scrollBehavior,
@@ -190,7 +190,7 @@ export function Marketplace({
       body.style.paddingRight = previous.bodyPaddingRight;
       window.scrollTo(0, showFilterResults.current ? 0 : scrollY);
       showFilterResults.current = false;
-      if (filtersOpen) filterToggleRef.current?.focus({ preventScroll: true });
+      if (filtersOpen) filterToggle?.focus({ preventScroll: true });
       root.style.scrollBehavior = previous.rootScrollBehavior;
     };
   }, [selectedListing, filtersOpen]);
@@ -517,6 +517,7 @@ export function Marketplace({
                   >
                     <span className="product-card-media">
                       {listing.imageUrls[0] ? (
+                        // eslint-disable-next-line @next/next/no-img-element -- Fotos privadas requieren la sesión del navegador, sin proxy de optimización.
                         <img
                           className="product-card-image"
                           src={listing.imageUrls[0]}
@@ -647,6 +648,7 @@ export function Marketplace({
               {selectedListing.imageUrls.length ? (
                 <>
                   <div className="listing-detail-image-wrap">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- Fotos privadas requieren la sesión del navegador, sin proxy de optimización. */}
                     <img
                       key={selectedListing.imageUrls[selectedPhotoIndex]}
                       src={selectedListing.imageUrls[selectedPhotoIndex]}

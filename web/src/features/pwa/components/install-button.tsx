@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { ArrowDownToLine, MoreVertical, Share } from "lucide-react";
 
 type InstallChoice = { outcome: "accepted" | "dismissed"; platform: string };
@@ -10,11 +10,36 @@ type InstallPromptEvent = Event & {
 };
 type ExtendedNavigator = Navigator & { standalone?: boolean };
 
+function subscribeInstallEnvironment(onChange: () => void) {
+  const media = window.matchMedia("(display-mode: standalone)");
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+}
+
+function getInstallEnvironment() {
+  const standalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    Boolean((navigator as ExtendedNavigator).standalone);
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const android = /android/i.test(navigator.userAgent);
+  return (standalone ? 1 : 0) | (ios ? 2 : 0) | (android ? 4 : 0);
+}
+
+function getServerInstallEnvironment() {
+  return 0;
+}
+
 export function InstallButton() {
   const [promptEvent, setPromptEvent] = useState<InstallPromptEvent | null>(null);
-  const [isIos, setIsIos] = useState(false);
-  const [isAndroid, setIsAndroid] = useState(false);
-  const [isInstalled, setIsInstalled] = useState(false);
+  const environment = useSyncExternalStore(
+    subscribeInstallEnvironment,
+    getInstallEnvironment,
+    getServerInstallEnvironment,
+  );
+  const [installedAfterPrompt, setInstalledAfterPrompt] = useState(false);
+  const isInstalled = installedAfterPrompt || Boolean(environment & 1);
+  const isIos = !isInstalled && Boolean(environment & 2);
+  const isAndroid = !isInstalled && Boolean(environment & 4);
   const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
@@ -25,21 +50,12 @@ export function InstallButton() {
   }, []);
 
   useEffect(() => {
-    const standalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      Boolean((navigator as ExtendedNavigator).standalone);
-    const userAgent = navigator.userAgent;
-    const appleDevice = /iphone|ipad|ipod/i.test(userAgent);
-    setIsInstalled(standalone);
-    setIsIos(appleDevice && !standalone);
-    setIsAndroid(/android/i.test(userAgent) && !standalone);
-
     const onBeforeInstall = (event: Event) => {
       event.preventDefault();
       setPromptEvent(event as InstallPromptEvent);
     };
     const onInstalled = () => {
-      setIsInstalled(true);
+      setInstalledAfterPrompt(true);
       setPromptEvent(null);
       setShowInstructions(false);
     };

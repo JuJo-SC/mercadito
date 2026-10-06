@@ -122,11 +122,24 @@ export function ListingForm({
   const photoInputRef = useRef<HTMLInputElement>(null);
   const submissionIdRef = useRef<string | null>(null);
 
+  const allocatedPhotoUrls = useRef(new Set<string>());
+
   useEffect(() => {
-    const previewUrls = photoFiles.map((file) => URL.createObjectURL(file));
+    const urls = allocatedPhotoUrls.current;
+    return () => {
+      urls.forEach((url) => URL.revokeObjectURL(url));
+      urls.clear();
+    };
+  }, []);
+
+  function updatePhotoFiles(files: File[]) {
+    const previewUrls = files.map((file) => URL.createObjectURL(file));
+    allocatedPhotoUrls.current.forEach((url) => URL.revokeObjectURL(url));
+    allocatedPhotoUrls.current.clear();
+    previewUrls.forEach((url) => allocatedPhotoUrls.current.add(url));
+    setPhotoFiles(files);
     setPhotoPreviewUrls(previewUrls);
-    return () => previewUrls.forEach((url) => URL.revokeObjectURL(url));
-  }, [photoFiles]);
+  }
 
   const storedPhotoUrls = listing?.imageUrls ?? publishedPhotoUrls ?? [];
   const visibleStoredPhotos = storedPhotoUrls
@@ -276,7 +289,7 @@ export function ListingForm({
     setError("");
     setSubmissionConflict(false);
     setSent(false);
-    setPhotoFiles([]);
+    updatePhotoFiles([]);
     setKeptPhotoPositions([]);
     setPublishedPhotoUrls(null);
   }
@@ -293,6 +306,7 @@ export function ListingForm({
       <div className="product-preview-media">
         {currentPhotoUrls[0] ? (
           <>
+            {/* eslint-disable-next-line @next/next/no-img-element -- Fotos con sesión y vistas blob requieren carga directa en el navegador. */}
             <img
               className="product-preview-photo"
               src={currentPhotoUrls[0]}
@@ -508,6 +522,7 @@ export function ListingForm({
                 <div className="listing-photo-thumbnails" aria-label="Fotos de la publicación">
                   {visibleStoredPhotos.map(({ url, position }, index) => (
                     <div className="listing-photo-thumb" key={`stored-${position}`}>
+                      {/* eslint-disable-next-line @next/next/no-img-element -- Fotos con sesión y vistas blob requieren carga directa en el navegador. */}
                       <img
                         src={url}
                         alt={`Foto ${index + 1} de ${draft.title || "tu producto"}`}
@@ -527,6 +542,7 @@ export function ListingForm({
                   ))}
                   {photoPreviewUrls.map((url, index) => (
                     <div className="listing-photo-thumb" key={`${url}-${index}`}>
+                      {/* eslint-disable-next-line @next/next/no-img-element -- Fotos con sesión y vistas blob requieren carga directa en el navegador. */}
                       <img
                         src={url}
                         alt={`Nueva foto ${index + 1} de ${draft.title || "tu producto"}`}
@@ -535,8 +551,8 @@ export function ListingForm({
                         className="listing-photo-remove"
                         type="button"
                         aria-label={`Quitar foto ${visibleStoredPhotos.length + index + 1}`}
-                        onClick={() => setPhotoFiles((current) =>
-                          current.filter((_, currentIndex) => currentIndex !== index),
+                        onClick={() => updatePhotoFiles(
+                          photoFiles.filter((_, currentIndex) => currentIndex !== index),
                         )}
                       >
                         <span aria-hidden="true">×</span>
@@ -579,7 +595,7 @@ export function ListingForm({
                     return;
                   }
                   setError("");
-                  setPhotoFiles((current) => [...current, ...selected]);
+                  updatePhotoFiles([...photoFiles, ...selected]);
                 }}
               />
               {currentPhotoUrls.length < MAX_LISTING_PHOTOS ? (
