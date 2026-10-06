@@ -53,6 +53,8 @@ docker compose build web
 
 Lint, tipos y compilación deben pasar. Para cambios de comportamiento, comprobar los casos afectados y añadir pruebas cuando aporten cobertura real. Una reorganización debe conservar rutas, permisos y comportamiento. No desactivar reglas globalmente para esconder errores; cualquier excepción puntual debe explicar una restricción concreta.
 
+Consultar [docs/mantenimiento-pendiente.md](docs/mantenimiento-pendiente.md) para los hallazgos de dependencias que requieren un cambio independiente.
+
 ## Publicación y despliegue
 
 Una revisión debe describir el problema y el resultado, las verificaciones realizadas y las migraciones o acciones operativas necesarias. Usar la plantilla de pull request cuando corresponda. Para cambios web sin esquema ni dependencias operativas nuevas, reconstruir la imagen y reemplazar únicamente el servicio web:
