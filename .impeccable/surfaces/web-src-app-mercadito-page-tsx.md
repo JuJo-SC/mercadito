@@ -2,7 +2,7 @@
 version: 1
 slug: "web-src-app-mercadito-page-tsx"
 primary_target: "web/src/app/mercadito/page.tsx"
-related_targets: ["web/src/components/marketplace.tsx", "web/src/components/site-header.tsx", "web/src/app/globals.css", "web/src/app/api/listings/[id]/photo/route.ts"]
+related_targets: ["web/src/features/listings/components/marketplace.tsx", "web/src/components/site-header.tsx", "web/src/app/globals.css", "web/src/app/api/listings/[id]/photo/route.ts"]
 ---
 
 # Superficie: catálogo del campus

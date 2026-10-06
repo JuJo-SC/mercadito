@@ -1,9 +1,9 @@
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { findConversationForStudent } from "@/lib/conversation-access";
-import { getActiveStudent } from "@/lib/require-student";
-import { countUnreadMessagesForStudent } from "@/lib/conversations";
-import { MessageThread } from "@/components/message-thread";
+import { findConversationForStudent } from "@/features/conversations/lib/conversation-access";
+import { getActiveStudent } from "@/features/auth/lib/require-student";
+import { countUnreadMessagesForStudent } from "@/features/conversations/lib/conversations";
+import { MessageThread } from "@/features/conversations/components/message-thread";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";

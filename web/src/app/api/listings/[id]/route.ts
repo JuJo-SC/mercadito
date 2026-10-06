@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { ListingCategory, type ListingStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { getActiveStudent } from "@/lib/require-student";
+import { getActiveStudent } from "@/features/auth/lib/require-student";
 import {
   ListingPhotoInputError,
   parseListingMultipart,
   parseListingPhotos,
-} from "@/lib/listing-photo";
-import { MAX_LISTING_PHOTOS } from "@/lib/listing-photo-limits";
+} from "@/features/listings/lib/listing-photo";
+import { MAX_LISTING_PHOTOS } from "@/features/listings/lib/listing-photo-limits";
 
 const updateListingSchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED", "RESERVED", "SOLD", "ARCHIVED"]),

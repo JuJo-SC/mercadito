@@ -22,8 +22,8 @@ services:
 
   keycloak:
     build:
-      context: .
-      dockerfile: keycloak.Dockerfile
+      context: ./infra/keycloak
+      dockerfile: Dockerfile
     image: mercadito-keycloak:26.7.4
     container_name: mercadito-keycloak
     restart: unless-stopped

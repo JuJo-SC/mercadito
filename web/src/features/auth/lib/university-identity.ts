@@ -1,6 +1,6 @@
 import type { University } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { activeUniversitySlug } from "@/lib/active-community";
+import { activeUniversitySlug } from "@/features/community/lib/active-community";
 
 type IdentityProfile = Record<string, unknown>;
 

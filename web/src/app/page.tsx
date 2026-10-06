@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { redirect } from "next/navigation";
-import { activeUniversityName, getActiveCommunity } from "@/lib/active-community";
-import { getActiveStudent } from "@/lib/require-student";
-import { getLandingProducts } from "@/lib/landing-products";
-import { LandingProducts } from "@/components/landing-products";
+import { activeUniversityName, getActiveCommunity } from "@/features/community/lib/active-community";
+import { getActiveStudent } from "@/features/auth/lib/require-student";
+import { getLandingProducts } from "@/features/listings/lib/landing-products";
+import { LandingProducts } from "@/features/listings/components/landing-products";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";

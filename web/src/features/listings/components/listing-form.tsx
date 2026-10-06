@@ -6,7 +6,7 @@ import {
   MAX_LISTING_PHOTOS,
   MAX_LISTING_PHOTO_BYTES,
   MAX_TOTAL_LISTING_PHOTO_BYTES,
-} from "@/lib/listing-photo-limits";
+} from "@/features/listings/lib/listing-photo-limits";
 import Link from "next/link";
 import {
   ArrowLeft,

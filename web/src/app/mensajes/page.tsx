@@ -3,9 +3,9 @@ import { TaskPageHeading } from "@/components/task-page-heading";
 import { ArrowRight } from "lucide-react";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { listConversationsForStudent } from "@/lib/conversations";
-import { getActiveStudent } from "@/lib/require-student";
-import { ConversationInbox } from "@/components/conversation-inbox";
+import { listConversationsForStudent } from "@/features/conversations/lib/conversations";
+import { getActiveStudent } from "@/features/auth/lib/require-student";
+import { ConversationInbox } from "@/features/conversations/components/conversation-inbox";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";

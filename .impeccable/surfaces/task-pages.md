@@ -2,7 +2,7 @@
 version: 1
 slug: "task-pages"
 primary_target: "web/src/components/task-page-heading.tsx"
-related_targets: ["web/src/app/mensajes/page.tsx", "web/src/app/mis-avisos/page.tsx", "web/src/app/publicar/page.tsx", "web/src/components/listing-form.tsx", "web/src/app/globals.css"]
+related_targets: ["web/src/app/mensajes/page.tsx", "web/src/app/mis-avisos/page.tsx", "web/src/app/publicar/page.tsx", "web/src/features/listings/components/listing-form.tsx", "web/src/app/globals.css"]
 ---
 
 # Superficie: tareas del estudiante

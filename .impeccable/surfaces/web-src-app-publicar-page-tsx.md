@@ -2,7 +2,7 @@
 version: 1
 slug: "web-src-app-publicar-page-tsx"
 primary_target: "web/src/app/publicar/page.tsx"
-related_targets: ["web/src/components/listing-form.tsx","web/src/components/manage-listings.tsx","web/src/app/globals.css"]
+related_targets: ["web/src/features/listings/components/listing-form.tsx","web/src/features/listings/components/manage-listings.tsx","web/src/app/globals.css"]
 ---
 
 # Superficie: publicar y editar un aviso

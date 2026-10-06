@@ -2,7 +2,7 @@
 version: 1
 slug: "web-src-app-mensajes-page-tsx"
 primary_target: "web/src/app/mensajes/page.tsx"
-related_targets: ["web/src/app/mensajes/[id]/page.tsx", "web/src/components/conversation-inbox.tsx", "web/src/components/message-thread.tsx", "web/src/components/start-conversation-form.tsx", "web/src/components/marketplace.tsx", "web/src/components/site-header.tsx", "web/src/app/globals.css"]
+related_targets: ["web/src/app/mensajes/[id]/page.tsx", "web/src/features/conversations/components/conversation-inbox.tsx", "web/src/features/conversations/components/message-thread.tsx", "web/src/features/conversations/components/start-conversation-form.tsx", "web/src/features/listings/components/marketplace.tsx", "web/src/components/site-header.tsx", "web/src/app/globals.css"]
 ---
 
 # Superficie: correspondencia del campus

@@ -3,7 +3,7 @@ import {
   MAX_LISTING_PHOTOS,
   MAX_LISTING_PHOTO_BYTES,
   MAX_TOTAL_LISTING_PHOTO_BYTES,
-} from "@/lib/listing-photo-limits";
+} from "@/features/listings/lib/listing-photo-limits";
 
 const MAX_REQUEST_BYTES = MAX_TOTAL_LISTING_PHOTO_BYTES + 1024 * 1024;
 const TARGET_OUTPUT_BYTES = 700_000;

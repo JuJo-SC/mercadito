@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { findConversationForStudent } from "@/lib/conversation-access";
-import { getActiveStudent } from "@/lib/require-student";
-import { findMessageRequestReplay, prismaErrorCode } from "@/lib/message-idempotency";
+import { findConversationForStudent } from "@/features/conversations/lib/conversation-access";
+import { getActiveStudent } from "@/features/auth/lib/require-student";
+import { findMessageRequestReplay, prismaErrorCode } from "@/features/conversations/lib/message-idempotency";
 
 export const runtime = "nodejs";
 

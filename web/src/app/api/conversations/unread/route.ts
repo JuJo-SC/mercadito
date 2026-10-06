@@ -1,5 +1,5 @@
-import { countUnreadMessagesForStudent } from "@/lib/conversations";
-import { getActiveStudent } from "@/lib/require-student";
+import { countUnreadMessagesForStudent } from "@/features/conversations/lib/conversations";
+import { getActiveStudent } from "@/features/auth/lib/require-student";
 
 export const runtime = "nodejs";
 

@@ -1,7 +1,7 @@
 import { cache } from "react";
 import sharp from "sharp";
 import { prisma } from "@/lib/prisma";
-import { getActiveCommunity } from "@/lib/active-community";
+import { getActiveCommunity } from "@/features/community/lib/active-community";
 
 // Public preview: only published items in the active campus, never seller data.
 export const getLandingProducts = cache(async () => {

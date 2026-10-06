@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getActiveStudent } from "@/lib/require-student";
-import { countUnreadMessagesForStudent } from "@/lib/conversations";
-import { Marketplace } from "@/components/marketplace";
+import { getActiveStudent } from "@/features/auth/lib/require-student";
+import { countUnreadMessagesForStudent } from "@/features/conversations/lib/conversations";
+import { Marketplace } from "@/features/listings/components/marketplace";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";

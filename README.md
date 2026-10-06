@@ -15,9 +15,16 @@ El MVP no procesa pagos. La comunidad coordina el intercambio directamente y las
 
 ## Estructura
 
-- web/: aplicación Next.js, endpoints y esquema de Prisma.
+- `web/src/app/`: páginas, endpoints y convenciones de Next.js.
+- `web/src/features/`: módulos de avisos, mensajes, comunidad, acceso y PWA.
+- `web/src/components/`: componentes compartidos de navegación y estructura.
+- `web/src/lib/`: infraestructura compartida; actualmente el cliente de Prisma.
+- `web/prisma/`: esquema y migraciones de la base de datos.
 - database/init/: creación inicial de las bases de datos y roles separados.
-- keycloak.Dockerfile: imagen de Keycloak.
+- `infra/keycloak/`: imagen de Keycloak.
+- `infra/ssh-access/`: configuración versionada del acceso administrativo.
+- `docs/`: arquitectura y guías operativas.
+- `CONTRIBUTING.md`: flujo de trabajo, validación y convenciones de commits.
 - compose.yml: servicios privados del proyecto y conexión al proxy compartido edge.
 - PRODUCT.md: alcance, decisiones y datos que faltan para habilitar instituciones reales.
 
@@ -74,6 +81,8 @@ Antes de habilitar un campus real, registrar en Keycloak su proveedor institucio
 La base inicial contiene una comunidad y publicaciones sintéticas de demostración. En el servidor UMAN está registrada por separado como campus de prueba, con cuentas locales de Keycloak para revisar el flujo de publicación. isDemo distingue los ejemplos sintéticos e isTest identifica campus de prueba; la interfaz debe etiquetar ambos. El antiguo campus demo permanece guardado, pero no es accesible desde la web ni la API de productos. No guardar las credenciales de prueba en este repositorio.
 
 ## Desarrollo y cambios
+
+Consultar [CONTRIBUTING.md](CONTRIBUTING.md) para el flujo de cambios y [docs/arquitectura.md](docs/arquitectura.md) para decidir dónde colocar cada archivo.
 
 El entorno oficial de desarrollo y despliegue de este proyecto es el servidor definido por las instrucciones de operación del propietario. Trabajar allí y evitar copias de fuentes, dependencias, compilaciones, secretos o datos de producción en el directorio de entrada local.
 

@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, LockKeyhole } from "lucide-react";
-import { signIn } from "@/auth";
-import { activeUniversityName, getActiveCommunity } from "@/lib/active-community";
-import { getActiveStudent } from "@/lib/require-student";
-import { countUnreadMessagesForStudent } from "@/lib/conversations";
+import { signIn } from "@/features/auth/auth";
+import { activeUniversityName, getActiveCommunity } from "@/features/community/lib/active-community";
+import { getActiveStudent } from "@/features/auth/lib/require-student";
+import { countUnreadMessagesForStudent } from "@/features/conversations/lib/conversations";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";

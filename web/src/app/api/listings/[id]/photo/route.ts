@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { getActiveStudent } from "@/lib/require-student";
-import { MAX_LISTING_PHOTOS } from "@/lib/listing-photo-limits";
+import { getActiveStudent } from "@/features/auth/lib/require-student";
+import { MAX_LISTING_PHOTOS } from "@/features/listings/lib/listing-photo-limits";
 
 export const runtime = "nodejs";
 

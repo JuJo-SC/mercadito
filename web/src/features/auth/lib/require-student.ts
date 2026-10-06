@@ -1,6 +1,6 @@
-import { auth } from "@/auth";
+import { auth } from "@/features/auth/auth";
 import { prisma } from "@/lib/prisma";
-import { activeUniversitySlug } from "@/lib/active-community";
+import { activeUniversitySlug } from "@/features/community/lib/active-community";
 
 export async function getActiveStudent() {
   const session = await auth();

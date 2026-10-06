@@ -2,9 +2,9 @@ import Link from "next/link";
 import { TaskPageHeading } from "@/components/task-page-heading";
 import { ArrowRight, LockKeyhole } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { getActiveStudent } from "@/lib/require-student";
-import { countUnreadMessagesForStudent } from "@/lib/conversations";
-import { ListingForm } from "@/components/listing-form";
+import { getActiveStudent } from "@/features/auth/lib/require-student";
+import { countUnreadMessagesForStudent } from "@/features/conversations/lib/conversations";
+import { ListingForm } from "@/features/listings/components/listing-form";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 type PublishPageProps = {

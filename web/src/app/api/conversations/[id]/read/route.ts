@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { findConversationForStudent } from "@/lib/conversation-access";
-import { getActiveStudent } from "@/lib/require-student";
+import { findConversationForStudent } from "@/features/conversations/lib/conversation-access";
+import { getActiveStudent } from "@/features/auth/lib/require-student";
 
 export const runtime = "nodejs";
 

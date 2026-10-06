@@ -7,3 +7,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Organización de Mercadito
+
+Aplicar también las [reglas del repositorio](../AGENTS.md), la [guía de contribución](../CONTRIBUTING.md) y el [mapa de arquitectura](../docs/arquitectura.md). Las rutas permanecen en `src/app/`; componentes y lógica propios de una función van en `src/features/<modulo>/`.

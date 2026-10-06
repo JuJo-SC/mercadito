@@ -2,9 +2,9 @@ import Link from "next/link";
 import { TaskPageHeading } from "@/components/task-page-heading";
 import { ArrowRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { getActiveStudent } from "@/lib/require-student";
-import { countUnreadMessagesForStudent } from "@/lib/conversations";
-import { ManageListings } from "@/components/manage-listings";
+import { getActiveStudent } from "@/features/auth/lib/require-student";
+import { countUnreadMessagesForStudent } from "@/features/conversations/lib/conversations";
+import { ManageListings } from "@/features/listings/components/manage-listings";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";

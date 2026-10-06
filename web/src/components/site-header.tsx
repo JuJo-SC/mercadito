@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, LogOut, Store } from "lucide-react";
-import { signOut } from "@/auth";
-import { activeUniversityName } from "@/lib/active-community";
-import { InstallButton } from "@/components/install-button";
+import { signOut } from "@/features/auth/auth";
+import { activeUniversityName } from "@/features/community/lib/active-community";
+import { InstallButton } from "@/features/pwa/components/install-button";
 import {
   DashboardNavigationLink,
   SiteHeaderFrame,
@@ -10,7 +10,7 @@ import {
 import {
   UnreadMessagesNavLink,
   UnreadMessagesProvider,
-} from "@/components/unread-messages-navigation";
+} from "@/features/conversations/components/unread-messages-navigation";
 
 type SiteHeaderProps = {
   signedIn?: boolean;

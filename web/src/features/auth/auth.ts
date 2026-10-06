@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import Keycloak from "next-auth/providers/keycloak";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
-import { resolveActiveStudent } from "@/lib/university-identity";
+import { resolveActiveStudent } from "@/features/auth/lib/university-identity";
 
 const keycloakConfigured = Boolean(
   process.env.AUTH_KEYCLOAK_ID &&

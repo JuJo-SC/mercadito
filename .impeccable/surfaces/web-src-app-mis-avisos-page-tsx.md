@@ -2,7 +2,7 @@
 version: 1
 slug: "web-src-app-mis-avisos-page-tsx"
 primary_target: "web/src/app/mis-avisos/page.tsx"
-related_targets: ["web/src/components/manage-listings.tsx","web/src/app/globals.css","web/src/components/site-header.tsx"]
+related_targets: ["web/src/features/listings/components/manage-listings.tsx","web/src/app/globals.css","web/src/components/site-header.tsx"]
 ---
 
 # Superficie: mis avisos

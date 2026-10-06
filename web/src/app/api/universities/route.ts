@@ -1,4 +1,4 @@
-import { getActiveCommunity } from "@/lib/active-community";
+import { getActiveCommunity } from "@/features/community/lib/active-community";
 
 export const runtime = "nodejs";
 

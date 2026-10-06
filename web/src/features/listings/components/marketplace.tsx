@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { StartConversationForm } from "@/components/start-conversation-form";
+import { StartConversationForm } from "@/features/conversations/components/start-conversation-form";
 import type { FormEvent } from "react";
 import Link from "next/link";
 import {

@@ -2,13 +2,13 @@ import { createHash } from "node:crypto";
 import { z } from "zod";
 import { ListingCategory } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { activeUniversitySlug, getActiveCommunity } from "@/lib/active-community";
-import { getActiveStudent } from "@/lib/require-student";
+import { activeUniversitySlug, getActiveCommunity } from "@/features/community/lib/active-community";
+import { getActiveStudent } from "@/features/auth/lib/require-student";
 import {
   ListingPhotoInputError,
   parseListingMultipart,
   parseListingPhotos,
-} from "@/lib/listing-photo";
+} from "@/features/listings/lib/listing-photo";
 
 export const runtime = "nodejs";
 
