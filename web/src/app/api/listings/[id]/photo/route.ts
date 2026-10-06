@@ -44,7 +44,17 @@ export async function GET(
             { isDemo: true, university: { isTest: true } },
           ],
         },
-        { OR: [{ status: "PUBLISHED" }, { sellerId: student.id }] },
+        {
+          OR: [
+            { status: "PUBLISHED" },
+            { sellerId: student.id },
+            // Buyers retain the product reference in their existing conversations.
+            { isDemo: false, conversations: { some: {
+              buyerId: student.id,
+              universityId: student.universityId,
+            } } },
+          ],
+        },
       ],
     },
     select: {

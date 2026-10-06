@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { Archive, Check, Pencil, Bookmark, RotateCcw } from "lucide-react";
+import { ProductThumbnail } from "@/features/listings/components/product-thumbnail";
 
 type ListingStatus = "DRAFT" | "PUBLISHED" | "RESERVED" | "SOLD" | "ARCHIVED";
 
@@ -14,6 +16,7 @@ type ManagedListing = {
   condition: string;
   status: ListingStatus;
   createdAt: string;
+  photoUrl: string | null;
 };
 
 const statusLabels: Record<ListingStatus, string> = {
@@ -45,12 +48,12 @@ const statusActions: Record<ListingStatus, { label: string; status: ListingStatu
   DRAFT: [{ label: "Publicar", status: "PUBLISHED" }, { label: "Archivar", status: "ARCHIVED" }],
   PUBLISHED: [
     { label: "Apartar", status: "RESERVED" },
-    { label: "Marcar vendido", status: "SOLD" },
+    { label: "Marcar como vendido", status: "SOLD" },
     { label: "Archivar", status: "ARCHIVED" },
   ],
   RESERVED: [
-    { label: "Volver a publicar", status: "PUBLISHED" },
-    { label: "Marcar vendido", status: "SOLD" },
+    { label: "Quitar apartado", status: "PUBLISHED" },
+    { label: "Marcar como vendido", status: "SOLD" },
     { label: "Archivar", status: "ARCHIVED" },
   ],
   SOLD: [
@@ -73,7 +76,7 @@ function formatDate(value: string) {
     day: "numeric",
     month: "short",
     year: "numeric",
-    timeZone: "UTC",
+    timeZone: "America/Mexico_City",
   }).format(new Date(value));
 }
 
@@ -82,8 +85,11 @@ export function ManageListings({ initialListings }: { initialListings: ManagedLi
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const requestInFlight = useRef(false);
 
   async function changeStatus(listing: ManagedListing, status: ListingStatus) {
+    if (requestInFlight.current) return;
+    requestInFlight.current = true;
     setPendingId(listing.id);
     setMessage("");
     setError("");
@@ -110,6 +116,7 @@ export function ManageListings({ initialListings }: { initialListings: ManagedLi
           : "No pudimos actualizar la publicación. Intenta de nuevo.",
       );
     } finally {
+      requestInFlight.current = false;
       setPendingId(null);
     }
   }
@@ -124,55 +131,63 @@ export function ManageListings({ initialListings }: { initialListings: ManagedLi
     );
   }
 
+  const groups = [
+    { id: "active", title: "En venta", statuses: ["PUBLISHED", "RESERVED"] },
+    { id: "drafts", title: "Borradores", statuses: ["DRAFT"] },
+    { id: "archived", title: "Archivadas", statuses: ["ARCHIVED"] },
+    { id: "sold", title: "Vendidas", statuses: ["SOLD"] },
+  ].map((group) => ({ ...group, listings: listings.filter((listing) => group.statuses.includes(listing.status)) }))
+    .filter((group) => group.listings.length > 0);
+
   return (
     <>
-      <p className="seller-feedback" role="status" aria-live="polite" aria-atomic="true">
-        {message}
-      </p>
+      <p className="seller-feedback" role="status" aria-live="polite" aria-atomic="true">{message}</p>
       {error ? <p className="seller-error" role="alert">{error}</p> : null}
-      <ol className="seller-listing-index" aria-label="Tus publicaciones">
-        {listings.map((listing, index) => (
-          <li className="seller-listing-entry" key={listing.id} aria-busy={pendingId === listing.id}>
-            <div className="seller-listing-heading">
-              <div>
-                <div className="seller-listing-state-line">
-                  <span className={"seller-status seller-status-" + listing.status.toLowerCase()}>
-                    {statusLabels[listing.status]}
-                  </span>
-                  <span>Creado el {formatDate(listing.createdAt)}</span>
+      <p className="seller-reservation-help">Apartar pausa la publicación mientras acuerdas la entrega. Puedes quitar el apartado cuando quieras.</p>
+      {groups.map((group) => (
+        <section className="seller-product-group" key={group.id} aria-labelledby={"seller-group-" + group.id}>
+          <div className="seller-product-group-heading">
+            <h2 id={"seller-group-" + group.id}>{group.title}</h2>
+            <span>{group.listings.length}</span>
+          </div>
+          <ol className="seller-product-list" aria-label={group.title}>
+            {group.listings.map((listing) => (
+              <li className="seller-product-entry" key={listing.id} aria-busy={pendingId === listing.id}>
+                <div className="seller-product-summary">
+                  <ProductThumbnail photoUrl={listing.photoUrl} title={listing.title} />
+                  <div className="seller-product-content">
+                    <div className="seller-product-state">
+                      <span className={"seller-status seller-status-" + listing.status.toLowerCase()}>{statusLabels[listing.status]}</span>
+                      <time dateTime={listing.createdAt}>{formatDate(listing.createdAt)}</time>
+                    </div>
+                    <h3>{listing.title}</h3>
+                    <strong className="seller-product-price">{formatPrice(listing.price)}</strong>
+                    <p className="seller-product-meta">{categoryLabels[listing.category] ?? "Otros"} · {conditionLabels[listing.condition] ?? "Condición no especificada"}</p>
+                  </div>
                 </div>
-                <h3 id={"seller-listing-" + index}>{listing.title}</h3>
-              </div>
-              <strong>{formatPrice(listing.price)}</strong>
-            </div>
-            <p className="seller-listing-description">{listing.description}</p>
-            <p className="seller-listing-meta">
-              <span>{categoryLabels[listing.category] ?? "Otros"}</span>
-              <span aria-hidden="true">·</span>
-              <span>{conditionLabels[listing.condition] ?? "Condición no especificada"}</span>
-            </p>
-            <div className="seller-listing-actions" role="group" aria-label={"Acciones para " + listing.title}>
-              <Link
-                href={`/publicar?editar=${encodeURIComponent(listing.id)}`}
-                aria-label={"Editar contenido: " + listing.title}
-              >
-                Editar
-              </Link>
-              {statusActions[listing.status].map((action) => (
-                <button
-                  key={action.status}
-                  type="button"
-                  disabled={pendingId !== null}
-                  aria-label={action.label + ": " + listing.title}
-                  onClick={() => void changeStatus(listing, action.status)}
-                >
-                  {pendingId === listing.id ? "Guardando…" : action.label}
-                </button>
-              ))}
-            </div>
-          </li>
-        ))}
-      </ol>
+                <p className="seller-product-description">{listing.description}</p>
+                <div className="seller-product-actions" role="group" aria-label={"Acciones para " + listing.title}>
+                  <Link href={"/publicar?editar=" + encodeURIComponent(listing.id)} aria-label={"Editar contenido: " + listing.title}>
+                    <Pencil aria-hidden="true" size={16} />Editar
+                  </Link>
+                  {statusActions[listing.status].map((action) => {
+                    const Icon = action.status === "SOLD" ? Check : action.status === "RESERVED" ? Bookmark : action.status === "ARCHIVED" ? Archive : RotateCcw;
+                    return (
+                      <button key={action.status} type="button" disabled={pendingId !== null}
+                        className={action.status === "SOLD" || action.status === "PUBLISHED" ? "seller-action-primary" : ""}
+                        aria-label={action.label + ": " + listing.title}
+                        onClick={() => void changeStatus(listing, action.status)}>
+                        <Icon aria-hidden="true" size={16} />
+                        {pendingId === listing.id ? "Guardando…" : action.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
     </>
   );
 }

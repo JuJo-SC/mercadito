@@ -37,13 +37,15 @@ export default async function MyListingsPage() {
           condition: true,
           status: true,
           createdAt: true,
+          photos: { select: { position: true }, orderBy: { position: "asc" }, take: 1 },
         },
       })
     : [];
 
   const unreadMessageCount = await unreadMessageCountPromise;
-  const serializedListings = listings.map((listing) => ({
+  const serializedListings = listings.map(({ photos, ...listing }) => ({
     ...listing,
+    photoUrl: photos[0] ? "/api/listings/" + encodeURIComponent(listing.id) + "/photo?position=" + photos[0].position : null,
     price: listing.price.toNumber(),
     createdAt: listing.createdAt.toISOString(),
   }));
@@ -62,6 +64,7 @@ export default async function MyListingsPage() {
           ) : undefined}
         >
           <p>Solo estudiantes activos de tu campus pueden ver tus publicaciones. Actualiza su estado desde aquí.</p>
+          <p>Apartar retira temporalmente el producto del catálogo mientras coordinas una entrega. Las conversaciones existentes continúan abiertas y puedes volver a publicarlo. No reserva para una persona ni registra pagos.</p>
           {student && university?.isTest ? <p>Campus de prueba {university.name}. Usa datos ficticios.</p> : null}
           <Link className="back-link" href="/mercadito"><ArrowRight aria-hidden="true" size={16} />Volver al mercadito</Link>
         </TaskPageHeading>

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { ProductThumbnail } from "@/features/listings/components/product-thumbnail";
 
 type ConversationSummary = {
   id: string;
@@ -13,6 +14,7 @@ type ConversationSummary = {
     price: number;
     currency: string;
     status: string;
+    photoUrl: string | null;
   };
   otherStudentName: string;
   direction: "received" | "initiated";
@@ -69,6 +71,7 @@ export function ConversationInbox({
 }) {
   const [conversations, setConversations] = useState(initialConversations);
   const [error, setError] = useState("");
+  const [direction, setDirection] = useState<"received" | "initiated">("received");
   const requestInFlight = useRef(false);
 
   const refresh = useCallback(async () => {
@@ -106,108 +109,74 @@ export function ConversationInbox({
     };
   }, [refresh]);
 
-  if (!conversations.length) {
-    return (
-      <section className="messages-empty" aria-live="polite">
-        <h2>Tu próximo intercambio puede empezar aquí.</h2>
-        <p>
-          Cuando preguntes por una publicación o alguien responda a la tuya,
-          el intercambio aparecerá aquí.
-        </p>
-        <Link className="button-ink" href="/mercadito#productos">
-          Explorar publicaciones
-          <ArrowRight aria-hidden="true" size={17} strokeWidth={1.8} />
-        </Link>
-        {error ? <p className="messages-refresh-error" role="status">{error}</p> : null}
-      </section>
-    );
-  }
-
-  const groups = [
-    {
-      id: "needs-reply",
-      title: "Por responder",
-      conversations: conversations.filter(
-        (conversation) =>
-          Boolean(conversation.lastMessage) &&
-          conversation.lastMessage?.senderId !== currentUserId,
-      ),
-    },
-    {
-      id: "waiting",
-      title: "Esperando respuesta",
-      conversations: conversations.filter(
-        (conversation) =>
-          Boolean(conversation.lastMessage) &&
-          conversation.lastMessage?.senderId === currentUserId,
-      ),
-    },
-    {
-      id: "start",
-      title: "Por iniciar",
-      conversations: conversations.filter((conversation) => !conversation.lastMessage),
-    },
-  ].filter((group) => group.conversations.length > 0);
+  const sections = [
+    { id: "received" as const, title: "Ventas", description: "Personas que preguntan por tus productos." },
+    { id: "initiated" as const, title: "Compras", description: "Conversaciones que iniciaste con otros vendedores." },
+  ];
+  const visibleConversations = conversations.filter((conversation) => conversation.direction === direction);
+  const selected = sections.find((section) => section.id === direction)!;
 
   return (
-    <section className="conversation-inbox" aria-labelledby="conversation-list-title">
-      <div className="conversation-inbox-heading">
-        <h2 id="conversation-list-title">Tus conversaciones</h2>
-        <p>{conversations.length} {conversations.length === 1 ? "hilo" : "hilos"}</p>
+    <section className="conversation-inbox" aria-label="Tus conversaciones">
+      <div className="conversation-switcher" role="group" aria-label="Tipo de conversación">
+        {sections.map((section) => {
+          const items = conversations.filter((conversation) => conversation.direction === section.id);
+          const unread = items.reduce((total, conversation) => total + conversation.unreadCount, 0);
+          return (
+            <button key={section.id} type="button" aria-pressed={direction === section.id}
+              onClick={() => setDirection(section.id)}>
+              {section.title}<span className="conversation-section-count">{items.length}</span>
+              {unread > 0 ? <span className="conversation-section-unread" aria-label={unread + " mensajes sin leer"}>{unread}</span> : null}
+            </button>
+          );
+        })}
       </div>
-      {error ? <p className="messages-refresh-error" role="status">{error}</p> : null}
-      {groups.map((group) => (
-        <section
-          className="conversation-group"
-          key={group.id}
-          aria-labelledby={"conversation-group-" + group.id}
-        >
-          <div className="conversation-group-heading">
-            <h3 id={"conversation-group-" + group.id}>{group.title}</h3>
-            <p>{group.conversations.length} {group.conversations.length === 1 ? "hilo" : "hilos"}</p>
-          </div>
-          <ol className="conversation-index">
-            {group.conversations.map((conversation) => {
-              const lastMessage = conversation.lastMessage;
-              const preview = lastMessage
-                ? (lastMessage.senderId === currentUserId ? "Tú: " : "") + lastMessage.body
-                : "Abre el hilo para continuar.";
-              return (
-                <li key={conversation.id}>
-                  <Link className="conversation-index-row" href={"/mensajes/" + conversation.id}>
-                    <time
-                      className="conversation-index-date"
-                      dateTime={lastMessage?.createdAt ?? conversation.updatedAt}
-                    >
-                      {lastMessage ? formatActivity(lastMessage.createdAt) : formatActivity(conversation.updatedAt)}
-                    </time>
-                    <span className="conversation-index-main">
-                      <span className="conversation-index-kicker">
-                        <span className="conversation-direction">
-                          {conversation.direction === "received" ? "Te preguntaron" : "Preguntaste tú"}
-                        </span>
-                      </span>
-                      <span className="conversation-counterpart">{conversation.otherStudentName}</span>
-                      <span className="conversation-listing-title">{conversation.listing.title}</span>
-                      <span className="conversation-preview">{preview}</span>
+      <p className="conversation-section-description">{selected.description}</p>
+      {error ? <p className="messages-refresh-error" role="status">{error} <button className="text-action" type="button" onClick={() => void refresh()}>Reintentar</button></p> : null}
+      {visibleConversations.length === 0 ? (
+        <div className="messages-empty">
+          <h2>{direction === "received" ? "Aún no recibes consultas." : "Aún no has preguntado por un producto."}</h2>
+          <p>{direction === "received" ? "Cuando alguien te escriba por una publicación, verás aquí el producto y su mensaje." : "Abre un producto que te interese y escribe al vendedor. Encontrarás aquí esa conversación."}</p>
+          <Link className="button-ink" href={direction === "received" ? "/mis-avisos" : "/mercadito"}>
+            {direction === "received" ? "Ver mis publicaciones" : "Explorar productos"}
+            <ArrowRight aria-hidden="true" size={17} />
+          </Link>
+        </div>
+      ) : (
+        <ol className="conversation-product-list" aria-label={selected.title}>
+          {visibleConversations.map((conversation) => {
+            const lastMessage = conversation.lastMessage;
+            const needsReply = lastMessage && lastMessage.senderId !== currentUserId;
+            const preview = lastMessage
+              ? (lastMessage.senderId === currentUserId ? "Tú: " : "") + lastMessage.body
+              : "Abre la conversación para continuar.";
+            return (
+              <li key={conversation.id}>
+                <Link className={"conversation-product-row" + (conversation.unreadCount > 0 ? " has-unread" : "")}
+                  href={"/mensajes/" + conversation.id}>
+                  <ProductThumbnail photoUrl={conversation.listing.photoUrl} title={conversation.listing.title} />
+                  <span className="conversation-product-content">
+                    <span className="conversation-product-heading">
+                      <strong>{conversation.listing.title}</strong>
+                      <time dateTime={lastMessage?.createdAt ?? conversation.updatedAt}>
+                        {formatActivity(lastMessage?.createdAt ?? conversation.updatedAt)}
+                      </time>
                     </span>
-                    <span className="conversation-index-meta">
-                      <span className="conversation-price">{formatPrice(conversation.listing.price, conversation.listing.currency)}</span>
-                      <span className="conversation-availability">{availabilityName(conversation.listing.status)}</span>
-                      {conversation.unreadCount > 0 ? (
-                        <span className="conversation-unread">
-                          {conversation.unreadCount} {conversation.unreadCount === 1 ? "nuevo" : "nuevos"}
-                        </span>
-                      ) : null}
+                    <span className="conversation-product-person">{conversation.otherStudentName} · {formatPrice(conversation.listing.price, conversation.listing.currency)}</span>
+                    <span className="conversation-product-preview">{preview}</span>
+                    <span className="conversation-product-status">
+                      <span>{availabilityName(conversation.listing.status)}</span>
+                      {needsReply ? <span>Por responder</span> : lastMessage ? <span>Esperando respuesta</span> : null}
+                      {conversation.unreadCount > 0 ? <span className="conversation-unread">{conversation.unreadCount} sin leer</span> : null}
                     </span>
-                    <ArrowRight className="conversation-index-arrow" aria-hidden="true" size={18} strokeWidth={1.8} />
-                  </Link>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-      ))}
+                  </span>
+                  <ArrowRight className="conversation-product-arrow" aria-hidden="true" size={18} />
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+      )}
     </section>
   );
 }

@@ -19,8 +19,7 @@ export function AppNavigation({ signedIn, universityName }: { signedIn: boolean;
         </DashboardNavigationLink>
         <DashboardNavigationLink href={destination("/mis-avisos")} activePath="/mis-avisos" className="app-nav-link">
           <LayoutGrid aria-hidden="true" size={22} strokeWidth={1.8} />
-          <span className="app-nav-long-label">Mis publicaciones</span>
-          <span className="app-nav-short-label">Mis avisos</span>
+          <span className="app-nav-publications-label">Mis publicaciones</span>
         </DashboardNavigationLink>
       </nav>
       <div className="app-navigation-context">

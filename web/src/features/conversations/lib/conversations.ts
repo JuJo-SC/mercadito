@@ -40,7 +40,10 @@ export async function listConversationsForStudent(
       buyerId: true,
       sellerId: true,
       listing: {
-        select: { id: true, title: true, price: true, currency: true, status: true },
+        select: {
+          id: true, title: true, price: true, currency: true, status: true,
+          photos: { select: { position: true }, orderBy: { position: "asc" }, take: 1 },
+        },
       },
       buyer: { select: { name: true } },
       seller: { select: { name: true } },
@@ -80,6 +83,9 @@ export async function listConversationsForStudent(
         price: conversation.listing.price.toNumber(),
         currency: conversation.listing.currency,
         status: conversation.listing.status,
+        photoUrl: conversation.listing.photos[0]
+          ? "/api/listings/" + encodeURIComponent(conversation.listing.id) + "/photo?position=" + conversation.listing.photos[0].position
+          : null,
       },
       otherStudentName:
         conversation.buyerId === studentId

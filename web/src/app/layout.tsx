@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./app-shell.css";
+import "./account-pages.css";
 import { RouteScrollReset } from "@/components/route-scroll-reset";
 
 export const metadata: Metadata = {
