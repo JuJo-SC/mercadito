@@ -127,11 +127,21 @@ El catálogo descarga únicamente la foto principal de cada tarjeta. Las imágen
 
 ## Navegación y superficies compartidas
 
-La navegación compartida ofrece Explorar, Mensajes, Publicar y Mis publicaciones en el lateral de escritorio. En móvil, una barra inferior de 70px más el área segura muestra las mismas tareas; Mis publicaciones se abrevia a Mis avisos. Iconos Lucide de 22px y etiquetas identifican cada sección. La sección activa combina texto, verde suave y aria-current, incluyendo conversaciones y edición de avisos. El contador de mensajes sin leer sigue actualizándose.
+La navegación compartida ofrece Explorar, Mensajes, Publicar y Mis publicaciones en el lateral de escritorio. En móvil, una barra inferior de 70px más el área segura muestra las mismas tareas y conserva la etiqueta completa «Mis publicaciones». Iconos Lucide de 22px y etiquetas identifican cada sección. La sección activa combina texto, verde suave y aria-current, incluyendo conversaciones y edición de avisos. El contador de mensajes sin leer sigue actualizándose.
 
-La cabecera, el lateral y la barra inferior permanecen visibles durante el recorrido. El contenido reserva su espacio, los filtros flotantes quedan encima de la barra inferior y los diálogos nativos se presentan sobre toda la interfaz. La portada usa el mismo marco de aplicación; los accesos privados conservan returnTo al pedir sesión. Las pantallas autenticadas prescinden del pie promocional. Formularios, bandeja y chat conservan sus flujos actuales. Al cambiar de sección, la página empieza arriba.
+La cabecera, el lateral y la barra inferior permanecen visibles durante el recorrido. El contenido reserva su espacio, los filtros flotantes quedan encima de la barra inferior y los diálogos nativos se presentan sobre toda la interfaz. La portada usa el mismo marco de aplicación; los accesos privados conservan returnTo al pedir sesión. Las pantallas autenticadas prescinden del pie promocional. Formularios y chat conservan sus flujos; la bandeja distingue Ventas y Compras según el papel del estudiante en cada conversación. Al cambiar de sección, la página empieza arriba.
 
 Mensajes, Mis publicaciones y Publicar usan títulos breves en una línea, con un tamaño de 1.35rem en escritorio y 1.15rem en móvil. La explicación y los avisos completos se consultan desde «Información», mediante un desplegable nativo. El campus de prueba mantiene una indicación breve visible. Las conversaciones, las publicaciones y los campos del formulario aparecen inmediatamente después; los títulos de los pasos de publicación también son compactos.
+
+## Mensajes y Mis publicaciones
+
+Estas superficies extienden el mismo sistema claro, con superficies blancas, tipografía del sistema, verde de acción y foco azul. Las miniaturas de producto permiten reconocer el artículo; cuando falta la foto o su carga falla, aparece «Sin foto» con un icono. Las etiquetas de estado conservan texto y contraste legible.
+
+Mensajes abre en Ventas y permite cambiar a Compras mediante dos controles de al menos 44px, con selección y contadores visibles. Ventas reúne conversaciones donde el estudiante es vendedor; Compras, donde es comprador. El último emisor modifica «Por responder» o «Esperando respuesta», sin cambiar esa pertenencia. Cada sección conserva el orden por actividad reciente. La fila presenta foto y título antes del nombre de la otra persona, además de precio, último mensaje, actividad, disponibilidad y mensajes sin leer. En móvil la miniatura se reduce a 72px y la flecha se oculta para dar espacio al contenido.
+
+Mis publicaciones presenta la foto propia junto a estado, fecha, título, precio, categoría y condición. Las secciones aparecen en este orden: En venta (publicadas y apartadas), Borradores, Archivadas y Vendidas; las vacías se omiten. Las tarjetas forman una columna y pasan a dos desde 1200px. Editar y las acciones disponibles para cada estado se distribuyen en una cuadrícula de dos columnas, con controles de al menos 44px. Una respuesta correcta mueve la publicación a su grupo sin recargar; durante el guardado se indica actividad y un fallo conserva el estado anterior con su explicación.
+
+Apartar pausa el catálogo y la apertura de nuevos hilos, mientras las conversaciones existentes continúan. No implica reserva para una persona ni pago. «Quitar apartado» vuelve a publicar el artículo. La explicación completa permanece en «Información» y el índice conserva una ayuda breve junto a las acciones.
 
 ## Accesibilidad y adaptación
 

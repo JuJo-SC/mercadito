@@ -57,3 +57,13 @@ No cambiar nombres de rutas, tablas, migraciones, volúmenes o servicios para ac
 ## Marco de aplicación
 
 La estructura compartida vive en web/src/components/site-header.tsx, app-navigation.tsx y site-header-interactions.tsx. El encabezado conserva autenticación e instalación; el lateral y la barra inferior consumen el mismo proveedor de mensajes sin leer. Los enlaces reconocen la ruta activa, incluidas sus subrutas. web/src/app/app-shell.css, cargado después de globals.css, reúne la distribución responsive del marco y del catálogo, sin duplicar las páginas ni cambiar permisos.
+
+## Mensajes y publicaciones propias
+
+- `web/src/app/mis-avisos/page.tsx` consulta las publicaciones del estudiante y su campus; `features/listings/components/manage-listings.tsx` presenta los grupos de estado y aplica las acciones después de una respuesta correcta, sin recargar. La URL `/mis-avisos` se conserva y la interfaz usa «Mis publicaciones», también en móvil.
+- `features/conversations/lib/conversations.ts` construye el resumen de los hilos y deriva Ventas de `sellerId` y Compras de `buyerId`, sin depender del último emisor. `features/conversations/components/conversation-inbox.tsx` presenta el selector, las referencias del artículo, el turno de respuesta, la actividad y los contadores.
+- `features/listings/components/product-thumbnail.tsx` comparte la presentación de fotos entre publicaciones propias y conversaciones, con «Sin foto» tanto para ausencia como para fallo de carga. Permanece en el módulo de publicaciones porque representa un producto y no contiene lógica de conversaciones.
+- Ambos resúmenes consultan solo `position` de la primera foto, con orden ascendente y `take: 1`, para construir `/api/listings/[id]/photo?position=…`. La ruta `web/src/app/api/listings/[id]/photo/route.ts` comprueba sesión y campus antes de entregar bytes con `private, no-store`: permite publicaciones visibles, fotos propias en cualquier estado y referencias del comprador de un hilo existente aunque el artículo esté apartado, vendido o archivado.
+- `web/src/app/account-pages.css` reúne los estilos de estas superficies y de las miniaturas; `web/src/app/layout.tsx` lo importa después de `globals.css` y `app-shell.css`. Reutiliza los tokens compartidos y mantiene las reglas responsive de cuenta separadas del marco y del catálogo.
+
+Las verificaciones y los límites del cambio están en [verificacion-mensajes-publicaciones.md](verificacion-mensajes-publicaciones.md). No requiere migraciones ni cambios de infraestructura.

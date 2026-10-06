@@ -15,7 +15,7 @@ THESIS: Publicar un artículo debe sentirse claro y directo; editarlo conserva s
 
 OWN-WORLD: Interfaz clara de app nativa, heredada del catálogo: fondo gris suave, campos y superficies blancas, tipografía del sistema, radios cómodos y verde para acciones.
 
-STORY: El flujo separa el reconocimiento del artículo, sus detalles y la revisión. Desde Mis avisos, el estudiante puede abrir Editar, corregir los mismos campos y guardar. La API confirma propiedad y campus, mantiene el estado actual del aviso y rechaza ediciones simultáneas para evitar que una sobrescriba a otra. El éxito lleva al índice personal.
+STORY: El flujo separa el reconocimiento del artículo, sus detalles y la revisión. Desde Mis publicaciones, el estudiante puede abrir Editar, corregir los mismos campos y guardar. La API confirma propiedad y campus, mantiene el estado actual del aviso y rechaza ediciones simultáneas para evitar que una sobrescriba a otra. El éxito lleva al índice personal.
 
 FIRST VIEWPORT: En móvil, el título del paso, su instrucción y los campos actuales deben aparecer sin desplazamiento innecesario. La barra de tres pasos, los botones y las opciones de condición conservan blancos táctiles de 44px, foco visible y una jerarquía legible.
 
