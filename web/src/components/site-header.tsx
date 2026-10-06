@@ -1,14 +1,15 @@
 import Link from "next/link";
-import { ArrowRight, LogOut, Store } from "lucide-react";
+import { ArrowRight, LogOut, Store, UserRound } from "lucide-react";
 import { signOut } from "@/features/auth/auth";
 import { activeUniversityName } from "@/features/community/lib/active-community";
 import { InstallButton } from "@/features/pwa/components/install-button";
 import {
   DashboardNavigationLink,
   SiteHeaderFrame,
+  AppSectionTitle,
 } from "@/components/site-header-interactions";
+import { AppNavigation } from "@/components/app-navigation";
 import {
-  UnreadMessagesNavLink,
   UnreadMessagesProvider,
 } from "@/features/conversations/components/unread-messages-navigation";
 
@@ -38,7 +39,7 @@ export function SiteHeader({
       initialUnreadCount={unreadMessageCount}
       excludeConversationId={excludeUnreadConversationId}
     >
-      <SiteHeaderFrame>
+      <SiteHeaderFrame signedIn={signedIn}>
         <div className="site-header-inner page-width">
           <DashboardNavigationLink
             className="brand-lockup"
@@ -59,26 +60,16 @@ export function SiteHeader({
             </span>
           </DashboardNavigationLink>
 
-          <nav className="primary-navigation" aria-label="Navegación principal">
-            {signedIn ? (
-              <>
-                <DashboardNavigationLink href="/mercadito">Mercadito</DashboardNavigationLink>
-                <DashboardNavigationLink href="/publicar">Publicar</DashboardNavigationLink>
-                <DashboardNavigationLink href="/mis-avisos">Mis publicaciones</DashboardNavigationLink>
-                <UnreadMessagesNavLink />
-              </>
-            ) : (
-              <DashboardNavigationLink href="/#como-funciona">Cómo funciona</DashboardNavigationLink>
-            )}
-          </nav>
+          <AppSectionTitle />
 
           <div className="header-actions">
             <InstallButton />
             {signedIn ? (
               <>
                 {userName ? (
-                  <span className="account-name" title={userName}>
-                    {userName}
+                  <span className="app-account" title={userName}>
+                    <span className="app-avatar" aria-hidden="true"><UserRound size={18} strokeWidth={1.8} /></span>
+                    <span className="account-name">{userName}</span>
                   </span>
                 ) : null}
                 <form action={leaveAccount}>
@@ -100,25 +91,8 @@ export function SiteHeader({
             )}
           </div>
         </div>
-        <nav
-          className={signedIn ? "mobile-navigation page-width has-messages" : "mobile-navigation page-width"}
-          aria-label="Accesos rápidos"
-        >
-          {signedIn ? (
-            <>
-              <DashboardNavigationLink href="/mercadito">Mercadito</DashboardNavigationLink>
-              <UnreadMessagesNavLink />
-              <DashboardNavigationLink href="/mis-avisos">Mis publicaciones</DashboardNavigationLink>
-              <DashboardNavigationLink href="/publicar">Publicar</DashboardNavigationLink>
-            </>
-          ) : (
-            <>
-              <DashboardNavigationLink href="/#como-funciona">Cómo funciona</DashboardNavigationLink>
-                <DashboardNavigationLink href="/ingresar?returnTo=%2Fmercadito">Entrar</DashboardNavigationLink>
-            </>
-          )}
-        </nav>
       </SiteHeaderFrame>
+      <AppNavigation signedIn={signedIn} universityName={universityName} />
     </UnreadMessagesProvider>
   );
 }

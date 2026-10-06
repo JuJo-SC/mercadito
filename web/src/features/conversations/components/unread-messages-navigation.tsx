@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { MessageCircle } from "lucide-react";
 import type { ReactNode } from "react";
 import { DashboardNavigationLink } from "@/components/site-header-interactions";
 
@@ -80,14 +81,15 @@ export function UnreadMessagesProvider({
   );
 }
 
-export function UnreadMessagesNavLink() {
+export function UnreadMessagesNavLink({ href = "/mensajes" }: { href?: string }) {
   const unreadMessageCount = useContext(UnreadMessagesContext);
   const label = unreadMessageCount > 0
     ? `Mensajes, ${unreadMessageCount} sin leer`
     : "Mensajes";
 
   return (
-    <DashboardNavigationLink className="messages-nav-link" href="/mensajes" aria-label={label}>
+    <DashboardNavigationLink className="app-nav-link messages-nav-link" href={href} activePath="/mensajes" aria-label={label}>
+      <MessageCircle aria-hidden="true" size={22} strokeWidth={1.8} />
       <span>Mensajes</span>
       {unreadMessageCount > 0 ? (
         <span className="messages-unread-count" aria-hidden="true">

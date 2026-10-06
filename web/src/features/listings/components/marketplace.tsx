@@ -478,7 +478,7 @@ export function Marketplace({
         <div className="marketplace-results">
           <div className="listing-heading">
             <div>
-              <h1>Encuentra algo para tu día.</h1>
+              <h1>Explorar publicaciones</h1>
               <p className="listing-meta">
                 <span>{total} {total === 1 ? "publicación" : "publicaciones"}</span>
                 {university.isTest ? <span className="mobile-campus-note">Campus de prueba</span> : null}

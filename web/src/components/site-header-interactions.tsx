@@ -1,59 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import type { ComponentProps, ReactNode } from "react";
 
-type DashboardNavigationLinkProps = Omit<ComponentProps<typeof Link>, "onNavigate" | "scroll">;
+type DashboardNavigationLinkProps = Omit<ComponentProps<typeof Link>, "onNavigate" | "scroll"> & {
+  activePath?: string;
+};
 
-export function DashboardNavigationLink(props: DashboardNavigationLinkProps) {
-  // RouteScrollReset positions the destination after it has rendered.
-  // Next's automatic element selection can otherwise jump past the page intro.
-  return <Link {...props} scroll={false} />;
+export function DashboardNavigationLink({ activePath, ...props }: DashboardNavigationLinkProps) {
+  const pathname = usePathname();
+  const target = activePath ?? (typeof props.href === "string" ? props.href : "");
+  const selected = target && !target.includes("#") &&
+    (pathname === target || (target !== "/" && pathname.startsWith(target + "/")));
+  return <Link {...props} aria-current={selected ? "page" : undefined} scroll={false} />;
 }
 
-export function SiteHeaderFrame({ children }: { children: ReactNode }) {
-  const [isHidden, setIsHidden] = useState(false);
+export function SiteHeaderFrame({ children, signedIn = false }: { children: ReactNode; signedIn?: boolean }) {
+  return <header className={"site-header app-header" + (signedIn ? " is-authenticated" : "")}>{children}</header>;
+}
 
-  useEffect(() => {
-    let directionAnchor = window.scrollY;
-    let latestScrollY = directionAnchor;
-    let frameId: number | null = null;
-
-    const updateVisibility = () => {
-      frameId = null;
-      if (latestScrollY <= 96) {
-        setIsHidden(false);
-        directionAnchor = latestScrollY;
-        return;
-      }
-
-      const delta = latestScrollY - directionAnchor;
-      if (delta >= 4) {
-        setIsHidden(true);
-        directionAnchor = latestScrollY;
-      } else if (delta <= -4) {
-        setIsHidden(false);
-        directionAnchor = latestScrollY;
-      }
-    };
-
-    const handleScroll = () => {
-      latestScrollY = window.scrollY;
-      if (frameId !== null) return;
-      frameId = window.requestAnimationFrame(updateVisibility);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (frameId !== null) window.cancelAnimationFrame(frameId);
-    };
-  }, []);
-
-  return (
-    <header className={"site-header" + (isHidden ? " is-scroll-hidden" : "")}>
-      {children}
-    </header>
-  );
+export function AppSectionTitle() {
+  const pathname = usePathname();
+  const title = pathname.startsWith("/mensajes") ? "Mensajes"
+    : pathname.startsWith("/mis-avisos") ? "Mis publicaciones"
+    : pathname.startsWith("/publicar") ? "Publicar"
+    : pathname.startsWith("/ingresar") ? "Acceso a tu comunidad"
+    : "Explorar";
+  return <span className="app-section-title">{title}</span>;
 }
