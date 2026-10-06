@@ -55,7 +55,7 @@ Aún se necesita el aviso de privacidad aprobado por quien operará el servicio,
 
 ## Flujo del estudiante
 
-1. La portada pública presenta el mercadito de la universidad configurada y su condición de prueba cuando corresponde. Muestra una vista previa de productos publicados con desplazamiento suave, pausa y alternativa sin movimiento. No ofrece integrar otras comunidades.
+1. La portada pública presenta el mercadito de la universidad configurada y su condición de prueba cuando corresponde. Muestra una cuadrícula estática de hasta ocho productos publicados, con foto, precio y nombre. No ofrece integrar otras comunidades.
 2. Al iniciar sesión, Keycloak entrega los claims que permiten asociar la cuenta con la universidad activa configurada. Otra universidad se rechaza, incluso con claims válidos. El correo por sí solo no determina el campus.
 3. El alumno entra a /mercadito, donde ve el catálogo de su universidad, busca por texto o categoría y compara publicaciones.
 4. El catálogo empieza por publicaciones con más conversaciones iniciadas cuando hay actividad suficiente; si no, muestra las más recientes. Mercadito no procesa pagos.
@@ -72,3 +72,7 @@ Las cuentas UMAN son sintéticas para recorrido de prueba. Sus correos se mantie
 ## Configuración de esta etapa
 
 `ACTIVE_UNIVERSITY_SLUG` y `ACTIVE_UNIVERSITY_NAME` se definen fuera de Git. Por defecto se usa UMAN. Cambiar a una universidad real requiere su propio registro e identidad institucional, conservando las cuentas y publicaciones de prueba aisladas. El modelo por campus se mantiene para una mejora futura; no existe selección ni recepción de solicitudes de otras universidades en el producto actual.
+
+## Experiencia de aplicación
+
+Confirmado por el propietario: conservar una página web con apariencia y navegación de aplicación en escritorio y móvil; tomar Facebook Marketplace como referencia. El escritorio tiene menú lateral permanente y el móvil barra inferior para Explorar, Mensajes, Publicar y Mis publicaciones. Se conserva el estilo claro y verde de Mercadito y sus restricciones de acceso.

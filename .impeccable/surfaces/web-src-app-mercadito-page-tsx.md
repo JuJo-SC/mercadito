@@ -17,9 +17,9 @@ OWN-WORLD: Interfaz clara de app nativa: fondo gris muy tenue, superficies blanc
 
 STORY: La comunidad autenticada entra a su campus, busca productos, filtra por categoría o fecha y abre un aviso cuando quiere ver todas sus características. La ficha muestra galería, descripción, vendedor, campus, condición, fecha y precio; desde allí puede iniciar conversación. Mercadito no procesa pagos.
 
-FIRST VIEWPORT: Cabecera compacta con marca y universidad a la izquierda y opciones de catálogo/publicación junto a ella. La identidad no se repite en la barra lateral. En móvil, la búsqueda y los filtros se reúnen en una cortina cerrada al entrar; un botón fijo en el costado inferior derecho abre el panel desde la derecha, disponible durante todo el recorrido. La cuadrícula aparece inmediatamente después de un título compacto y el total, con una indicación breve de campus de prueba. En escritorio los controles y avisos se conservan en un lateral fijo, con desplazamiento independiente si supera el alto de pantalla. En 320px siguen visibles dos tarjetas con imagen, título, condición y precio.
+FIRST VIEWPORT: Cabecera fija de 64px con marca y universidad. En escritorio, lateral de 280px (248px en tablet) con Explorar, Mensajes, Publicar y Mis publicaciones; los filtros aparecen debajo en ese mismo lateral con scroll independiente. Los productos ocupan el resto de la pantalla. En móvil, barra inferior fija de 70px más área segura con las mismas cuatro tareas. El botón de filtros queda encima de esa barra. La cuadrícula muestra dos tarjetas por fila desde 320px; foto cuadrada, precio primero y nombre visible.
 
-NAVIGATION: Al elegir una sección desde la cabecera, la página abre desde arriba. La cabecera se oculta al bajar y reaparece al subir, tanto en escritorio como en móvil.
+NAVIGATION: La sección activa se identifica con aria-current, texto firme y verde suave. Conversaciones y edición conservan la selección de su sección. Al elegir una sección, la página abre desde arriba. Las barras de aplicación permanecen visibles al desplazarse.
 
 FORM: Tarjetas de catálogo con foto principal de carga diferida. Un `<dialog>` modal protege el foco y deja recorrer hasta cinco fotos con flechas o indicadores; en teléfono se convierte en una hoja de pantalla completa. Los estados de error, carga y catálogo vacío ofrecen una acción de recuperación.
 

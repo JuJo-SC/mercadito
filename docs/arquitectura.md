@@ -53,3 +53,7 @@ Los componentes con `"use client"` solo importan código apto para el navegador.
 ## Alcance de esta organización
 
 No cambiar nombres de rutas, tablas, migraciones, volúmenes o servicios para acomodar carpetas. Mantener actualizadas las importaciones, el contexto de Docker, los README y las referencias de diseño cuando se mueve un archivo. `web/src/generated/`, `.next/` y `node_modules/` son artefactos y no se reorganizan ni versionan.
+
+## Marco de aplicación
+
+La estructura compartida vive en web/src/components/site-header.tsx, app-navigation.tsx y site-header-interactions.tsx. El encabezado conserva autenticación e instalación; el lateral y la barra inferior consumen el mismo proveedor de mensajes sin leer. Los enlaces reconocen la ruta activa, incluidas sus subrutas. web/src/app/app-shell.css, cargado después de globals.css, reúne la distribución responsive del marco y del catálogo, sin duplicar las páginas ni cambiar permisos.

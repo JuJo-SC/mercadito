@@ -161,11 +161,6 @@
         "name": "card-hover",
         "value": "180ms ease",
         "purpose": "Elevación sutil al señalar una publicación."
-      },
-      {
-        "name": "header-scroll",
-        "value": "180ms ease",
-        "purpose": "Ocultar la cabecera al bajar y mostrarla al subir."
       }
     ],
     "breakpoints": [
@@ -199,9 +194,29 @@
       "testCampus": "compact visible note"
     },
     "desktopCatalogFilters": {
-      "position": "fixed",
+      "position": "fixed inside application rail below navigation",
       "overflow": "independent vertical scroll",
-      "header": "follow visibility"
+      "header": "persistent"
+    },
+    "applicationFrame": {
+      "reference": "Facebook Marketplace, conservando identidad Mercadito",
+      "headerHeight": "64px",
+      "desktopRailWidth": "280px",
+      "tabletRailWidth": "248px",
+      "mobileBottomHeight": "70px + safe-area-inset-bottom",
+      "mobileBreakpoint": "760px",
+      "persistent": true,
+      "activeState": "aria-current=page, verde suave y peso de texto",
+      "tasks": [
+        "Explorar",
+        "Mensajes",
+        "Publicar",
+        "Mis publicaciones"
+      ],
+      "publicProducts": "cuadrícula estática, hasta ocho miniaturas",
+      "productPhotoRatio": "1",
+      "productPhotoRadius": "12px",
+      "styles": "web/src/app/app-shell.css"
     }
   },
   "components": [
@@ -209,9 +224,9 @@
       "name": "Cabecera de campus",
       "kind": "navigation",
       "refersTo": "site-header",
-      "description": "Marca, universidad y navegación en una sola cabecera adaptable.",
-      "html": "<header class=\"site-header\"><a class=\"brand-lockup\">Mercadito · universidad</a><nav>Publicar · Mis publicaciones</nav></header>",
-      "css": ".site-header{position:sticky;top:0;transition:transform 180ms ease}.site-header.is-scroll-hidden{transform:translateY(-100%);pointer-events:none}"
+      "description": "Cabecera fija y navegación compartida: lateral en escritorio, barra inferior en móvil.",
+      "html": "<header class=\"site-header app-header\">Mercadito · universidad · cuenta</header><aside class=\"app-navigation\"><nav aria-label=\"Navegación principal\">Explorar · Mensajes · Publicar · Mis publicaciones</nav></aside>",
+      "css": ".app-header{position:fixed;inset:0 0 auto}.app-navigation{position:fixed;inset:auto 0 0}@media(min-width:761px){.app-navigation{inset:64px auto 0 0;width:280px}}"
     },
     {
       "name": "Acción principal",

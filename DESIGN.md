@@ -81,7 +81,7 @@ components:
 
 ## Idea central
 
-Una experiencia universitaria fácil de recorrer y agradable de usar. La referencia de las apps de Apple se traduce en superficies luminosas, jerarquía tipográfica nítida, controles familiares, esquinas suaves y transiciones discretas. La identidad propia de Mercadito vive en el símbolo de tienda y el acento verde; el azul identifica el foco de teclado.
+Una experiencia universitaria fácil de recorrer y agradable de usar. La referencia elegida por el propietario es Facebook Marketplace: navegación permanente, productos al centro y controles familiares. Mercadito conserva sus superficies luminosas, tipografía del sistema y acento verde. La identidad propia de Mercadito vive en el símbolo de tienda y el acento verde; el azul identifica el foco de teclado.
 
 El catálogo ayuda a descubrir y comparar productos con rapidez. Cada publicación muestra primero foto, nombre, condición y precio. Al abrirla, una ficha modal reúne galería, descripción, campus, fecha, vendedor y acceso a la conversación.
 
@@ -107,15 +107,15 @@ La pila del sistema usa SF Pro en dispositivos Apple y sus equivalentes nativos 
 - Botones: 12–13px, al menos 44px de zona interactiva.
 - Tarjetas: 16px, borde tenue y sombra corta que aparece al pasar el cursor.
 - Ficha de detalle: 25px en escritorio; ocupa la pantalla del teléfono como una hoja modal.
-- Cabecera adhesiva translúcida con la marca y la universidad asociada. Se oculta al bajar para dar visibilidad a los productos y reaparece al subir.
+- Cabecera blanca fija de 64px con marca, universidad y acciones de cuenta. En escritorio identifica la sección activa; en móvil deja las tareas principales a la barra inferior.
 
 ## Catálogo
 
-La portada pública presenta un título compacto y una frase, seguidos de productos publicados con foto, nombre y precio. En escritorio el texto queda a la izquierda y un solo producto a la derecha, cambiando cada cinco segundos con controles anterior/siguiente y pausa. En móvil se conserva la fila de productos con desplazamiento suave y manual. Ambas vistas se detienen al interactuar y respetan movimiento reducido. Las tarjetas llevan al acceso autorizado; los ejemplos se etiquetan y las miniaturas no abren fotos originales. El portal autenticado muestra el nombre del campus, la acción para publicar, el aviso de campus de prueba, búsqueda, filtros, orden y catálogo.
+La portada pública muestra una introducción compacta y una cuadrícula estática de hasta ocho productos: foto, precio y nombre. Mantiene las etiquetas de ejemplo y el acceso protegido; no muestra vendedores ni fotos originales. Las tarjetas llevan al inicio de sesión. El catálogo autenticado conserva búsqueda, categorías, orden y fichas completas. El precio precede visualmente al título, y la fotografía ocupa una superficie cuadrada con radio de 12px.
 
-En móvil, un botón verde de «Filtros» permanece fijo en el costado inferior derecho, incluso después de recorrer el catálogo. Abre un panel desde la derecha con búsqueda, categorías, orden y avisos completos. El panel tiene desplazamiento independiente y protege el foco mediante un diálogo nativo. Cerrar o Escape recupera la posición del catálogo; buscar o elegir «Ver productos» vuelve al inicio de los resultados. El contador indica filtros activos. El catálogo conserva una indicación breve de campus de prueba junto al total. En escritorio, la barra lateral permanece fija durante todo el recorrido del catálogo, incluso junto a las últimas publicaciones. Su contenido puede desplazarse de forma independiente cuando supera la altura disponible, y se acomoda a la cabecera al ocultarse o reaparecer.
+En móvil, un botón verde de «Filtros» permanece fijo en el costado inferior derecho, incluso después de recorrer el catálogo. Abre un panel desde la derecha con búsqueda, categorías, orden y avisos completos. El panel tiene desplazamiento independiente y protege el foco mediante un diálogo nativo. Cerrar o Escape recupera la posición del catálogo; buscar o elegir «Ver productos» vuelve al inicio de los resultados. El contador indica filtros activos. El catálogo conserva una indicación breve de campus de prueba junto al total. En escritorio, los filtros se integran debajo de las cuatro tareas principales en el mismo lateral fijo de 280px (248px en tablet). Tienen desplazamiento independiente y dejan libre la identificación de comunidad al pie.
 
-Las tarjetas forman tres columnas amplias, dos en tablet y dos compactas en móvil. La primera foto usa carga diferida; el contador solo aparece cuando existe una imagen. Fotos, precio, condición y estado permanecen legibles con texto.
+La cuadrícula usa columnas fluidas de al menos 200px en escritorio y dos columnas en tablet y móvil. La primera foto usa carga diferida; el contador solo aparece cuando existe una imagen. Fotos, precio, condición y estado permanecen legibles con texto.
 
 Al seleccionar una publicación, el navegador abre un `<dialog>` modal centrado. Escritorio reparte fotos y datos en dos columnas. Móvil presenta una hoja a pantalla completa, con la galería arriba y los datos desplazables debajo. Escape, botón de cierre, flechas y puntos permiten salir y recorrer las fotos. La ficha informa título, precio, categoría, condición, descripción, campus, vendedor y fecha; las publicaciones ficticias mantienen su etiqueta.
 
@@ -127,7 +127,9 @@ El catálogo descarga únicamente la foto principal de cada tarjeta. Las imágen
 
 ## Navegación y superficies compartidas
 
-El encabezado alinea el símbolo y nombre de Mercadito, la universidad asociada, las opciones del catálogo y el acceso a la cuenta. El campus aparece aquí, sin repetirse en la barra lateral. Publicar se mantiene como opción del encabezado sin añadir otro botón al costado. En escritorio y móvil, la cabecera se oculta al bajar y reaparece al subir; al abrir una sección desde su navegación, la página empieza arriba. En teléfono, una fila compacta da acceso a las tareas principales. Formularios, bandeja de mensajes, acceso institucional y pie de página usan el mismo fondo claro, la misma tipografía y radios suaves.
+La navegación compartida ofrece Explorar, Mensajes, Publicar y Mis publicaciones en el lateral de escritorio. En móvil, una barra inferior de 70px más el área segura muestra las mismas tareas; Mis publicaciones se abrevia a Mis avisos. Iconos Lucide de 22px y etiquetas identifican cada sección. La sección activa combina texto, verde suave y aria-current, incluyendo conversaciones y edición de avisos. El contador de mensajes sin leer sigue actualizándose.
+
+La cabecera, el lateral y la barra inferior permanecen visibles durante el recorrido. El contenido reserva su espacio, los filtros flotantes quedan encima de la barra inferior y los diálogos nativos se presentan sobre toda la interfaz. La portada usa el mismo marco de aplicación; los accesos privados conservan returnTo al pedir sesión. Las pantallas autenticadas prescinden del pie promocional. Formularios, bandeja y chat conservan sus flujos actuales. Al cambiar de sección, la página empieza arriba.
 
 Mensajes, Mis publicaciones y Publicar usan títulos breves en una línea, con un tamaño de 1.35rem en escritorio y 1.15rem en móvil. La explicación y los avisos completos se consultan desde «Información», mediante un desplegable nativo. El campus de prueba mantiene una indicación breve visible. Las conversaciones, las publicaciones y los campos del formulario aparecen inmediatamente después; los títulos de los pasos de publicación también son compactos.
 
