@@ -82,7 +82,7 @@ export function InstallButton() {
 
   return (
     <div className="install-control">
-      <button className="install-button" type="button" onClick={install}>
+      <button className="install-button" type="button" onClick={install} aria-label="Instalar Mercadito" title="Instalar Mercadito">
         <ArrowDownToLine aria-hidden="true" size={16} strokeWidth={1.8} />
         <span>Instalar</span>
       </button>
