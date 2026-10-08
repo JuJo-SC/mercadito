@@ -4922,7 +4922,7 @@ select {
 }
 
 .listing-detail-description {
-  margin-top: 1.2rem;
+  margin: 0 0 1.2rem;
 }
 
 .listing-detail-description h3 {

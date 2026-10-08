@@ -713,6 +713,10 @@ export function Marketplace({
               <p className="listing-detail-price">
                 {formatPrice(selectedListing.price, selectedListing.currency)}
               </p>
+              <section className="listing-detail-description">
+                <h3>Descripción</h3>
+                <p>{selectedListing.description}</p>
+              </section>
               <dl className="listing-detail-facts">
                 <div>
                   <dt>Condición</dt>
@@ -726,15 +730,7 @@ export function Marketplace({
                   <dt>Fecha de publicación</dt>
                   <dd>{formatListingDate(selectedListing.createdAt)}</dd>
                 </div>
-                <div>
-                  <dt>Campus</dt>
-                  <dd>{university.name}</dd>
-                </div>
               </dl>
-              <section className="listing-detail-description">
-                <h3>Descripción</h3>
-                <p>{selectedListing.description}</p>
-              </section>
               {selectedListing.isDemo ? (
                 <p className="listing-detail-demo-note" role="note">
                   Publicación ficticia de demostración. No representa una oferta real.

@@ -117,7 +117,11 @@ En móvil, un botón verde de «Filtros» permanece fijo en el costado inferior 
 
 La cuadrícula usa columnas fluidas de al menos 200px en escritorio y dos columnas en tablet y móvil. La primera foto usa carga diferida; el contador solo aparece cuando existe una imagen. Fotos, precio, condición y estado permanecen legibles con texto.
 
-Al seleccionar una publicación, el navegador abre un `<dialog>` modal centrado. Escritorio reparte fotos y datos en dos columnas. Móvil presenta una hoja a pantalla completa, con la galería arriba y los datos desplazables debajo. Escape, botón de cierre, flechas y puntos permiten salir y recorrer las fotos. La ficha informa título, precio, categoría, condición, descripción, campus, vendedor y fecha; las publicaciones ficticias mantienen su etiqueta.
+Al seleccionar una publicación, el navegador abre un `<dialog>` modal centrado. Escritorio reparte fotos y datos en dos columnas. Móvil presenta una hoja a pantalla completa, con la galería arriba y los datos desplazables debajo. Escape, botón de cierre, flechas y puntos permiten salir y recorrer las fotos. La ficha informa título, precio, categoría, descripción, condición, vendedor y fecha; las publicaciones ficticias mantienen su etiqueta.
+
+La ficha presenta la descripción inmediatamente después del título y el precio. Debajo quedan la condición, quién publicó y la fecha; se omite el campus porque esta etapa usa una sola universidad. Este ajuste no incorpora facultades ni modifica el aislamiento por universidad.
+
+Al finalizar una publicación o edición, la confirmación usa una superficie blanca, texto oscuro y un icono verde sobre verde suave. Los enlaces conservan el verde de acción con contraste legible y al menos 44px de altura; en móvil se apilan para facilitar su uso.
 
 ## Publicación de fotos
 
