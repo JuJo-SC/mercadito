@@ -1,7 +1,7 @@
+import { PublicFeatureIntro } from "@/components/public-feature-guide";
 import Link from "next/link";
 import { TaskPageHeading } from "@/components/task-page-heading";
 import { ArrowRight } from "lucide-react";
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { listConversationsForStudent } from "@/features/conversations/lib/conversations";
 import { getActiveStudent } from "@/features/auth/lib/require-student";
@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function MessagesPage() {
   const student = await getActiveStudent();
-  if (!student) redirect("/ingresar?returnTo=%2Fmensajes");
+  if (!student) return <PublicFeatureIntro feature="messages" />;
 
   const [university, conversations] = await Promise.all([
     prisma.university.findUnique({

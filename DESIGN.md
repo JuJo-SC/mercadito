@@ -137,11 +137,11 @@ La cabecera, el lateral y la barra inferior permanecen visibles durante el recor
 
 Mensajes, Mis publicaciones y Publicar usan títulos breves en una línea, con un tamaño de 1.35rem en escritorio y 1.15rem en móvil. La explicación y los avisos completos se consultan desde «Información», mediante un desplegable nativo. El campus de prueba mantiene una indicación breve visible. Las conversaciones, las publicaciones y los campos del formulario aparecen inmediatamente después; los títulos de los pasos de publicación también son compactos.
 
-## Ayudas en la portada
+## Introducciones antes del acceso
 
-Sin sesión, el lateral de la portada explica Mensajes, Publicar y Mis publicaciones con una frase breve y un ejemplo visual: conversación, tipos de productos y publicación en venta. Las ayudas permanecen visibles, sin desplegables. Mensajes incluye a compradores y vendedores y presenta compartir el teléfono como una decisión voluntaria; Publicar menciona artículos sin uso, ropa y emprendimientos sujetos al reglamento; Mis publicaciones explica la administración.
+El lateral y la barra inferior permanecen compactos, con los cuatro enlaces habituales. Al pulsar Mensajes, Publicar o Mis publicaciones sin sesión, la ruta muestra una presentación propia: título, explicación breve, acceso al login y una muestra visual amplia. En escritorio, texto y ejemplo comparten dos columnas; en tablet y móvil se apilan, con el botón de acceso antes del ejemplo.
 
-Las muestras usan HTML e iconos Lucide, con la indicación de que son ejemplos. El lateral permite desplazarse en pantallas de poca altura sin superponer el acceso ni la comunidad. En móvil, la barra inferior conserva su tamaño y las mismas ayudas aparecen en «Así funciona», después de los productos. Los enlaces y el botón «Entrar al mercadito» llevan al login y conservan el destino seleccionado.
+Mensajes ilustra una conversación sobre un producto y explica el contacto con compradores y vendedores sin exigir teléfono. Publicar muestra ropa, libros y emprendimientos sujetos al reglamento, y permite abrir el recorrido de demostración. Mis publicaciones ilustra los estados En venta, Apartado y Vendido. Las muestras se identifican como datos ilustrativos; no contienen controles falsamente interactivos. Con sesión, cada apartado conserva la interfaz operativa.
 
 ## Mensajes y Mis publicaciones
 

@@ -5,7 +5,6 @@ import { activeUniversityName, getActiveCommunity } from "@/features/community/l
 import { getActiveStudent } from "@/features/auth/lib/require-student";
 import { getLandingProducts } from "@/features/listings/lib/landing-products";
 import { LandingProducts } from "@/features/listings/components/landing-products";
-import { LandingFeatureGuide } from "@/components/public-feature-guide";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +16,7 @@ export default async function Home() {
 
   return (
     <>
-      <SiteHeader publicGuide />
+      <SiteHeader />
       <main className="landing-home">
         <div className="landing-intro page-width">
         <section className="landing-hero" aria-labelledby="landing-title">
@@ -37,7 +36,6 @@ export default async function Home() {
           <div className="landing-section-heading">
             <h2 id="how-title">Así funciona</h2>
           </div>
-          <LandingFeatureGuide />
           <ol className="landing-steps">
             <li>
               <h3>Entra</h3>

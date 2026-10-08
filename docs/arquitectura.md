@@ -69,6 +69,8 @@ La estructura compartida vive en web/src/components/site-header.tsx, app-navigat
 Las verificaciones y los límites del cambio están en [verificacion-mensajes-publicaciones.md](verificacion-mensajes-publicaciones.md). No requiere migraciones ni cambios de infraestructura.
 
 
-## Ayudas de la portada pública
+## Introducciones públicas por apartado
 
-`components/public-feature-guide.tsx` reúne textos y ejemplos ilustrativos de Mensajes, Publicar y Mis publicaciones. `SiteHeader` activa `publicGuide` únicamente desde la portada: el lateral de escritorio muestra las explicaciones junto a cada apartado y la sección «Así funciona» las muestra en móvil. Los enlaces conservan `returnTo` hacia el login; la navegación autenticada y los permisos no cambian. Las muestras son HTML e iconos del sistema, sin conversaciones ni datos privados.
+`components/public-feature-guide.tsx` presenta Mensajes, Publicar y Mis publicaciones antes de iniciar sesión. Cada ruta comprueba primero la cuenta: sin estudiante activo muestra esta introducción; con sesión conserva su función real. `publicar?demo=1` y las solicitudes de edición mantienen sus recorridos específicos. El lateral enlaza a cada ruta y conserva su presentación compacta; el botón de la introducción lleva al login con el `returnTo` correspondiente.
+
+`app/public-feature-pages.css` reúne los estilos de estas pantallas y se importa desde el layout raíz. Las muestras son HTML e iconos Lucide con datos ilustrativos, sin consultas a conversaciones ni artículos privados. Las API siguen requiriendo autorización.

@@ -1,3 +1,4 @@
+import { PublicFeatureIntro } from "@/components/public-feature-guide";
 import Link from "next/link";
 import { TaskPageHeading } from "@/components/task-page-heading";
 import { ArrowRight } from "lucide-react";
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function MyListingsPage() {
   const student = await getActiveStudent();
+  if (!student) return <PublicFeatureIntro feature="listings" />;
   const unreadMessageCountPromise = student
     ? countUnreadMessagesForStudent(student.id, student.universityId)
     : Promise.resolve(0);

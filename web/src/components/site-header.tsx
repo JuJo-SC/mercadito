@@ -15,7 +15,6 @@ import {
 
 type SiteHeaderProps = {
   signedIn?: boolean;
-  publicGuide?: boolean;
   userName?: string | null;
   universityName?: string | null;
   unreadMessageCount?: number;
@@ -29,7 +28,6 @@ async function leaveAccount() {
 
 export function SiteHeader({
   signedIn = false,
-  publicGuide = false,
   userName,
   universityName = activeUniversityName,
   unreadMessageCount = 0,
@@ -94,7 +92,7 @@ export function SiteHeader({
           </div>
         </div>
       </SiteHeaderFrame>
-      <AppNavigation signedIn={signedIn} universityName={universityName} publicGuide={publicGuide} />
+      <AppNavigation signedIn={signedIn} universityName={universityName} />
     </UnreadMessagesProvider>
   );
 }
