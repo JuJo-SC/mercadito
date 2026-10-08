@@ -79,3 +79,8 @@ Las cuentas UMAN son sintéticas para recorrido de prueba. Sus correos se mantie
 ## Experiencia de aplicación
 
 Confirmado por el propietario: conservar una página web con apariencia y navegación de aplicación en escritorio y móvil; tomar Facebook Marketplace como referencia. El escritorio tiene menú lateral permanente y el móvil barra inferior para Explorar, Mensajes, Publicar y Mis publicaciones. Se conserva el estilo claro y verde de Mercadito y sus restricciones de acceso.
+
+
+## Orientación pública
+
+Confirmado: las explicaciones de Mensajes, Publicar y Mis publicaciones permanecen visibles en el lateral de la portada, con poco texto y ejemplos visuales. El chat permite coordinar con compradores y vendedores sin tener que compartir un teléfono; compartirlo es voluntario. Publicar presenta artículos sin uso, ropa y productos de emprendimientos, conforme al reglamento. Mis publicaciones presenta la consulta y administración de los artículos propios. En móvil estas ayudas aparecen en la portada sin ampliar la barra inferior; los accesos continúan requiriendo login.

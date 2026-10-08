@@ -137,6 +137,12 @@ La cabecera, el lateral y la barra inferior permanecen visibles durante el recor
 
 Mensajes, Mis publicaciones y Publicar usan títulos breves en una línea, con un tamaño de 1.35rem en escritorio y 1.15rem en móvil. La explicación y los avisos completos se consultan desde «Información», mediante un desplegable nativo. El campus de prueba mantiene una indicación breve visible. Las conversaciones, las publicaciones y los campos del formulario aparecen inmediatamente después; los títulos de los pasos de publicación también son compactos.
 
+## Ayudas en la portada
+
+Sin sesión, el lateral de la portada explica Mensajes, Publicar y Mis publicaciones con una frase breve y un ejemplo visual: conversación, tipos de productos y publicación en venta. Las ayudas permanecen visibles, sin desplegables. Mensajes incluye a compradores y vendedores y presenta compartir el teléfono como una decisión voluntaria; Publicar menciona artículos sin uso, ropa y emprendimientos sujetos al reglamento; Mis publicaciones explica la administración.
+
+Las muestras usan HTML e iconos Lucide, con la indicación de que son ejemplos. El lateral permite desplazarse en pantallas de poca altura sin superponer el acceso ni la comunidad. En móvil, la barra inferior conserva su tamaño y las mismas ayudas aparecen en «Así funciona», después de los productos. Los enlaces y el botón «Entrar al mercadito» llevan al login y conservan el destino seleccionado.
+
 ## Mensajes y Mis publicaciones
 
 Estas superficies extienden el mismo sistema claro, con superficies blancas, tipografía del sistema, verde de acción y foco azul. Las miniaturas de producto permiten reconocer el artículo; cuando falta la foto o su carga falla, aparece «Sin foto» con un icono. Las etiquetas de estado conservan texto y contraste legible.

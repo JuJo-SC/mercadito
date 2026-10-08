@@ -67,3 +67,8 @@ La estructura compartida vive en web/src/components/site-header.tsx, app-navigat
 - `web/src/app/account-pages.css` reúne los estilos de estas superficies y de las miniaturas; `web/src/app/layout.tsx` lo importa después de `globals.css` y `app-shell.css`. Reutiliza los tokens compartidos y mantiene las reglas responsive de cuenta separadas del marco y del catálogo.
 
 Las verificaciones y los límites del cambio están en [verificacion-mensajes-publicaciones.md](verificacion-mensajes-publicaciones.md). No requiere migraciones ni cambios de infraestructura.
+
+
+## Ayudas de la portada pública
+
+`components/public-feature-guide.tsx` reúne textos y ejemplos ilustrativos de Mensajes, Publicar y Mis publicaciones. `SiteHeader` activa `publicGuide` únicamente desde la portada: el lateral de escritorio muestra las explicaciones junto a cada apartado y la sección «Así funciona» las muestra en móvil. Los enlaces conservan `returnTo` hacia el login; la navegación autenticada y los permisos no cambian. Las muestras son HTML e iconos del sistema, sin conversaciones ni datos privados.
