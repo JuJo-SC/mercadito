@@ -1,0 +1,336 @@
+/* Tema de acceso de Mercadito.
+   Reproduce el lenguaje visual de web/src/app/globals.css sobre el tema
+   keycloak.v2, que se apoya en PatternFly v5. Se prefiere redefinir las
+   variables --pf-v5-* antes que sobrescribir reglas con !important. */
+
+:root {
+  --m-paper: #f5f5f7;
+  --m-surface: #ffffff;
+  --m-paper-quiet: #e8e8ed;
+  --m-ink: #1d1d1f;
+  --m-muted: #6e6e73;
+  --m-rule: rgba(29, 29, 31, 0.13);
+  --m-signal: #167d62;
+  --m-signal-dark: #116850;
+  --m-signal-soft: #e7f4ee;
+  --m-focus: #087ff5;
+  --m-error: #a4262c;
+  --m-font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  --m-font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+
+  /* Paleta de PatternFly v5 reasignada al verde de Mercadito. */
+  --pf-v5-global--primary-color--100: var(--m-signal);
+  --pf-v5-global--primary-color--200: var(--m-signal-dark);
+  --pf-v5-global--link--Color: var(--m-signal);
+  --pf-v5-global--link--Color--hover: var(--m-signal-dark);
+  --pf-v5-global--danger-color--100: var(--m-error);
+  --pf-v5-global--FontFamily--text: var(--m-font-body);
+  --pf-v5-global--FontFamily--heading: var(--m-font-display);
+  --pf-v5-global--FontFamily--redhatfont--text: var(--m-font-body);
+  --pf-v5-global--FontFamily--redhatfont--heading: var(--m-font-display);
+
+  /* Botón principal. */
+  --pf-v5-c-button--m-primary--BackgroundColor: var(--m-signal);
+  --pf-v5-c-button--m-primary--hover--BackgroundColor: var(--m-signal-dark);
+  --pf-v5-c-button--m-primary--focus--BackgroundColor: var(--m-signal-dark);
+  --pf-v5-c-button--m-primary--active--BackgroundColor: var(--m-signal-dark);
+
+  /* Tarjeta de acceso. */
+  --pf-v5-c-login__main--BackgroundColor: var(--m-surface);
+  --pf-v5-c-login__main--BoxShadow: 0 2px 7px rgba(29, 29, 31, 0.045);
+
+  /* El tema padre pinta una franja azul sobre la tarjeta. */
+  --keycloak-card-top-color: transparent;
+}
+
+/* ---------------------------------------------------------------- Fondo */
+/* El tema padre pinta una imagen de fondo a pantalla completa; Mercadito
+   usa el gris plano de la aplicación. */
+html.login-pf,
+.login-pf body {
+  background: var(--m-paper);
+  background-image: none;
+  color: var(--m-ink);
+  font-family: var(--m-font-body);
+}
+
+.pf-v5-c-login {
+  padding: clamp(1.5rem, 5vw, 3rem) 1rem;
+}
+
+/* El tema padre fija la columna del grid en 34rem; Mercadito usa una
+   tarjeta más estrecha. */
+.pf-v5-c-login__container {
+  /* PatternFly reserva 6.125rem a cada lado para la columna ilustrada que
+     este acceso no usa. */
+  --pf-v5-c-login__container--PaddingLeft: 0;
+  --pf-v5-c-login__container--PaddingRight: 0;
+  grid-template-columns: minmax(0, 26rem);
+  justify-content: center;
+  max-width: 26rem;
+  margin-inline: auto;
+  gap: 0;
+}
+
+/* ---------------------------------------------------------- Marca arriba */
+/* #kc-header-wrapper recibe el "HTML display name" del realm. El tema padre
+   lo pone en mayúsculas y en color claro para fondos oscuros. */
+#kc-header-wrapper {
+  padding: 0 0 1.25rem;
+  color: var(--m-ink) !important;
+  font-family: var(--m-font-display);
+  font-size: 1.4rem;
+  font-weight: 680;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: none;
+  white-space: normal;
+}
+
+#kc-header-wrapper .mercadito-campus {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--m-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------- Tarjeta */
+.pf-v5-c-login__main {
+  /* PatternFly da este relleno al último hijo de la tarjeta con un selector
+     más específico que el de .pf-v5-c-login__main-body, así que se ajusta
+     la variable en lugar de pelear por especificidad. */
+  --pf-v5-c-login__main-footer--PaddingBottom: 1.75rem;
+  border: 1px solid rgba(29, 29, 31, 0.09);
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.pf-v5-c-login__main-header {
+  padding: 1.75rem 1.75rem 0;
+  border-top: 0;
+}
+
+.pf-v5-c-login__main-body {
+  padding: 1.25rem 1.75rem 1.75rem;
+}
+
+#kc-page-title {
+  color: var(--m-ink);
+  font-family: var(--m-font-display);
+  font-size: 1.6rem;
+  font-weight: 680;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* --------------------------------------------------------------- Campos */
+.pf-v5-c-form__label-text {
+  color: var(--m-ink);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* El formulario es un grid; la separación se controla con su variable. */
+.pf-v5-c-form {
+  --pf-v5-c-form--GridGap: 1rem;
+}
+
+/* En PatternFly v5 el campo de texto es el <input>, y el de contraseña es un
+   <span> que lo envuelve. Ambos llevan la clase .pf-v5-c-form-control. */
+.pf-v5-c-form-control {
+  --pf-v5-c-form-control--after--BorderBottomWidth: 0;
+  --pf-v5-c-form-control--BackgroundColor: var(--m-surface);
+  --pf-v5-c-form-control--Color: var(--m-ink);
+  min-height: 48px;
+  border: 1px solid #d2d2d7;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.pf-v5-c-form-control > input {
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.pf-v5-c-form-control::placeholder,
+.pf-v5-c-form-control > input::placeholder {
+  color: #86868b;
+}
+
+.pf-v5-c-form-control:focus,
+.pf-v5-c-form-control:focus-within {
+  border-color: var(--m-focus);
+  outline: 0;
+  box-shadow: 0 0 0 4px rgba(8, 127, 245, 0.13);
+}
+
+/* El campo de contraseña va junto al botón de mostrar/ocultar. */
+.pf-v5-c-input-group {
+  --pf-v5-c-input-group--BackgroundColor: transparent;
+  gap: 8px;
+}
+
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control {
+  min-width: 48px;
+  border: 1px solid #d2d2d7;
+  border-radius: 12px;
+  background: var(--m-surface);
+  color: var(--m-muted);
+}
+
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control::before,
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control::after {
+  border: 0;
+}
+
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control:hover {
+  border-color: #b9b9c0;
+  color: var(--m-ink);
+}
+
+/* -------------------------------------------------------------- Botones */
+.pf-v5-c-form__actions {
+  margin-top: 0.4rem;
+}
+
+.pf-v5-c-button.pf-m-primary {
+  min-height: 50px;
+  border: 1px solid var(--m-signal);
+  border-radius: 13px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 650;
+  box-shadow: 0 2px 4px rgba(22, 125, 98, 0.13);
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.pf-v5-c-button.pf-m-primary:hover {
+  border-color: var(--m-signal-dark);
+  box-shadow: 0 5px 12px rgba(22, 125, 98, 0.18);
+  transform: translateY(-1px);
+}
+
+.pf-v5-c-button.pf-m-primary:active {
+  transform: translateY(0);
+}
+
+.pf-v5-c-button.pf-m-secondary {
+  min-height: 48px;
+  border: 1px solid var(--m-rule);
+  border-radius: 13px;
+  background: var(--m-surface);
+  color: var(--m-ink);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------- Enlaces */
+.pf-v5-c-login__main a,
+.pf-v5-c-login__main-footer a {
+  color: var(--m-signal);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pf-v5-c-login__main a:hover,
+.pf-v5-c-login__main-footer a:hover {
+  color: var(--m-signal-dark);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+/* "¿Olvidaste tu contraseña?" vive en el texto de ayuda del campo.
+   La plantilla le pone la utilidad pf-v5-u-justify-content-space-between,
+   que lleva !important; por eso se alinea el elemento con margin-left. */
+.pf-v5-c-form__helper-text {
+  margin-top: 0.4rem;
+}
+
+.pf-v5-c-helper-text__item:only-child {
+  margin-left: auto;
+}
+
+.pf-v5-c-helper-text__item-text {
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+/* -------------------------------------------------- Avisos de error */
+.pf-v5-c-alert.pf-m-inline {
+  --pf-v5-c-alert--BackgroundColor: var(--m-signal-soft);
+  border: 1px solid rgba(22, 125, 98, 0.14);
+  border-radius: 15px;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+.pf-v5-c-alert.pf-m-danger,
+.pf-v5-c-alert.pf-m-error {
+  --pf-v5-c-alert--BackgroundColor: #f8dfd9;
+  border-color: rgba(164, 38, 44, 0.16);
+  color: var(--m-error);
+}
+
+.pf-v5-c-helper-text__item.pf-m-error,
+.kc-feedback-text {
+  color: var(--m-error);
+}
+
+.pf-v5-c-form-control.pf-m-error,
+.pf-v5-c-form-control[aria-invalid="true"] {
+  border-color: var(--m-error);
+}
+
+/* ------------------------------------------------------- Pie de tarjeta */
+.pf-v5-c-login__main-footer-band {
+  padding: 1rem 1.75rem 1.5rem;
+  border-top: 1px solid var(--m-rule);
+  color: var(--m-muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+/* ----------------------------------------------------------- Accesible */
+:focus-visible {
+  outline: 3px solid var(--m-focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-v5-c-button.pf-m-primary {
+    transition: none;
+  }
+
+  .pf-v5-c-button.pf-m-primary:hover {
+    transform: none;
+  }
+}
+
+/* -------------------------------------------------------------- Celular */
+@media (max-width: 540px) {
+  .pf-v5-c-login {
+    padding: 1.25rem 0.75rem 2rem;
+  }
+
+  .pf-v5-c-login__main {
+    border-radius: 18px;
+  }
+
+  .pf-v5-c-login__main-header {
+    padding: 1.4rem 1.15rem 0;
+  }
+
+  .pf-v5-c-login__main-body {
+    padding: 1rem 1.15rem 1.4rem;
+  }
+
+  #kc-page-title {
+    font-size: 1.4rem;
+  }
+}
