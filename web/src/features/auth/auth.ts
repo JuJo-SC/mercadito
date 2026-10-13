@@ -3,6 +3,7 @@ import Keycloak from "next-auth/providers/keycloak";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { resolveActiveStudent } from "@/features/auth/lib/university-identity";
+import { activeUniversitySlug } from "@/features/community/lib/active-community";
 
 const keycloakConfigured = Boolean(
   process.env.AUTH_KEYCLOAK_ID &&
@@ -13,17 +14,21 @@ const keycloakConfigured = Boolean(
 const providers = keycloakConfigured
   ? [
       Keycloak({
+        ...(activeUniversitySlug === "uat" ? { authorization: { params: { scope: "openid" } } } : {}),
         profile: async (rawProfile) => {
           const profile = rawProfile as Record<string, unknown>;
           const university = await resolveActiveStudent(profile);
           const subject = profile.sub;
-          const email = profile.email;
+          const email = university?.slug === "uat"
+            ? null
+            : typeof profile.email === "string" && profile.email.trim()
+              ? profile.email.trim()
+              : null;
 
           if (
             !university ||
             typeof subject !== "string" ||
-            typeof email !== "string" ||
-            email.length === 0
+            (university.slug !== "uat" && !email)
           ) {
             throw new Error("Institutional identity could not be verified.");
           }
@@ -38,7 +43,7 @@ const providers = keycloakConfigured
             name:
               typeof profile.name === "string"
                 ? profile.name
-                : fullName || null,
+                : fullName || (university.slug === "uat" ? "Estudiante UAT" : null),
             email,
             image:
               typeof profile.picture === "string" ? profile.picture : null,
@@ -54,11 +59,14 @@ const providers = keycloakConfigured
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers,
-  session: { strategy: "database" },
+  session: {
+    strategy: "database",
+    ...(activeUniversitySlug === "uat" ? { maxAge: 8 * 60 * 60, updateAge: 8 * 60 * 60 } : {}),
+  },
   pages: { signIn: "/ingresar" },
   trustHost: process.env.AUTH_TRUST_HOST === "true",
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile }): Promise<boolean> {
       if (
         account?.provider !== "keycloak" ||
         !account.providerAccountId ||
@@ -74,6 +82,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       const currentUniversity = await resolveActiveStudent(identityProfile);
       if (!currentUniversity) return false;
+
+      // Do not link a different portal identity to an existing app session.
+      const currentSession = await auth();
+      if (currentSession?.user?.id) {
+        const linkedAccount = await prisma.account.findUnique({
+          where: {
+            provider_providerAccountId: {
+              provider: "keycloak",
+              providerAccountId: account.providerAccountId,
+            },
+          },
+          select: { userId: true },
+        });
+        if (linkedAccount?.userId !== currentSession.user.id) return false;
+      }
 
       const localUser = await prisma.user.findUnique({
         where: { id: user.id },

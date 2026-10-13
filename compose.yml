@@ -29,6 +29,7 @@ services:
     restart: unless-stopped
     env_file:
       - /srv/secrets/mercadito/keycloak.env
+      - /srv/secrets/mercadito/uat.env
     depends_on:
       database:
         condition: service_healthy
@@ -42,6 +43,7 @@ services:
     networks:
       - private
       - edge
+      - uat-verification
 
   migrate:
     build:
@@ -92,4 +94,6 @@ networks:
   private:
     driver: bridge
   edge:
+    external: true
+  uat-verification:
     external: true

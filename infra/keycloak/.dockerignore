@@ -1,0 +1,4 @@
+uat-provider/target/
+uat-provider/smoke/
+**/__pycache__/
+**/*.pyc

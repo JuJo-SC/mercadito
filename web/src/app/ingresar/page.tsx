@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { ArrowRight, LockKeyhole } from "lucide-react";
-import { signIn } from "@/features/auth/auth";
-import { activeUniversityName, getActiveCommunity } from "@/features/community/lib/active-community";
+import { signIn, signOut } from "@/features/auth/auth";
+import { activeUniversityName, activeUniversitySlug, getActiveCommunity } from "@/features/community/lib/active-community";
 import { getActiveStudent } from "@/features/auth/lib/require-student";
 import { countUnreadMessagesForStudent } from "@/features/conversations/lib/conversations";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
+
+import { getUatPrivacyUrl, isUatLoginEnabled } from "@/features/auth/lib/uat-access";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +30,7 @@ function safeReturnTo(value: string | string[] | undefined) {
 
 async function startInstitutionalLogin(formData: FormData) {
   "use server";
+  await signOut({ redirect: false });
   await signIn("keycloak", { redirectTo: safeReturnTo(formData.get("returnTo")?.toString()) });
 }
 
@@ -39,6 +42,9 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
     ? countUnreadMessagesForStudent(student.id, student.universityId)
     : Promise.resolve(0);
   const community = await getActiveCommunity();
+  const isUat = activeUniversitySlug === "uat";
+  const accessReady = !isUat || isUatLoginEnabled();
+  const privacyUrl = isUat ? getUatPrivacyUrl() : null;
 
   const unreadMessageCount = await unreadMessageCountPromise;
 
@@ -75,7 +81,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
               <ArrowRight aria-hidden="true" size={17} />
             </Link>
           </section>
-        ) : community ? (
+        ) : community && accessReady ? (
           <section className="auth-panel">
             <div className="auth-panel-heading">
               <LockKeyhole aria-hidden="true" size={22} strokeWidth={1.7} />
@@ -84,8 +90,16 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             <p>
               {community.isTest
                 ? `Se abrirá el acceso de ${activeUniversityName} con las cuentas de prueba proporcionadas para este recorrido.`
-                : `Se abrirá el acceso institucional de ${activeUniversityName}. Mercadito no recibe tu contraseña.`}
+                : isUat
+                  ? "En el siguiente paso usaremos tu cuenta del portal de alumnos UAT para comprobar tu matrícula y situación académica. Tu contraseña no se guarda."
+                  : `Se abrirá el acceso institucional de ${activeUniversityName}. Mercadito no recibe tu contraseña.`}
             </p>
+            {isUat ? (
+              <p>Mercadito es independiente de la UAT. La verificación no guarda tus horarios ni calificaciones.</p>
+            ) : null}
+            {privacyUrl ? (
+              <p><a href={privacyUrl}>Consulta el aviso de privacidad</a> antes de continuar.</p>
+            ) : null}
             <form action={startInstitutionalLogin}>
               <input type="hidden" name="returnTo" value={returnTo} />
               <button className="button-ink form-submit" type="submit">

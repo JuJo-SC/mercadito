@@ -1,0 +1,9 @@
+# Explicit future activation overlay; do not use "up" while testing the candidate.
+# Requires configure-identity.py --apply and the operator's chosen access policy.
+services:
+  web:
+    image: mercadito-web:uat
+    env_file:
+      - /srv/secrets/mercadito/uat-auth.env
+  keycloak:
+    image: mercadito-keycloak:26.7.4-uat
