@@ -1,6 +1,7 @@
 package xyz.mercadito.uat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jboss.logging.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public final class UatGatewayClient implements UatVerifier {
+    private static final Logger LOG = Logger.getLogger(UatGatewayClient.class);
     static final int MAX_RESPONSE_BYTES = 1_048_576;
     private final HttpClient http;
     private final URI endpoint;
@@ -55,6 +57,7 @@ public final class UatGatewayClient implements UatVerifier {
         // The UAT domain login expects the institutional account, not a bare student number.
         String portalUsername = matricula + "@alumnos.uat.edu.mx";
         if (password == null || password.isEmpty() || password.length() > 512) {
+            LOG.warn("UAT_CHECK input_password_rejected");
             throw new UatVerificationException(UatVerificationException.Reason.CREDENTIALS);
         }
         CompletableFuture<HttpResponse<byte[]>> pending = null;
@@ -78,6 +81,7 @@ public final class UatGatewayClient implements UatVerifier {
             if (response.statusCode() == 401) {
                 String code = mapper.readTree(response.body()).path("error").asText("");
                 if ("UAT_LOGIN_FAILED".equals(code) || "UAT_SESSION_EXPIRED".equals(code)) {
+                    LOG.warnf("UAT_CHECK portal_http_rejection code=%s", code);
                     throw new UatVerificationException(UatVerificationException.Reason.CREDENTIALS);
                 }
             }

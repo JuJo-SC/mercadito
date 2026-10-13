@@ -104,3 +104,7 @@ La lista vive en UAT_ALLOWED_MATRICULAS dentro de /srv/secrets/mercadito/uat.env
 No incluir esta lista en Git. Para cerrar nuevas entradas UAT, establecer UAT_LOGIN_ENABLED=false en uat.env y uat-auth.env y recrear Keycloak y web con el mismo overlay. El cierre también impide usar las rutas estudiantiles aunque exista una sesión previa.
 
 En este piloto se verificaron salud HTTPS, redirección HTTP a HTTPS, aviso publicado, recorrido del botón hasta Keycloak, formulario con contraseña oculta y aceptación desmarcada, rechazo de una matrícula ajena antes de consultar el gateway y configuración de tres cuentas autorizadas. No se enviaron contraseñas reales ni se copiaron publicaciones UMAN a UAT.
+
+## Diagnóstico del rechazo
+
+Los registros de Keycloak distinguen categorías UAT_CHECK de formato de usuario, contraseña ausente o fuera de límite, rechazo HTTP del portal, indicadores de login no confirmados y cambio obligatorio de contraseña. Solo se registran etiquetas constantes, tipos JSON o valores booleanos y los dos códigos de rechazo reconocidos. No se registran usuarios, contraseñas, mensajes del portal ni cuerpos de respuesta. El diagnóstico no cambia los requisitos de acceso.
