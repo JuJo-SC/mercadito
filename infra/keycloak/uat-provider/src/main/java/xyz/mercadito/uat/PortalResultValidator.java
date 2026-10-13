@@ -15,6 +15,9 @@ public final class PortalResultValidator {
             "^(?:([0-9]{1,32})|a?([0-9]{1,32})@alumnos\\.uat\\.edu\\.mx)$", Pattern.CASE_INSENSITIVE);
     private static final Set<String> SITUATION_FIELDS = Set.of(
             "txt_situacion_alumno", "txt_situacion", "situacion_alumno", "situacion");
+    // Exact labels shown in UAT's official enrollment guides; never match substrings.
+    private static final Set<String> ELIGIBLE_SITUATIONS = Set.of(
+            "ACTIVO", "ACTIVO - REGULARES", "REGULARES");
     private final PortalResponseReader reader = new PortalResponseReader();
 
     public static String canonicalMatricula(String username) throws UatVerificationException {
@@ -66,7 +69,6 @@ public final class PortalResultValidator {
         boolean matchedIdentity = false;
         boolean inactivePlan = false;
         boolean unknownStatus = false;
-        boolean caseOnlyActive = false;
         for (JsonNode program : programs) {
             JsonNode raw = program.path("raw");
             JsonNode rawMatricula = raw.path("Num_Matricula");
@@ -84,11 +86,9 @@ public final class PortalResultValidator {
                             && recognizedField(leaf)) addSituation(field.path("value"), situations);
                 }
             }
-            if (situations.size() == 1 && situations.iterator().next().equalsIgnoreCase("ACTIVO")
-                    && !situations.contains("ACTIVO")) caseOnlyActive = true;
             // Do not combine another plan, selection, global situation or the HTML page.
-            // Conflicting career fields must fail closed rather than choosing ACTIVO.
-            if (situations.equals(Set.of("ACTIVO"))) {
+            // Any unknown or inactive evidence in the same career still fails closed.
+            if (!situations.isEmpty() && ELIGIBLE_SITUATIONS.containsAll(situations)) {
                 String email = username.strip().contains("@")
                         ? "a" + matricula + "@alumnos.uat.edu.mx" : null;
                 return new VerifiedStudent(matricula, email);
@@ -99,11 +99,12 @@ public final class PortalResultValidator {
                 unknownStatus = true;
             }
         }
-        LOG.warnf("UAT_CHECK academic_contract_unconfirmed programs_count=%d matching_identity=%s raw_matricula_type=%s case_only_active=%s first_program_schema=%s",
+        LOG.warnf("UAT_CHECK academic_contract_unconfirmed programs_count=%d matching_identity=%s raw_matricula_type=%s first_program_schema=%s",
                 programs.size(), matchedIdentity, programs.path(0).path("raw").path("Num_Matricula").getNodeType().name(),
-                caseOnlyActive, schemaNames(programs.path(0).path("raw")));
-        throw failure(matchedIdentity && inactivePlan && !unknownStatus
-                ? UatVerificationException.Reason.INACTIVE : UatVerificationException.Reason.UNAVAILABLE);
+                schemaNames(programs.path(0).path("raw")));
+        throw failure(!matchedIdentity ? UatVerificationException.Reason.UNAVAILABLE
+                : inactivePlan && !unknownStatus ? UatVerificationException.Reason.INACTIVE
+                : UatVerificationException.Reason.UNCONFIRMED_STATUS);
     }
 
     private static void collectRawSituations(JsonNode node, Set<String> values, int depth) {
@@ -116,7 +117,7 @@ public final class PortalResultValidator {
 
     private static void addSituation(JsonNode value, Set<String> values) {
         if (value.isTextual() && !value.asText().strip().isEmpty()) {
-            values.add(value.asText().strip());
+            values.add(value.asText().strip().toUpperCase(Locale.ROOT));
         }
     }
 

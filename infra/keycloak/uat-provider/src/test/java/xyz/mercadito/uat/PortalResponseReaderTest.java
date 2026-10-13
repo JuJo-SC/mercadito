@@ -50,6 +50,6 @@ class PortalResponseReaderTest {
         assertTrue(root.path("programs").path(0).path("raw").path("Num_Matricula").isIntegralNumber());
         var denied = assertThrows(UatVerificationException.class,
                 () -> new PortalResultValidator().validate(body.getBytes(StandardCharsets.UTF_8), "123"));
-        assertEquals(UatVerificationException.Reason.UNAVAILABLE, denied.reason());
+        assertEquals(UatVerificationException.Reason.UNCONFIRMED_STATUS, denied.reason());
     }
 }

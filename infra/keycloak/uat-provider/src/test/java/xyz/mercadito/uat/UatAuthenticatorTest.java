@@ -109,12 +109,13 @@ class UatAuthenticatorTest {
         verify(context, never()).success();
         verify(authenticationSession, never()).setUserSessionNote(anyString(), anyString());
         verify(context).failureChallenge(eq(AuthenticationFlowError.INVALID_CREDENTIALS), any());
-        verify(context, times(4)).forceChallenge(any());
+        verify(context, times(5)).forceChallenge(any());
         verify(forms).setError("uatInvalidCredentials");
         verify(forms).setError("uatInvalidUsername");
         verify(forms).setError("uatInvalidPassword");
         verify(forms).setError("uatInactiveStudent");
         verify(forms).setError("uatUnavailable");
+        verify(forms).setError("uatUnconfirmedStatus");
     }
 
     @Test void rejectsDisabledAccountWithoutCallingGateway() {

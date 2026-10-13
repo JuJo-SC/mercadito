@@ -122,7 +122,7 @@ else:
 
     inactive = authenticate("000124").read().decode()
     invalid = authenticate("000125").read().decode()
-    assert "No encontramos un programa UAT" in inactive
+    assert "El portal UAT indica baja, inactividad o egreso" in inactive
     assert "El portal UAT rechazó el acceso" in invalid
 
     admin_body = urllib.parse.urlencode({"grant_type": "password", "client_id": "admin-cli",

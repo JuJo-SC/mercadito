@@ -179,6 +179,11 @@ public final class UatAuthenticator implements Authenticator {
                 flowError = AuthenticationFlowError.INVALID_USER;
                 context.getEvent().error(Errors.USER_DISABLED);
             }
+            case UNCONFIRMED_STATUS -> {
+                message = "uatUnconfirmedStatus";
+                flowError = AuthenticationFlowError.INVALID_USER;
+                context.getEvent().error(Errors.GENERIC_AUTHENTICATION_ERROR);
+            }
             default -> {
                 message = "uatUnavailable";
                 flowError = AuthenticationFlowError.INTERNAL_ERROR;
