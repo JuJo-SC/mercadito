@@ -1,7 +1,7 @@
 package xyz.mercadito.uat;
 
 public final class UatVerificationException extends Exception {
-    public enum Reason { CREDENTIALS, INACTIVE, UNAVAILABLE }
+    public enum Reason { INPUT_USERNAME, INPUT_PASSWORD, CREDENTIALS, INACTIVE, UNAVAILABLE }
 
     private final Reason reason;
 

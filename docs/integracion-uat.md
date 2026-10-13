@@ -14,7 +14,7 @@ Mercadito conserva Auth.js, sesiones en PostgreSQL y OIDC con Keycloak. Un auten
 
 El endpoint de alumnos es POST /api/v1/alumnos/scrape. Se envía usuario y contraseña con include.programPage=true, include.schedule=false, include.partialGrades=false e include.finalGrades=false. No se necesitan los endpoints de horarios, calificaciones, docentes ni asistencia.
 
-El formulario admite matrícula o correo de alumnos; antes de llamar al gateway se normaliza siempre a matrícula@alumnos.uat.edu.mx. La matrícula conserva sus ceros iniciales y la contraseña no se recorta ni transforma. El portal confirmado para este piloto es https://alumnossur.uat.edu.mx/Login.
+El formulario admite matrícula o correo de alumnos, incluido aMATRÍCULA@alumnos.uat.edu.mx. Si se escribe solo la matrícula, el usuario enviado al portal es aMATRÍCULA@alumnos.uat.edu.mx. Los formatos admitidos se normalizan siempre al mismo correo con prefijo a, también si se omite ese prefijo al escribir el correo. La autorización usa únicamente la matrícula numérica, conserva sus ceros iniciales y la contraseña no se recorta ni transforma. El portal confirmado para este piloto es https://alumnossur.uat.edu.mx/Login.
 
 El validador exige authenticated=true, login.exito=true y ausencia de cambio obligatorio de contraseña. La matrícula canónica debe coincidir con programs[].raw.Num_Matricula; no se eliminan ceros iniciales. La situación ACTIVO debe estar respaldada por el mismo programa y por campos de carrera reconocidos. No se autoriza usando el catálogo agregado situations, una coincidencia parcial de texto, CicloActivo, un correo o el HTML de otro plan. INACTIVO, EGRESADO, BAJA, campos ausentes o contradictorios se rechazan.
 
@@ -108,3 +108,5 @@ En este piloto se verificaron salud HTTPS, redirección HTTP a HTTPS, aviso publ
 ## Diagnóstico del rechazo
 
 Los registros de Keycloak distinguen categorías UAT_CHECK de formato de usuario, contraseña ausente o fuera de límite, rechazo HTTP del portal, indicadores de login no confirmados y cambio obligatorio de contraseña. Solo se registran etiquetas constantes, tipos JSON o valores booleanos y los dos códigos de rechazo reconocidos. No se registran usuarios, contraseñas, mensajes del portal ni cuerpos de respuesta. El diagnóstico no cambia los requisitos de acceso.
+
+Los errores de formato del usuario o de entrada de contraseña muestran un mensaje del formulario y no se presentan como rechazo del portal ni incrementan los contadores de contraseña incorrecta.

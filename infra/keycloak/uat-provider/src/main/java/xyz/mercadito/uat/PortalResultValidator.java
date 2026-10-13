@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 public final class PortalResultValidator {
     private static final Logger LOG = Logger.getLogger(PortalResultValidator.class);
     private static final Pattern USERNAME = Pattern.compile(
-            "^([0-9]{1,32})(@alumnos\\.uat\\.edu\\.mx)?$", Pattern.CASE_INSENSITIVE);
+            "^(?:([0-9]{1,32})|a?([0-9]{1,32})@alumnos\\.uat\\.edu\\.mx)$", Pattern.CASE_INSENSITIVE);
     private static final Set<String> SITUATION_FIELDS = Set.of(
             "txt_situacion_alumno", "txt_situacion", "situacion_alumno", "situacion");
     private final ObjectMapper mapper = new ObjectMapper();
@@ -21,14 +21,14 @@ public final class PortalResultValidator {
     public static String canonicalMatricula(String username) throws UatVerificationException {
         if (username == null) {
             LOG.warn("UAT_CHECK input_username_rejected");
-            throw failure(UatVerificationException.Reason.CREDENTIALS);
+            throw failure(UatVerificationException.Reason.INPUT_USERNAME);
         }
         var match = USERNAME.matcher(username.strip());
         if (!match.matches()) {
             LOG.warn("UAT_CHECK input_username_rejected");
-            throw failure(UatVerificationException.Reason.CREDENTIALS);
+            throw failure(UatVerificationException.Reason.INPUT_USERNAME);
         }
-        return match.group(1);
+        return match.group(1) != null ? match.group(1) : match.group(2);
     }
 
     public VerifiedStudent validate(byte[] body, String username) throws UatVerificationException {
@@ -82,7 +82,7 @@ public final class PortalResultValidator {
             // Conflicting career fields must fail closed rather than choosing ACTIVO.
             if (situations.equals(Set.of("ACTIVO"))) {
                 String email = username.strip().contains("@")
-                        ? matricula + "@alumnos.uat.edu.mx" : null;
+                        ? "a" + matricula + "@alumnos.uat.edu.mx" : null;
                 return new VerifiedStudent(matricula, email);
             }
             if (!situations.isEmpty() && Set.of("INACTIVO", "BAJA", "EGRESADO").containsAll(situations)) {

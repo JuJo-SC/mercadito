@@ -158,6 +158,14 @@ public final class UatAuthenticator implements Authenticator {
         String message;
         AuthenticationFlowError flowError;
         switch (reason) {
+            case INPUT_USERNAME -> {
+                message = "uatInvalidUsername";
+                flowError = AuthenticationFlowError.INVALID_USER;
+            }
+            case INPUT_PASSWORD -> {
+                message = "uatInvalidPassword";
+                flowError = AuthenticationFlowError.INVALID_CREDENTIALS;
+            }
             case CREDENTIALS -> {
                 message = "uatInvalidCredentials";
                 flowError = AuthenticationFlowError.INVALID_CREDENTIALS;

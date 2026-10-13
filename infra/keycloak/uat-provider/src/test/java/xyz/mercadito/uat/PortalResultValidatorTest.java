@@ -29,10 +29,18 @@ class PortalResultValidatorTest {
         assertNull(student.email());
     }
 
-    @Test void retainsActualSubmittedInstitutionalEmailOnly() throws Exception {
+    @Test void retainsNormalizedEmailOnlyWhenInstitutionalEmailWasSubmitted() throws Exception {
         var student = parse(response("[{\"raw\":{\"Num_Matricula\":\"00123\",\"Situación\":\"ACTIVO\"}}]"), "00123@ALUMNOS.UAT.EDU.MX");
         assertEquals("00123", student.matricula());
-        assertEquals("00123@alumnos.uat.edu.mx", student.email());
+        assertEquals("a00123@alumnos.uat.edu.mx", student.email());
+    }
+
+    @Test void acceptsPrefixedStudentEmailWithoutChangingMatriculaOrLosingZeros() throws Exception {
+        String body = response("[{\"raw\":{\"Num_Matricula\":\"00123\",\"Situacion\":\"ACTIVO\"}}]");
+        var student = parse(body, " A00123@ALUMNOS.UAT.EDU.MX ");
+        assertEquals("00123", student.matricula());
+        assertEquals("uat:00123", student.keycloakUsername());
+        assertEquals("a00123@alumnos.uat.edu.mx", student.email());
     }
 
     @Test void acceptsCareerFieldFromNormalizedGatewayContract() throws Exception {
@@ -88,8 +96,9 @@ class PortalResultValidatorTest {
         denied(response("[]"), "00123", UatVerificationException.Reason.UNAVAILABLE);
     }
 
-    @ParameterizedTest @ValueSource(strings={"uat-demo", "123@example.com", "123@uat.edu.mx", "123@alumnos.uat.edu.mx.evil.test", "123/../../x", "-123"})
+    @ParameterizedTest @ValueSource(strings={"uat-demo", "123@example.com", "123@uat.edu.mx", "123@alumnos.uat.edu.mx.evil.test", "123/../../x", "-123", "a123", "aa123@alumnos.uat.edu.mx", "a123@example.com"})
     void rejectsUnsupportedIdentityFormats(String username) {
-        assertThrows(UatVerificationException.class, () -> PortalResultValidator.canonicalMatricula(username));
+        var error = assertThrows(UatVerificationException.class, () -> PortalResultValidator.canonicalMatricula(username));
+        assertEquals(UatVerificationException.Reason.INPUT_USERNAME, error.reason());
     }
 }

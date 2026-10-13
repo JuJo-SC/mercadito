@@ -54,11 +54,11 @@ public final class UatGatewayClient implements UatVerifier {
     @Override
     public VerifiedStudent verify(String username, String password) throws UatVerificationException {
         String matricula = PortalResultValidator.canonicalMatricula(username);
-        // The UAT domain login expects the institutional account, not a bare student number.
-        String portalUsername = matricula + "@alumnos.uat.edu.mx";
+        // All accepted forms identify the same prefixed UAT student account.
+        String portalUsername = "a" + matricula + "@alumnos.uat.edu.mx";
         if (password == null || password.isEmpty() || password.length() > 512) {
             LOG.warn("UAT_CHECK input_password_rejected");
-            throw new UatVerificationException(UatVerificationException.Reason.CREDENTIALS);
+            throw new UatVerificationException(UatVerificationException.Reason.INPUT_PASSWORD);
         }
         CompletableFuture<HttpResponse<byte[]>> pending = null;
         try {

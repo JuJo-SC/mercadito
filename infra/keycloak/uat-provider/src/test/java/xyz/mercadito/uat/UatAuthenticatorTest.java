@@ -109,8 +109,10 @@ class UatAuthenticatorTest {
         verify(context, never()).success();
         verify(authenticationSession, never()).setUserSessionNote(anyString(), anyString());
         verify(context).failureChallenge(eq(AuthenticationFlowError.INVALID_CREDENTIALS), any());
-        verify(context, times(2)).forceChallenge(any());
+        verify(context, times(4)).forceChallenge(any());
         verify(forms).setError("uatInvalidCredentials");
+        verify(forms).setError("uatInvalidUsername");
+        verify(forms).setError("uatInvalidPassword");
         verify(forms).setError("uatInactiveStudent");
         verify(forms).setError("uatUnavailable");
     }
@@ -165,6 +167,18 @@ class UatAuthenticatorTest {
         authenticator = new UatAuthenticator(verifier, true, "https://example.test/privacy", "fixture-v1", "00123,000987");
         authenticator.action(context);
         verify(context).success("password");
+    }
+
+    @Test void allowlistUsesNumericMatriculaForAPrefixedInstitutionalAccount() throws Exception {
+        input.putSingle("username", "a00123@alumnos.uat.edu.mx");
+        UserModel user = mock(UserModel.class);
+        when(verifier.verify("a00123@alumnos.uat.edu.mx", "test-password"))
+                .thenReturn(new VerifiedStudent("00123", "a00123@alumnos.uat.edu.mx"));
+        when(users.addUser(realm, "uat:00123")).thenReturn(user);
+        authenticator = new UatAuthenticator(verifier, true, "https://example.test/privacy", "fixture-v1", "00123");
+        authenticator.action(context);
+        verify(context).success("password");
+        verify(authenticationSession).setUserSessionNote("university_id", "uat");
     }
 
     @Test void malformedAllowlistClosesInsteadOfAllowingAllAccounts() {
