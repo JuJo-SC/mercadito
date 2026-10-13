@@ -14,6 +14,8 @@ Mercadito conserva Auth.js, sesiones en PostgreSQL y OIDC con Keycloak. Un auten
 
 El endpoint de alumnos es POST /api/v1/alumnos/scrape. Se envía usuario y contraseña con include.programPage=true, include.schedule=false, include.partialGrades=false e include.finalGrades=false. No se necesitan los endpoints de horarios, calificaciones, docentes ni asistencia.
 
+El formulario admite matrícula o correo de alumnos; antes de llamar al gateway se normaliza siempre a matrícula@alumnos.uat.edu.mx. La matrícula conserva sus ceros iniciales y la contraseña no se recorta ni transforma. El portal confirmado para este piloto es https://alumnossur.uat.edu.mx/Login.
+
 El validador exige authenticated=true, login.exito=true y ausencia de cambio obligatorio de contraseña. La matrícula canónica debe coincidir con programs[].raw.Num_Matricula; no se eliminan ceros iniciales. La situación ACTIVO debe estar respaldada por el mismo programa y por campos de carrera reconocidos. No se autoriza usando el catálogo agregado situations, una coincidencia parcial de texto, CicloActivo, un correo o el HTML de otro plan. INACTIVO, EGRESADO, BAJA, campos ausentes o contradictorios se rechazan.
 
 El identificador interno de Keycloak es independiente y estable. Las notas de sesión university_id=uat y uat_student_verified=true se convierten en claims OIDC. El cliente UAT no hereda profile/email; solicita únicamente openid, evitando propagar matrícula o datos académicos en los tokens. Auth.js usa el sub y acepta email=null para UAT; no inventa un correo ni vincula identidades por correo. Una sesión previa no puede vincular otra identidad de portal a su cuenta local.

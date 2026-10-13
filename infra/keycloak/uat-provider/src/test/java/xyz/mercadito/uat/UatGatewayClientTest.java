@@ -57,7 +57,7 @@ class UatGatewayClientTest {
         var student = new UatGatewayClient(base, "test-key").verify("00123", "escaped-\"-password");
         JsonNode body = new ObjectMapper().readTree(request.get());
         assertEquals("test-key", apiKey.get());
-        assertEquals("00123", body.path("username").asText());
+        assertEquals("00123@alumnos.uat.edu.mx", body.path("username").asText());
         assertEquals("escaped-\"-password", body.path("password").asText());
         assertEquals(3, body.size());
         assertTrue(body.path("include").path("programPage").asBoolean());
@@ -66,6 +66,17 @@ class UatGatewayClientTest {
         assertFalse(body.path("include").path("finalGrades").asBoolean());
         assertEquals(4, body.path("include").size());
         assertEquals("00123", student.matricula());
+    }
+
+    @Test void acceptsBothUsernameFormsAndPreservesPasswordExactly() throws Exception {
+        String password = "  contraseña con espacios +&=\\\"  ";
+        for (String username : new String[] { " 00123 ", " 00123@ALUMNOS.UAT.EDU.MX " }) {
+            var student = new UatGatewayClient(base, "test-key").verify(username, password);
+            JsonNode body = new ObjectMapper().readTree(request.get());
+            assertEquals("00123@alumnos.uat.edu.mx", body.path("username").asText());
+            assertEquals(password, body.path("password").asText());
+            assertEquals("00123", student.matricula());
+        }
     }
 
     @Test void distinguishesCredentialFailureFromBrokenGatewayAuthorization() {

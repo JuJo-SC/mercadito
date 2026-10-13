@@ -51,7 +51,9 @@ public final class UatGatewayClient implements UatVerifier {
 
     @Override
     public VerifiedStudent verify(String username, String password) throws UatVerificationException {
-        PortalResultValidator.canonicalMatricula(username);
+        String matricula = PortalResultValidator.canonicalMatricula(username);
+        // The UAT domain login expects the institutional account, not a bare student number.
+        String portalUsername = matricula + "@alumnos.uat.edu.mx";
         if (password == null || password.isEmpty() || password.length() > 512) {
             throw new UatVerificationException(UatVerificationException.Reason.CREDENTIALS);
         }
@@ -59,7 +61,7 @@ public final class UatGatewayClient implements UatVerifier {
         try {
             // This stateless route does not retain portal cookies or create a gateway session.
             byte[] requestBody = mapper.writeValueAsBytes(Map.of(
-                    "username", username.strip(), "password", password,
+                    "username", portalUsername, "password", password,
                     "include", Map.of("programPage", true, "schedule", false,
                             "partialGrades", false, "finalGrades", false)));
             HttpRequest request = HttpRequest.newBuilder(endpoint).timeout(timeout)
