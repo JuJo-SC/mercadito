@@ -2,7 +2,10 @@ import { auth } from "@/features/auth/auth";
 import { prisma } from "@/lib/prisma";
 import { activeUniversitySlug } from "@/features/community/lib/active-community";
 
+import { isUatLoginEnabled } from "@/features/auth/lib/uat-access";
+
 export async function getActiveStudent() {
+  if (activeUniversitySlug === "uat" && !isUatLoginEnabled()) return null;
   const session = await auth();
   const id = session?.user?.id;
   if (!id) return null;

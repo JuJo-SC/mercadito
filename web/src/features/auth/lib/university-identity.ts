@@ -2,6 +2,8 @@ import type { University } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { activeUniversitySlug } from "@/features/community/lib/active-community";
 
+import { isUatLoginEnabled } from "@/features/auth/lib/uat-access";
+
 type IdentityProfile = Record<string, unknown>;
 
 function claimText(profile: IdentityProfile, name: string): string | null {
@@ -28,6 +30,7 @@ export async function resolveActiveStudent(
     university.status !== "ACTIVE" ||
     university.slug !== activeUniversitySlug ||
     university.isDemo ||
+    (university.slug === "uat" && !isUatLoginEnabled()) ||
     !university.studentStatusClaim ||
     university.studentStatusValue === null
   ) {

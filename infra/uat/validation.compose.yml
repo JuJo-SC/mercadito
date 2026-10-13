@@ -1,0 +1,6 @@
+# Build checks do not recreate production containers.
+services:
+  web:
+    image: mercadito-web:uat-candidate
+  keycloak:
+    image: mercadito-keycloak:26.7.4-uat-candidate
