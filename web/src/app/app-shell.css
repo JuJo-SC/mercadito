@@ -25,22 +25,35 @@ html:has(.app-header) { scroll-padding-top: calc(var(--app-header-height) + 16px
 .app-header .site-header-inner,
 body:has(.campus-marketplace) .app-header .site-header-inner {
   width: 100%;
+  max-width: none;
+  margin-inline: 0;
   min-height: var(--app-header-height);
   flex-wrap: nowrap;
   gap: 12px;
   padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
 }
-.app-header .brand-symbol { width: 36px; height: 36px; border-radius: 12px; }
+.app-header .brand-lockup { min-width: 0; flex: 0 1 auto; }
+.app-header .brand-copy { min-width: 0; }
+.app-header .brand-symbol { flex-shrink: 0; width: 36px; height: 36px; border-radius: 12px; }
 .app-header .brand-name { font-size: 1.18rem; letter-spacing: -0.03em; }
 .app-header .brand-campus-name { max-width: 28vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.68rem; }
-.app-header .header-actions { margin-left: auto; gap: 6px; }
+.app-header .header-actions { position: relative; margin-left: auto; flex-shrink: 0; gap: 8px; }
 .app-header .header-login,
 .app-header .install-button,
 .app-header .signout-button { min-height: 44px; height: 44px; }
+.app-header .install-control { position: static; }
 .app-header .install-button { width: 44px; padding: 0; justify-content: center; }
-.app-header .install-button > span { display: none; }
+.app-header .install-button > span {
+  display: none;
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  white-space: nowrap;
+}
 .app-header .signout-button { width: 44px; }
-.app-header .header-login { padding-inline: 10px; }
+.app-header .header-login { width: clamp(96px, 24vw, 112px); padding-inline: 12px; justify-content: center; font-size: 0.9rem; }
 .app-section-title,
 .app-account { display: none; }
 .app-navigation {
@@ -131,14 +144,38 @@ body:has(.app-header) .landing-home .landing-how { padding-block: 24px; }
   body:has(.app-header) .product-card:hover { transform: none; box-shadow: none; }
   body:has(.app-header) .product-card:hover .product-card-title { color: var(--signal); }
 }
+@media (min-width: 480px) and (max-width: 760px) {
+  .app-header .install-button { width: clamp(96px, 18vw, 116px); padding-inline: 12px; gap: 8px; font-size: 0.9rem; }
+  .app-header .install-button > span { display: inline; }
+}
 @media (min-width: 761px) {
   :root { --app-rail-width: 280px; --app-bottom-height: 0px; }
+  /* Use the rail's column so the header stays aligned at every viewport. */
   .app-header .site-header-inner,
-  body:has(.campus-marketplace) .app-header .site-header-inner { padding-inline: 20px; gap: 20px; }
-  .app-header .brand-lockup { width: calc(var(--app-rail-width) - 20px); }
-  .app-header .brand-campus-name { max-width: 190px; }
-  .app-section-title { display: block; font-weight: 650; font-size: 1.05rem; }
-  .app-header .install-button { width: auto; padding-inline: 12px; gap: 7px; }
+  body:has(.campus-marketplace) .app-header .site-header-inner {
+    display: grid;
+    grid-template-columns: var(--app-rail-width) minmax(0, 1fr) auto;
+    gap: 0;
+    padding-inline: 0;
+  }
+  .app-header .brand-lockup { width: 100%; padding-inline: 24px; gap: 12px; }
+  .app-header .brand-symbol { width: 40px; height: 40px; }
+  .app-header .brand-symbol svg { width: 24px; height: 24px; }
+  .app-header .brand-name { font-size: clamp(1.25rem, 1.5vw, 1.35rem); }
+  .app-header .brand-campus-name { max-width: 100%; font-size: 0.75rem; }
+  .app-section-title {
+    display: block;
+    min-width: 0;
+    padding-inline: 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 650;
+    font-size: clamp(1.05rem, 1.3vw, 1.15rem);
+  }
+  .app-header .header-actions { margin-left: 0; margin-right: max(24px, env(safe-area-inset-right)); gap: 10px; }
+  .app-header .header-login { width: clamp(108px, 9vw, 136px); font-size: 0.95rem; gap: 10px; }
+  .app-header .install-button { width: clamp(116px, 10vw, 144px); padding-inline: 16px; gap: 10px; font-size: 0.95rem; }
   .app-header .install-button > span { display: inline; }
   .app-account { display: flex; align-items: center; gap: 8px; }
   .app-avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--paper-quiet); }
@@ -191,7 +228,9 @@ body:has(.app-header) .landing-home .landing-how { padding-block: 24px; }
 @media (min-width: 761px) and (max-width: 1020px) {
   :root { --app-rail-width: 248px; }
   .app-header .account-name { display: none; }
-  .app-header .app-section-title { font-size: 0.92rem; }
+  .app-header .brand-lockup { padding-inline: 16px; }
+  .app-header .app-section-title { padding-inline: 16px; font-size: 1rem; }
+  .app-header .header-actions { margin-right: max(16px, env(safe-area-inset-right)); }
   body:has(.app-header) .page-width { width: calc(100% - 32px); }
   body:has(.app-header) .marketplace-results .product-grid,
   .landing-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }

@@ -40,7 +40,7 @@ export function SiteHeader({
       excludeConversationId={excludeUnreadConversationId}
     >
       <SiteHeaderFrame signedIn={signedIn}>
-        <div className="site-header-inner page-width">
+        <div className="site-header-inner">
           <DashboardNavigationLink
             className="brand-lockup"
             href="/"
