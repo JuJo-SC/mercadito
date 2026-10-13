@@ -89,3 +89,9 @@ El entorno oficial de desarrollo y despliegue de este proyecto es el servidor de
 ## Licencia
 
 Este proyecto se distribuye bajo la licencia MIT. Consulta el archivo LICENSE.
+
+## Integración UAT en pruebas
+
+Se preparó la verificación mediante [scrap-uat-service](https://github.com/Campus-TD/scrap-uat-service), un gateway independiente del portal de alumnos. El servicio privado está aislado en Oracle; su código no forma parte de este repositorio público. La integración candidata conserva Keycloak y Auth.js, valida matrícula y situación por programa y mantiene cerrado el acceso UAT por defecto. UMAN continúa activa y conserva sus publicaciones.
+
+Consultar [docs/integracion-uat.md](docs/integracion-uat.md) para infraestructura, pruebas y preparación futura. El [borrador de privacidad](docs/aviso-privacidad-provisional.md) está pendiente de completar antes del lanzamiento; no es un aviso público aprobado.

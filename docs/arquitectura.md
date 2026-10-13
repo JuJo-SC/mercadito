@@ -74,3 +74,9 @@ Las verificaciones y los límites del cambio están en [verificacion-mensajes-pu
 `components/public-feature-guide.tsx` presenta Mensajes, Publicar y Mis publicaciones antes de iniciar sesión. Cada ruta comprueba primero la cuenta: sin estudiante activo muestra esta introducción; con sesión conserva su función real. `publicar?demo=1` y las solicitudes de edición mantienen sus recorridos específicos. El lateral enlaza a cada ruta y conserva su presentación compacta; el botón de la introducción lleva al login con el `returnTo` correspondiente.
 
 `app/public-feature-pages.css` reúne los estilos de estas pantallas y se importa desde el layout raíz. Las muestras son HTML e iconos Lucide con datos ilustrativos, sin consultas a conversaciones ni artículos privados. Las API siguen requiriendo autorización.
+
+## Verificación UAT en preparación
+
+infra/keycloak/uat-provider contiene el autenticador, el cliente HTTP, el validador de matrícula/situación, el formulario y las pruebas aisladas. infra/uat reúne configuración operativa, la definición del gateway privado y la compilación candidata. El código del scraper privado permanece fuera de este repositorio, en /srv/apps/scrap-uat-service.
+
+features/auth/lib/uat-access.ts centraliza el cierre por defecto del acceso UAT; los claims, el acceso estudiantil y la página de ingreso respetan esa configuración. UMAN conserva sus datos y configuración activos durante las pruebas. Consultar [integracion-uat.md](integracion-uat.md) para el alcance y los pendientes antes de habilitar alumnos.
