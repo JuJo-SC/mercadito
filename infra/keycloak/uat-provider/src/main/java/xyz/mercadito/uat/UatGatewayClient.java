@@ -99,7 +99,13 @@ public final class UatGatewayClient implements UatVerifier {
             throw new UatVerificationException(UatVerificationException.Reason.UNAVAILABLE);
         } catch (IOException | ExecutionException | TimeoutException | RuntimeException error) {
             if (pending != null) pending.cancel(true);
-            LOG.warnf("UAT_CHECK gateway_transport_error kind=%s", error.getClass().getSimpleName());
+            Throwable cause = error;
+            for (int depth = 0; cause.getCause() != null && depth < 8; depth++) {
+                cause = cause.getCause();
+            }
+            boolean responseLimit = "Respuesta UAT demasiado grande.".equals(cause.getMessage());
+            LOG.warnf("UAT_CHECK gateway_transport_error kind=%s cause=%s response_limit=%s",
+                    error.getClass().getSimpleName(), cause.getClass().getSimpleName(), responseLimit);
             // Never attach upstream messages, payloads, usernames or secrets to this exception.
             throw new UatVerificationException(UatVerificationException.Reason.UNAVAILABLE);
         }
