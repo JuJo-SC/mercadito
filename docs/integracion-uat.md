@@ -107,6 +107,6 @@ En este piloto se verificaron salud HTTPS, redirección HTTP a HTTPS, aviso publ
 
 ## Diagnóstico del rechazo
 
-Los registros de Keycloak distinguen categorías UAT_CHECK de formato de usuario, contraseña ausente o fuera de límite, rechazo HTTP del portal, indicadores de login no confirmados y cambio obligatorio de contraseña. Solo se registran etiquetas constantes, tipos JSON o valores booleanos y los dos códigos de rechazo reconocidos. No se registran usuarios, contraseñas, mensajes del portal ni cuerpos de respuesta. El diagnóstico no cambia los requisitos de acceso.
+Los registros de Keycloak distinguen categorías UAT_CHECK de formato de usuario, contraseña ausente o fuera de límite, rechazo HTTP del portal, indicadores de login no confirmados y cambio obligatorio de contraseña. Solo se registran etiquetas constantes, tipos JSON, nombres de propiedades DTO limitados y filtrados, valores booleanos, estado HTTP y los dos códigos de rechazo reconocidos. No se registran usuarios, contraseñas, mensajes del portal ni cuerpos de respuesta. El diagnóstico no cambia los requisitos de acceso.
 
 Los errores de formato del usuario o de entrada de contraseña muestran un mensaje del formulario y no se presentan como rechazo del portal ni incrementan los contadores de contraseña incorrecta.

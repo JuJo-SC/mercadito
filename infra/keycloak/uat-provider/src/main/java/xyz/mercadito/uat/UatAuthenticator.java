@@ -2,6 +2,7 @@ package xyz.mercadito.uat;
 
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
+import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.Authenticator;
@@ -14,6 +15,7 @@ import org.keycloak.models.UserModel;
 import org.keycloak.models.credential.PasswordCredentialModel;
 
 public final class UatAuthenticator implements Authenticator {
+    private static final Logger LOG = Logger.getLogger(UatAuthenticator.class);
     private final UatVerifier verifier;
     private final boolean enabled;
     private final String privacyUrl;
@@ -141,6 +143,7 @@ public final class UatAuthenticator implements Authenticator {
             if (existing != null) context.getEvent().user(existing);
             reject(context, error.reason());
         } catch (RuntimeException error) {
+            LOG.warnf("UAT_CHECK authenticator_runtime_error kind=%s", error.getClass().getSimpleName());
             reject(context, UatVerificationException.Reason.UNAVAILABLE);
         }
     }

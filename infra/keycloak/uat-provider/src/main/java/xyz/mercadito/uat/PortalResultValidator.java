@@ -37,9 +37,11 @@ public final class PortalResultValidator {
         try {
             root = mapper.readTree(body);
         } catch (IOException | RuntimeException error) {
+            LOG.warn("UAT_CHECK response_json_invalid");
             throw failure(UatVerificationException.Reason.UNAVAILABLE);
         }
         if (root == null || !root.isObject() || !"UAT".equals(root.path("source").asText())) {
+            LOG.warn("UAT_CHECK response_source_invalid");
             throw failure(UatVerificationException.Reason.UNAVAILABLE);
         }
         JsonNode login = root.path("login");
@@ -54,13 +56,18 @@ public final class PortalResultValidator {
             throw failure(UatVerificationException.Reason.CREDENTIALS);
         }
         if (!changePassword.isMissingNode() && !changePassword.isNull() && !changePassword.isBoolean()) {
+            LOG.warn("UAT_CHECK password_change_flag_invalid");
             throw failure(UatVerificationException.Reason.UNAVAILABLE);
         }
         JsonNode programs = root.path("programs");
-        if (!programs.isArray()) throw failure(UatVerificationException.Reason.UNAVAILABLE);
+        if (!programs.isArray()) {
+            LOG.warnf("UAT_CHECK programs_contract_invalid kind=%s", programs.getNodeType().name());
+            throw failure(UatVerificationException.Reason.UNAVAILABLE);
+        }
         boolean matchedIdentity = false;
         boolean inactivePlan = false;
         boolean unknownStatus = false;
+        boolean caseOnlyActive = false;
         for (JsonNode program : programs) {
             JsonNode raw = program.path("raw");
             JsonNode rawMatricula = raw.path("Num_Matricula");
@@ -78,6 +85,8 @@ public final class PortalResultValidator {
                             && recognizedField(leaf)) addSituation(field.path("value"), situations);
                 }
             }
+            if (situations.size() == 1 && situations.iterator().next().equalsIgnoreCase("ACTIVO")
+                    && !situations.contains("ACTIVO")) caseOnlyActive = true;
             // Do not combine another plan, selection, global situation or the HTML page.
             // Conflicting career fields must fail closed rather than choosing ACTIVO.
             if (situations.equals(Set.of("ACTIVO"))) {
@@ -91,6 +100,9 @@ public final class PortalResultValidator {
                 unknownStatus = true;
             }
         }
+        LOG.warnf("UAT_CHECK academic_contract_unconfirmed programs_count=%d matching_identity=%s raw_matricula_type=%s case_only_active=%s first_program_schema=%s",
+                programs.size(), matchedIdentity, programs.path(0).path("raw").path("Num_Matricula").getNodeType().name(),
+                caseOnlyActive, schemaNames(programs.path(0).path("raw")));
         throw failure(matchedIdentity && inactivePlan && !unknownStatus
                 ? UatVerificationException.Reason.INACTIVE : UatVerificationException.Reason.UNAVAILABLE);
     }
@@ -113,6 +125,14 @@ public final class PortalResultValidator {
         String normalized = Normalizer.normalize(field, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}+", "").toLowerCase(Locale.ROOT);
         return SITUATION_FIELDS.contains(normalized);
+    }
+
+    // DTO property names only, bounded and filtered; never emit property values.
+    private static String schemaNames(JsonNode node) {
+        if (!node.isObject()) return node.getNodeType().name();
+        return node.properties().stream().map(java.util.Map.Entry::getKey)
+                .filter(key -> key.matches("(?:Id|Num|Txt|Cve|Situacion|Matricula|Ciclo)[A-Za-z0-9_]{0,48}"))
+                .sorted().limit(24).collect(java.util.stream.Collectors.joining(","));
     }
 
     // Emit only a fixed type/boolean label; never include upstream field contents.

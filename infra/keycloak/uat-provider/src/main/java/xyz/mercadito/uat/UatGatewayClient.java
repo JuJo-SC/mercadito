@@ -76,6 +76,7 @@ public final class UatGatewayClient implements UatVerifier {
             HttpResponse<byte[]> response = pending.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
             String type = response.headers().firstValue("Content-Type").orElse("");
             if (!type.toLowerCase(java.util.Locale.ROOT).split(";", 2)[0].strip().equals("application/json")) {
+                LOG.warn("UAT_CHECK gateway_content_type_not_json");
                 throw new UatVerificationException(UatVerificationException.Reason.UNAVAILABLE);
             }
             if (response.statusCode() == 401) {
@@ -86,6 +87,7 @@ public final class UatGatewayClient implements UatVerifier {
                 }
             }
             if (response.statusCode() != 200) {
+                LOG.warnf("UAT_CHECK gateway_status_unexpected status=%d", response.statusCode());
                 throw new UatVerificationException(UatVerificationException.Reason.UNAVAILABLE);
             }
             return validator.validate(response.body(), username);
@@ -97,6 +99,7 @@ public final class UatGatewayClient implements UatVerifier {
             throw new UatVerificationException(UatVerificationException.Reason.UNAVAILABLE);
         } catch (IOException | ExecutionException | TimeoutException | RuntimeException error) {
             if (pending != null) pending.cancel(true);
+            LOG.warnf("UAT_CHECK gateway_transport_error kind=%s", error.getClass().getSimpleName());
             // Never attach upstream messages, payloads, usernames or secrets to this exception.
             throw new UatVerificationException(UatVerificationException.Reason.UNAVAILABLE);
         }
