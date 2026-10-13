@@ -89,6 +89,15 @@ class PortalResultValidatorTest {
         denied(valid.replace("\"cambiaPass\":false", "\"cambiaPass\":true"), "00123", UatVerificationException.Reason.CREDENTIALS);
     }
 
+
+    @Test void rejectsInvalidPasswordChangeFlagTypesEvenAfterProjection() {
+        String valid = response("[{\"raw\":{\"Num_Matricula\":\"00123\",\"Situacion\":\"ACTIVO\"}}]");
+        for (String flag : new String[] { "{}", "[]", "\"false\"", "0" }) {
+            denied(valid.replace("\"cambiaPass\":false", "\"cambiaPass\":" + flag),
+                    "00123", UatVerificationException.Reason.UNAVAILABLE);
+        }
+    }
+
     @Test void rejectsMissingContractAndInvalidJson() {
         denied("<html>ACTIVO</html>", "00123", UatVerificationException.Reason.UNAVAILABLE);
         denied("{}", "00123", UatVerificationException.Reason.UNAVAILABLE);

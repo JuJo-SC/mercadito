@@ -34,7 +34,7 @@ El cliente llama a `POST /api/v1/alumnos/scrape` con `X-API-Key` y el cuerpo mí
 }
 ```
 
-El límite de respuesta es 1 MiB y el plazo total de la solicitud es 90 segundos. No se siguen redirecciones. Los mensajes recibidos del gateway no se muestran ni registran.
+El transporte admite hasta 32 MiB y el plazo total de la solicitud es 90 segundos. El lector JSON conserva únicamente source, authenticated, los indicadores exito/cambiaPass del login, la matrícula y los campos de situación de cada programa; descarta imágenes, nombres, parámetros del login y cualquier otro dato adicional sin construir su árbol JSON. Los textos conservados se limitan a 4096 caracteres, las listas a 128 entradas y los objetos de carrera a 512 propiedades por nivel. Se rechazan JSON incompleto, propiedades duplicadas y contenido extra tras el objeto. No se siguen redirecciones. Los mensajes recibidos del gateway no se muestran ni registran.
 
 Se exige `source=UAT`, `authenticated=true`, `login.exito=true` y ausencia de cambio de contraseña pendiente. La matrícula de un programa debe coincidir exactamente con la introducida, conservando ceros iniciales. Se admite matrícula numérica o su correo `@alumnos.uat.edu.mx`.
 

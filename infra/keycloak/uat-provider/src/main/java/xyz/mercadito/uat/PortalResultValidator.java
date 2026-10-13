@@ -1,7 +1,6 @@
 package xyz.mercadito.uat;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.logging.Logger;
 import java.io.IOException;
 import java.text.Normalizer;
@@ -16,7 +15,7 @@ public final class PortalResultValidator {
             "^(?:([0-9]{1,32})|a?([0-9]{1,32})@alumnos\\.uat\\.edu\\.mx)$", Pattern.CASE_INSENSITIVE);
     private static final Set<String> SITUATION_FIELDS = Set.of(
             "txt_situacion_alumno", "txt_situacion", "situacion_alumno", "situacion");
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final PortalResponseReader reader = new PortalResponseReader();
 
     public static String canonicalMatricula(String username) throws UatVerificationException {
         if (username == null) {
@@ -35,7 +34,7 @@ public final class PortalResultValidator {
         String matricula = canonicalMatricula(username);
         final JsonNode root;
         try {
-            root = mapper.readTree(body);
+            root = reader.read(body);
         } catch (IOException | RuntimeException error) {
             LOG.warn("UAT_CHECK response_json_invalid");
             throw failure(UatVerificationException.Reason.UNAVAILABLE);
@@ -121,7 +120,7 @@ public final class PortalResultValidator {
         }
     }
 
-    private static boolean recognizedField(String field) {
+    static boolean recognizedField(String field) {
         String normalized = Normalizer.normalize(field, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}+", "").toLowerCase(Locale.ROOT);
         return SITUATION_FIELDS.contains(normalized);
