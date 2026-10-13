@@ -1,0 +1,14 @@
+PRUEBA PERSONAL DE ACCESO UAT — MERCADITO
+Versión: prueba-personal-2026-10-13
+
+Esta pantalla permite al operador probar su propia cuenta UAT. El acceso está limitado a la matrícula autorizada; no se ha abierto el registro general de estudiantes. Mercadito es un proyecto independiente de la UAT.
+
+Al continuar, autorizas una comprobación del acceso y la situación académica mediante el portal de alumnos UAT. La matrícula y la contraseña se envían por HTTPS a Mercadito y se utilizan durante la solicitud al portal de la universidad. La contraseña y las cookies del portal no se guardan como credenciales de Mercadito.
+
+El servicio consulta los programas académicos necesarios para comprobar que la matrícula coincide y que existe un programa con situación ACTIVO. En esta integración no se solicitan horarios ni calificaciones. La respuesta académica completa no se guarda en la base de datos de Mercadito.
+
+Si la validación es correcta, se crea una cuenta propia de esta comunidad con un identificador estable. Se conserva la relación con UAT, la sesión y la fecha y versión de esta aceptación. La sesión tiene una duración máxima de ocho horas. Las publicaciones y conversaciones que crees se guardan para que puedas probar esas funciones.
+
+La validación puede fallar si el portal no responde, rechaza las credenciales, solicita cambiar la contraseña o no permite confirmar tu situación académica. Si no quieres realizar la comprobación, cierra esta pantalla sin enviar el formulario.
+
+Este texto describe una prueba personal y provisional. El aviso y la configuración se revisarán antes de ampliar el acceso a otras personas.
