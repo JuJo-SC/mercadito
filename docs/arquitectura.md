@@ -75,8 +75,8 @@ Las verificaciones y los límites del cambio están en [verificacion-mensajes-pu
 
 `app/public-feature-pages.css` reúne los estilos de estas pantallas y se importa desde el layout raíz. Las muestras son HTML e iconos Lucide con datos ilustrativos, sin consultas a conversaciones ni artículos privados. Las API siguen requiriendo autorización.
 
-## Verificación UAT en preparación
+## Verificación UAT restringida
 
 infra/keycloak/uat-provider contiene el autenticador, el cliente HTTP, el validador de matrícula/situación, el formulario y las pruebas aisladas. infra/uat reúne configuración operativa, la definición del gateway privado y la compilación candidata. El código del scraper privado permanece fuera de este repositorio, en /srv/apps/scrap-uat-service.
 
-features/auth/lib/uat-access.ts centraliza el cierre por defecto del acceso UAT; los claims, el acceso estudiantil y la página de ingreso respetan esa configuración. UMAN conserva sus datos y configuración activos durante las pruebas. Consultar [integracion-uat.md](integracion-uat.md) para el alcance y los pendientes antes de habilitar alumnos.
+features/auth/lib/uat-access.ts centraliza el cierre por defecto del acceso UAT; los claims, el acceso estudiantil y la página de ingreso respetan esa configuración. UAT es la comunidad activa del piloto y solo admite las matrículas autorizadas en la configuración externa de Keycloak. UMAN conserva sus datos, realm y cliente originales. Consultar [integracion-uat.md](integracion-uat.md) para administrar participantes y revisar los pendientes antes de ampliar el acceso.

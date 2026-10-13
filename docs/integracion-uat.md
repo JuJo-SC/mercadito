@@ -2,7 +2,7 @@
 
 ## Alcance actual
 
-La integración está desplegada como una prueba restringida desde la rama feat/integracion-uat. UAT es la comunidad activa de la web y el autenticador solo admite las tres matrículas autorizadas por el propietario mediante configuración externa. No está abierto el acceso general. El realm, cliente, usuarios, publicaciones y conversaciones UMAN se conservan por separado.
+La integración está desplegada como una prueba restringida desde la rama feat/integracion-uat. UAT es la comunidad activa de la web y el autenticador solo admite las matrículas autorizadas por el propietario mediante configuración externa. No está abierto el acceso general. El realm, cliente, usuarios, publicaciones y conversaciones UMAN se conservan por separado.
 
 El servicio de origen es [Campus-TD/scrap-uat-service](https://github.com/Campus-TD/scrap-uat-service), versión b3b1c7adcbf76e08ee16b030b0702a8e8ecb14b1. Su código privado permanece en /srv/apps/scrap-uat-service y no se copia a este repositorio público. La copia proviene del ZIP autorizado de GitHub; .source-commit registra el commit original. No se añadió acceso persistente en GitHub.
 
@@ -56,7 +56,7 @@ Antes de declarar listo el acceso real se necesita una prueba con una cuenta UAT
 
 Para volver a UMAN, retirar la configuración UAT adicional del servicio web, conservar app.env original con su cliente y comunidad UMAN, y recrear solo web. El realm UAT y el gateway pueden permanecer cerrados sin eliminar datos; el cliente UMAN original conserva su configuración.
 
-El overlay infra/uat/activation.compose.yml incorpora el entorno UAT únicamente a web y etiqueta sus imágenes de forma explícita. Se usó para activar esta prueba, con UAT_LOGIN_ENABLED=true y una lista de tres matrículas en Keycloak. En otros entornos mantener el acceso cerrado hasta escoger y comprobar su alcance.
+El overlay infra/uat/activation.compose.yml incorpora el entorno UAT únicamente a web y etiqueta sus imágenes de forma explícita. Se usó para activar esta prueba, con UAT_LOGIN_ENABLED=true y una lista explícita de matrículas en Keycloak. En otros entornos mantener el acceso cerrado hasta escoger y comprobar su alcance.
 
 Secuencia operativa futura, tras configurar y revisar los archivos externos:
 
