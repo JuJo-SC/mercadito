@@ -2,7 +2,7 @@
 
 ## Alcance actual
 
-La integración está preparada en una rama de desarrollo para pruebas. El gateway privado se ejecuta en Oracle; la web y Keycloak que están en uso conservan su configuración UMAN. No se activa la recepción pública de alumnos UAT ni se modifican los usuarios, publicaciones o conversaciones UMAN.
+La integración está desplegada como una prueba restringida desde la rama feat/integracion-uat. UAT es la comunidad activa de la web y el autenticador solo admite las tres matrículas autorizadas por el propietario mediante configuración externa. No está abierto el acceso general. El realm, cliente, usuarios, publicaciones y conversaciones UMAN se conservan por separado.
 
 El servicio de origen es [Campus-TD/scrap-uat-service](https://github.com/Campus-TD/scrap-uat-service), versión b3b1c7adcbf76e08ee16b030b0702a8e8ecb14b1. Su código privado permanece en /srv/apps/scrap-uat-service y no se copia a este repositorio público. La copia proviene del ZIP autorizado de GitHub; .source-commit registra el commit original. No se añadió acceso persistente en GitHub.
 
@@ -43,7 +43,7 @@ infra/uat/prepare-university.cjs es de solo lectura sin --apply. Su aplicación 
 
 La configuración de Keycloak para el gateway vive en /srv/secrets/mercadito/uat.env. Para una futura apertura, la web debe cargar uat-auth.env después de app.env, sin recibir la API key del gateway. No cambiar ACTIVE_UNIVERSITY_SLUG hasta verificar el acceso y las restricciones entre campus.
 
-Antes de declarar listo el acceso real se necesita una prueba con una cuenta UAT autorizada y confirmar el significado de los estados devueltos. El aviso provisional solicitado queda como borrador operativo: aún no se publica información personal del responsable ni se afirma que un texto temporal sea suficiente para lanzar el servicio.
+Antes de declarar listo el acceso real se necesita una prueba con una cuenta UAT autorizada y confirmar el significado de los estados devueltos. El aviso de la prueba está en /aviso-prueba-uat.txt, versión prueba-restringida-2026-10-13. Describe la finalidad, la validación y los datos conservados para este grupo. No publica las matrículas ni información personal del responsable; debe revisarse antes de una apertura general.
 
 ## Procedimiento para abrir acceso en el futuro
 
@@ -56,7 +56,7 @@ Antes de declarar listo el acceso real se necesita una prueba con una cuenta UAT
 
 Para volver a UMAN, retirar la configuración UAT adicional del servicio web, conservar app.env original con su cliente y comunidad UMAN, y recrear solo web. El realm UAT y el gateway pueden permanecer cerrados sin eliminar datos; el cliente UMAN original conserva su configuración.
 
-El overlay infra/uat/activation.compose.yml incorpora el entorno UAT únicamente a web y etiqueta sus imágenes de forma explícita. Está preparado para una apertura futura; no se ha usado para recrear los servicios activos. Mantener UAT_LOGIN_ENABLED=false hasta escoger y comprobar el alcance de la prueba.
+El overlay infra/uat/activation.compose.yml incorpora el entorno UAT únicamente a web y etiqueta sus imágenes de forma explícita. Se usó para activar esta prueba, con UAT_LOGIN_ENABLED=true y una lista de tres matrículas en Keycloak. En otros entornos mantener el acceso cerrado hasta escoger y comprobar su alcance.
 
 Secuencia operativa futura, tras configurar y revisar los archivos externos:
 
@@ -86,6 +86,19 @@ La imagen del autenticador pasó 44 pruebas unitarias. El smoke final verificó 
 
 El configurador se probó contra un Keycloak/PostgreSQL temporal: lectura sin cambios, primera preparación, repetición sin alterar el secreto y rechazo de un entorno obsoleto. Los ensayos no afectaron el realm UMAN.
 
-La web candidata pasó lint, comprobación de tipos y compilación. En un contenedor temporal se verificaron health, pantalla UAT en preparación, catálogo cerrado con respuesta privada sin caché y registro de universidades bloqueado. Se consultó UMAN en modo de solo lectura: cinco usuarios, catorce publicaciones y cinco conversaciones. No existe aún un registro UAT en la base activa.
+La web candidata pasó lint, comprobación de tipos y compilación. En un contenedor temporal se verificaron health, pantalla UAT en preparación, catálogo cerrado con respuesta privada sin caché y registro de universidades bloqueado. Antes del piloto se consultó UMAN en modo de solo lectura: cinco usuarios, catorce publicaciones y cinco conversaciones. La preparación posterior creó UAT como una universidad independiente y confirmó que esos recuentos UMAN permanecían intactos.
 
-El estado activo conserva el commit ddc89f6164881259c3236fed6223d1d975cb6174 de Mercadito; el gateway privado ejecuta el commit de origen b3b1c7adcbf76e08ee16b030b0702a8e8ecb14b1. La apertura futura sigue requiriendo una prueba autorizada del portal real.
+La web del piloto ejecuta el commit 47c70a0 de feat/integracion-uat; Keycloak incorpora el autenticador de esta rama. El gateway privado ejecuta el commit de origen b3b1c7adcbf76e08ee16b030b0702a8e8ecb14b1. El formulario y la restricción se verificaron, pero el acceso al portal con una contraseña real sigue pendiente de que lo complete un participante autorizado.
+
+## Usar y administrar la prueba restringida
+
+Cada participante abre https://mercadito.291006.xyz/ingresar, pulsa «Continuar con UAT», introduce su propia matrícula y contraseña del portal, lee el aviso y acepta la verificación antes de pulsar «Verificar y entrar». La primera validación correcta crea su cuenta UAT; no se crea una contraseña local. La autorización de una matrícula no reemplaza la comprobación de situación ACTIVO.
+
+La lista vive en UAT_ALLOWED_MATRICULAS dentro de /srv/secrets/mercadito/uat.env. Para añadir participantes autorizados, editar esa lista con matrículas completas separadas por comas, sin quitar las existentes ni dejar el valor vacío. Reaplicar únicamente Keycloak y verificar que el contenedor reciba la lista esperada:
+
+    docker compose -f compose.yml -f infra/uat/activation.compose.yml config --quiet
+    docker compose -f compose.yml -f infra/uat/activation.compose.yml up -d --no-deps --wait keycloak
+
+No incluir esta lista en Git. Para cerrar nuevas entradas UAT, establecer UAT_LOGIN_ENABLED=false en uat.env y uat-auth.env y recrear Keycloak y web con el mismo overlay. El cierre también impide usar las rutas estudiantiles aunque exista una sesión previa.
+
+En este piloto se verificaron salud HTTPS, redirección HTTP a HTTPS, aviso publicado, recorrido del botón hasta Keycloak, formulario con contraseña oculta y aceptación desmarcada, rechazo de una matrícula ajena antes de consultar el gateway y configuración de tres cuentas autorizadas. No se enviaron contraseñas reales ni se copiaron publicaciones UMAN a UAT.

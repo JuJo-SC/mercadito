@@ -1,4 +1,4 @@
-# Explicit future activation overlay; do not use "up" while testing the candidate.
+# Activation overlay for an explicitly enabled and scoped UAT trial.
 # Requires configure-identity.py --apply and the operator's chosen access policy.
 services:
   web:
