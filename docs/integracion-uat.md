@@ -18,7 +18,7 @@ El formulario admite matrícula o correo de alumnos, incluido aMATRÍCULA@alumno
 
 El validador exige authenticated=true, login.exito=true y ausencia de cambio obligatorio de contraseña. La matrícula canónica debe coincidir con programs[].raw.Num_Matricula; no se eliminan ceros iniciales. La situación elegible debe estar respaldada por el mismo programa y por campos de carrera reconocidos. Se admiten únicamente las etiquetas exactas ACTIVO, ACTIVO - REGULARES y REGULARES. No se autoriza usando el catálogo agregado situations, una coincidencia parcial de texto, CicloActivo, un correo o el HTML de otro plan. INACTIVO, EGRESADO, BAJA, campos ausentes o contradictorios se rechazan.
 
-El identificador interno de Keycloak es independiente y estable. Las notas de sesión university_id=uat y uat_student_verified=true se convierten en claims OIDC. El cliente UAT no hereda profile/email; solicita únicamente openid, evitando propagar matrícula o datos académicos en los tokens. Auth.js usa el sub y acepta email=null para UAT; no inventa un correo ni vincula identidades por correo. Una sesión previa no puede vincular otra identidad de portal a su cuenta local.
+El identificador interno de Keycloak es independiente y estable. Las notas de sesión university_id=uat y uat_student_verified=true se convierten en claims OIDC. El cliente UAT no hereda profile/email; solicita únicamente openid, evitando propagar matrícula o datos académicos en los tokens; el claim específico uat_display_name contiene únicamente el nombre abreviado verificado. Auth.js usa el sub y acepta email=null para UAT; no inventa un correo ni vincula identidades por correo. Una sesión previa no puede vincular otra identidad de portal a su cuenta local.
 
 Las sesiones UAT duran ocho horas con caducidad fija. Una sesión válida no vuelve a consultar el portal durante su vigencia; al expirar se requiere verificar de nuevo. Las respuestas académicas crudas y las cookies UAT no se almacenan en la base de Mercadito.
 
@@ -45,7 +45,7 @@ infra/uat/prepare-university.cjs es de solo lectura sin --apply. Su aplicación 
 
 La configuración de Keycloak para el gateway vive en /srv/secrets/mercadito/uat.env. Para una futura apertura, la web debe cargar uat-auth.env después de app.env, sin recibir la API key del gateway. No cambiar ACTIVE_UNIVERSITY_SLUG hasta verificar el acceso y las restricciones entre campus.
 
-Antes de declarar listo el acceso real se necesita una prueba con una cuenta UAT autorizada y confirmar el significado de los estados devueltos. El aviso de la prueba está en /aviso-prueba-uat.txt, versión prueba-restringida-2026-10-13. Describe la finalidad, la validación y los datos conservados para este grupo. No publica las matrículas ni información personal del responsable; debe revisarse antes de una apertura general.
+Antes de declarar listo el acceso real se necesita una prueba con una cuenta UAT autorizada y confirmar el significado de los estados devueltos. El aviso de la prueba está en /aviso-prueba-uat.txt, versión prueba-restringida-nombre-2026-10-14. Describe la finalidad, la validación y los datos conservados para este grupo. No publica las matrículas ni información personal del responsable; debe revisarse antes de una apertura general.
 
 ## Procedimiento para abrir acceso en el futuro
 
@@ -90,7 +90,7 @@ El configurador se probó contra un Keycloak/PostgreSQL temporal: lectura sin ca
 
 La web candidata pasó lint, comprobación de tipos y compilación. En un contenedor temporal se verificaron health, pantalla UAT en preparación, catálogo cerrado con respuesta privada sin caché y registro de universidades bloqueado. Antes del piloto se consultó UMAN en modo de solo lectura: cinco usuarios, catorce publicaciones y cinco conversaciones. La preparación posterior creó UAT como una universidad independiente y confirmó que esos recuentos UMAN permanecían intactos.
 
-La web del piloto ejecuta el commit 47c70a0 de feat/integracion-uat; Keycloak incorpora el autenticador de esta rama. El gateway privado ejecuta el commit de origen b3b1c7adcbf76e08ee16b030b0702a8e8ecb14b1. El formulario y la restricción se verificaron. Un intento autorizado confirmó autenticación correcta del portal y matrícula coincidente; todavía falta confirmar que ese participante complete la sesión Mercadito con una situación elegible.
+La web del piloto ejecuta el commit 47c70a0 de feat/integracion-uat; Keycloak incorpora el autenticador de esta rama. El gateway privado ejecuta el commit de origen b3b1c7adcbf76e08ee16b030b0702a8e8ecb14b1. El formulario y la restricción se verificaron. Un intento autorizado confirmó autenticación correcta del portal y matrícula coincidente; el propietario confirmó posteriormente que completó el ingreso tras admitir REGULARES.
 
 ## Usar y administrar la prueba restringida
 
@@ -120,3 +120,14 @@ El portal puede producir respuestas mayores a 1 MiB aun solicitando solo el prog
 El manual administrativo de [reinscripción UAT](https://escolares.uat.edu.mx/forms/FrmPDF.aspx?id_pdf=49&tipo=4), figura 2, muestra ACTIVO - REGULARES. La [guía de inscripción del portal de alumnos](https://ceuidiomastampico.uat.edu.mx/CT/DocsPublic/SIIAA_Academico_Guia_Reinscripcion.pdf), página 4, muestra REGULARES. La integración interpreta esas dos etiquetas concretas como elegibles junto con ACTIVO; esta es una política de Mercadito basada en esos ejemplos oficiales, no una lista exhaustiva de estados UAT. No usa coincidencias parciales, no interpreta estados desconocidos y no admite evidencia de baja/inactividad/egreso mezclada con una etiqueta elegible. La cuenta debe haber autenticado correctamente y el programa debe pertenecer a la matrícula exacta. Una situación sin confirmar ahora presenta un mensaje específico y no se confunde con un servicio caído ni aumenta el contador de contraseñas incorrectas. La prueba mantiene su lista restringida de matrículas.
 
 La comparación de situaciones normaliza únicamente espacios exteriores y mayúsculas/minúsculas; después exige la etiqueta completa del conjunto admitido. Por ejemplo, regulares y REGULARES tienen el mismo significado. INACTIVO, IRREGULARES y REGULARES - BAJA no coinciden con REGULARES.
+
+
+## Nombre del estudiante verificado
+
+Por petición del propietario, el piloto muestra el primer nombre y la inicial del primer apellido cuando el portal entrega el apellido por separado (por ejemplo, María L.). Si solo hay un campo combinado, se conserva únicamente su primer término y no se adivina el orden de apellidos. Si el portal no entrega un nombre reconocible, el ingreso conserva el rótulo Estudiante UAT y registra solo nombres de campos para diagnosticar el contrato.
+
+PortalDisplayName reduce los campos explícitos del programa cuya matrícula y situación ya se validaron; como alternativa usa los parámetros del login autenticado siempre que su matrícula, si existe, coincida. No toma nombres de otros programas ni de campos editables. El nombre completo solo vive durante la petición, no se persiste. La nota de sesión uat_display_name se transforma en un claim específico del cliente UAT, sin activar el scope profile ni emitir matrícula, nombre completo o apellidos. El configurador añade solo ese mapper al contrato anterior y rechaza otras diferencias.
+
+Auth.js guarda el nombre reducido en User.name al primer registro y lo actualiza después de una nueva verificación para las cuentas existentes que pasan los controles de campus, rol y estado. Perfil, publicaciones y conversaciones ya consumen ese campo. No hay migraciones, nombres escritos manualmente ni actualizaciones de UMAN. El aviso del piloto explica esta presentación. Para verificar el cambio en una cuenta existente hay que cerrar la sesión anterior y entrar de nuevo.
+
+Verificación: pruebas unitarias del lector/validador, nombres compuestos y acentos, identidad incorrecta, nombres malformados, claim sin nombre completo, cuenta existente y flujo OIDC aislado; pruebas del claim web, lint, tipos y compilación. La comprobación del formato devuelto por una cuenta real debe hacerse desde el formulario por su titular, sin compartir su contraseña.

@@ -91,7 +91,20 @@ public final class PortalResultValidator {
             if (!situations.isEmpty() && ELIGIBLE_SITUATIONS.containsAll(situations)) {
                 String email = username.strip().contains("@")
                         ? "a" + matricula + "@alumnos.uat.edu.mx" : null;
-                return new VerifiedStudent(matricula, email);
+                String displayName = PortalDisplayName.from(raw);
+                JsonNode parameters = login.path("parametros");
+                JsonNode loginMatricula = parameters.path("Num_Matricula");
+                if (displayName == null && (loginMatricula.isMissingNode()
+                        || ((loginMatricula.isTextual() || loginMatricula.isIntegralNumber())
+                            && matricula.equals(loginMatricula.asText().strip())))) {
+                    displayName = PortalDisplayName.from(parameters);
+                }
+                if (displayName == null) {
+                    LOG.warnf("UAT_CHECK display_name_missing career_schema=%s login_schema=%s career_name_fields=%s login_name_fields=%s",
+                            schemaNames(raw), schemaNames(parameters),
+                            raw.path("_name_fields").asText(""), parameters.path("_name_fields").asText(""));
+                }
+                return new VerifiedStudent(matricula, email, displayName);
             }
             if (!situations.isEmpty() && Set.of("INACTIVO", "BAJA", "EGRESADO").containsAll(situations)) {
                 inactivePlan = true;
@@ -131,7 +144,7 @@ public final class PortalResultValidator {
     private static String schemaNames(JsonNode node) {
         if (!node.isObject()) return node.getNodeType().name();
         return node.properties().stream().map(java.util.Map.Entry::getKey)
-                .filter(key -> key.matches("(?:Id|Num|Txt|Cve|Situacion|Matricula|Ciclo)[A-Za-z0-9_]{0,48}"))
+                .filter(key -> key.matches("[A-Za-z][A-Za-z0-9_]{0,48}"))
                 .sorted().limit(24).collect(java.util.stream.Collectors.joining(","));
     }
 

@@ -66,3 +66,6 @@ Estas pruebas no acreditan que el contrato actual del portal UAT devuelva una et
 Las etiquetas de carrera admitidas son ACTIVO, ACTIVO - REGULARES y REGULARES, por coincidencia exacta. Consultar las fuentes y el alcance de esta política en docs/integracion-uat.md. Una cuenta autenticada con matrícula coincidente y estado no confirmado presenta uatUnconfirmedStatus; solo los errores de transporte o de contrato presentan uatUnavailable. La lista restringida de matrículas sigue aplicándose antes de consultar el portal.
 
 La comparación de situaciones normaliza únicamente espacios exteriores y mayúsculas/minúsculas; después exige la etiqueta completa del conjunto admitido. Por ejemplo, regulares y REGULARES tienen el mismo significado. INACTIVO, IRREGULARES y REGULARES - BAJA no coinciden con REGULARES.
+
+
+El nombre del portal se reduce en PortalDisplayName a primer nombre e inicial del primer apellido, si este existe por separado. La nota de sesión uat_display_name usa un mapper específico hacia ID token/userinfo; no requiere profile y no guarda el nombre completo en UserModel. Ver docs/integracion-uat.md para la sincronización de perfiles existentes y las pruebas.

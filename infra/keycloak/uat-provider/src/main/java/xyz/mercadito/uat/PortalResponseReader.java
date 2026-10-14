@@ -29,7 +29,7 @@ final class PortalResponseReader {
                 parser.nextToken();
                 switch (name) {
                     case "source", "authenticated", "error" -> root.set(name, scalar(parser));
-                    case "login" -> root.set(name, selectedObject(parser, Set.of("exito", "cambiaPass")));
+                    case "login" -> root.set(name, login(parser));
                     case "programs" -> root.set(name, programs(parser));
                     default -> parser.skipChildren();
                 }
@@ -37,6 +37,21 @@ final class PortalResponseReader {
             if (parser.nextToken() != null) throw new IOException("Contrato UAT inválido.");
             return root;
         }
+    }
+
+    private JsonNode login(JsonParser parser) throws IOException {
+        if (parser.currentToken() != JsonToken.START_OBJECT) return discard(parser);
+        ObjectNode login = mapper.createObjectNode();
+        while (nextField(parser)) {
+            String name = parser.currentName();
+            parser.nextToken();
+            if (Set.of("exito", "cambiaPass").contains(name)) login.set(name, scalar(parser));
+            else if ("parametros".equals(name)) {
+                JsonNode identity = rawCareer(parser, 0);
+                if (!identity.isEmpty()) login.set(name, identity);
+            } else parser.skipChildren();
+        }
+        return login;
     }
 
     private JsonNode programs(JsonParser parser) throws IOException {
@@ -72,7 +87,14 @@ final class PortalResponseReader {
             if (++fields > 512) throw new IOException("Contrato UAT excede límites.");
             String name = parser.currentName();
             parser.nextToken();
-            if ((depth == 0 && "Num_Matricula".equals(name)) || PortalResultValidator.recognizedField(name)) {
+            // Unknown name property names only; never retain their personal values.
+            if (depth == 0 && !PortalDisplayName.recognizedField(name)
+                    && name.matches("(?i)[A-Za-z0-9_]*(?:nom|apell|paterno|materno)[A-Za-z0-9_]*")) {
+                String schema = raw.path("_name_fields").asText("");
+                if (schema.length() < 400) raw.put("_name_fields", schema.isEmpty() ? name : schema + "," + name);
+            }
+            if ((depth == 0 && "Num_Matricula".equals(name)) || PortalResultValidator.recognizedField(name)
+                    || (depth == 0 && PortalDisplayName.recognizedField(name))) {
                 raw.set(name, scalar(parser));
             } else if (parser.currentToken() == JsonToken.START_OBJECT && depth < 3) {
                 JsonNode nested = rawCareer(parser, depth + 1);
