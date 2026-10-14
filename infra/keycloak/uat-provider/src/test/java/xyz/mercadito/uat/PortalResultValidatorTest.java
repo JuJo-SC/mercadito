@@ -53,9 +53,9 @@ class PortalResultValidatorTest {
         assertEquals("00123", student.matricula());
     }
 
-    @ParameterizedTest @ValueSource(strings={"INSCRITO", "VIGENTE", "activo", "ACTIVO - BAJA", ""})
+    @ParameterizedTest @ValueSource(strings={"INSCRITO", "VIGENTE", "ACTIVO - BAJA", "REGULARES - BAJA", "IRREGULARES", ""})
     void rejectsUnconfirmedStatesAndSubstringMatches(String status) {
-        denied(response("[{\"raw\":{\"Num_Matricula\":\"00123\",\"Situacion\":\"" + status + "\"}}]"), "00123", UatVerificationException.Reason.UNAVAILABLE);
+        denied(response("[{\"raw\":{\"Num_Matricula\":\"00123\",\"Situacion\":\"" + status + "\"}}]"), "00123", UatVerificationException.Reason.UNCONFIRMED_STATUS);
     }
 
     @ParameterizedTest @ValueSource(strings={"INACTIVO", "BAJA", "EGRESADO"})
@@ -63,10 +63,23 @@ class PortalResultValidatorTest {
         denied(response("[{\"raw\":{\"Num_Matricula\":\"00123\",\"Situacion\":\"" + status + "\"}}]"), "00123", UatVerificationException.Reason.INACTIVE);
     }
 
+    @ParameterizedTest @ValueSource(strings={"REGULARES", "ACTIVO - REGULARES", "regulares", "Regulares", "activo"})
+    void acceptsExactOfficialRegularStudentLabels(String status) throws Exception {
+        var student = parse(response("[{\"raw\":{\"Num_Matricula\":\"00123\",\"Txt_Situacion\":\"" + status + "\"}}]"), "00123");
+        assertEquals("00123", student.matricula());
+    }
+
+    @Test void regularLabelCannotOverrideInactiveEvidenceOrAnotherStudentsIdentity() {
+        denied(response("[{\"raw\":{\"Num_Matricula\":\"00123\",\"Txt_Situacion\":\"REGULARES\",\"Situacion\":\"BAJA\"}}]"),
+                "00123", UatVerificationException.Reason.UNCONFIRMED_STATUS);
+        denied(response("[{\"raw\":{\"Num_Matricula\":\"99999\",\"Txt_Situacion\":\"REGULARES\"}}]"),
+                "00123", UatVerificationException.Reason.UNAVAILABLE);
+    }
+
     @Test void rejectsGlobalHtmlAndSelectedCareerFallback() {
         String body = response("[{\"situation\":\"ACTIVO\",\"raw\":{\"Num_Matricula\":\"00123\",\"CicloActivo\":\"ACTIVO\"},\"situationFields\":[{\"source\":\"selection\",\"field\":\"Situacion\",\"value\":\"ACTIVO\"},{\"source\":\"program-page\",\"field\":\"Situacion\",\"value\":\"ACTIVO\"}]}]");
         body = body.substring(0, body.length()-1) + ",\"situations\":[\"ACTIVO\"],\"programPage\":{\"situations\":[\"ACTIVO\"]}}";
-        denied(body, "00123", UatVerificationException.Reason.UNAVAILABLE);
+        denied(body, "00123", UatVerificationException.Reason.UNCONFIRMED_STATUS);
     }
 
     @Test void rejectsCareerWithDifferentOrMissingMatricula() {
@@ -79,7 +92,7 @@ class PortalResultValidatorTest {
     }
 
     @Test void rejectsConflictingFieldsInSameCareer() {
-        denied(response("[{\"raw\":{\"Num_Matricula\":\"00123\",\"Situacion\":\"ACTIVO\",\"Txt_Situacion_Alumno\":\"INACTIVO\"}}]"), "00123", UatVerificationException.Reason.UNAVAILABLE);
+        denied(response("[{\"raw\":{\"Num_Matricula\":\"00123\",\"Situacion\":\"ACTIVO\",\"Txt_Situacion_Alumno\":\"INACTIVO\"}}]"), "00123", UatVerificationException.Reason.UNCONFIRMED_STATUS);
     }
 
     @Test void requiresActualBooleanAuthenticationAndCompletedPasswordChange() {
@@ -87,6 +100,14 @@ class PortalResultValidatorTest {
         denied(valid.replace("\"authenticated\":true", "\"authenticated\":\"true\""), "00123", UatVerificationException.Reason.CREDENTIALS);
         denied(valid.replace("\"exito\":true", "\"exito\":false"), "00123", UatVerificationException.Reason.CREDENTIALS);
         denied(valid.replace("\"cambiaPass\":false", "\"cambiaPass\":true"), "00123", UatVerificationException.Reason.CREDENTIALS);
+    }
+
+    @Test void rejectsInvalidPasswordChangeFlagTypesEvenAfterProjection() {
+        String valid = response("[{\"raw\":{\"Num_Matricula\":\"00123\",\"Situacion\":\"ACTIVO\"}}]");
+        for (String flag : new String[] { "{}", "[]", "\"false\"", "0" }) {
+            denied(valid.replace("\"cambiaPass\":false", "\"cambiaPass\":" + flag),
+                    "00123", UatVerificationException.Reason.UNAVAILABLE);
+        }
     }
 
     @Test void rejectsMissingContractAndInvalidJson() {

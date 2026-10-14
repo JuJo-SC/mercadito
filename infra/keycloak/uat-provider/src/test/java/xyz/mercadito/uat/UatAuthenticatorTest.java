@@ -98,6 +98,19 @@ class UatAuthenticatorTest {
         verify(user, never()).setEmail(anyString());
     }
 
+    @Test void emitsOnlyReducedNameForExistingAccountWithoutStoringPortalNames() throws Exception {
+        UserModel user = mock(UserModel.class);
+        when(user.isEnabled()).thenReturn(true);
+        when(users.getUserByUsername(realm, "uat:00123")).thenReturn(user);
+        when(verifier.verify("00123", "test-password")).thenReturn(new VerifiedStudent("00123", null, "María L."));
+        authenticator.action(context);
+        verify(authenticationSession).setUserSessionNote("uat_display_name", "María L.");
+        verify(user, never()).setFirstName(anyString());
+        verify(user, never()).setLastName(anyString());
+        verify(users, never()).addUser(any(), anyString());
+        verify(context).success("password");
+    }
+
     @Test void reportsCredentialInactiveAndAvailabilityFailuresWithoutCreatingUser() throws Exception {
         for (var reason : UatVerificationException.Reason.values()) {
             reset(verifier);
@@ -109,12 +122,13 @@ class UatAuthenticatorTest {
         verify(context, never()).success();
         verify(authenticationSession, never()).setUserSessionNote(anyString(), anyString());
         verify(context).failureChallenge(eq(AuthenticationFlowError.INVALID_CREDENTIALS), any());
-        verify(context, times(4)).forceChallenge(any());
+        verify(context, times(5)).forceChallenge(any());
         verify(forms).setError("uatInvalidCredentials");
         verify(forms).setError("uatInvalidUsername");
         verify(forms).setError("uatInvalidPassword");
         verify(forms).setError("uatInactiveStudent");
         verify(forms).setError("uatUnavailable");
+        verify(forms).setError("uatUnconfirmedStatus");
     }
 
     @Test void rejectsDisabledAccountWithoutCallingGateway() {

@@ -1,7 +1,6 @@
 package xyz.mercadito.uat;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.logging.Logger;
 import java.io.IOException;
 import java.text.Normalizer;
@@ -16,7 +15,10 @@ public final class PortalResultValidator {
             "^(?:([0-9]{1,32})|a?([0-9]{1,32})@alumnos\\.uat\\.edu\\.mx)$", Pattern.CASE_INSENSITIVE);
     private static final Set<String> SITUATION_FIELDS = Set.of(
             "txt_situacion_alumno", "txt_situacion", "situacion_alumno", "situacion");
-    private final ObjectMapper mapper = new ObjectMapper();
+    // Exact labels shown in UAT's official enrollment guides; never match substrings.
+    private static final Set<String> ELIGIBLE_SITUATIONS = Set.of(
+            "ACTIVO", "ACTIVO - REGULARES", "REGULARES");
+    private final PortalResponseReader reader = new PortalResponseReader();
 
     public static String canonicalMatricula(String username) throws UatVerificationException {
         if (username == null) {
@@ -35,7 +37,7 @@ public final class PortalResultValidator {
         String matricula = canonicalMatricula(username);
         final JsonNode root;
         try {
-            root = mapper.readTree(body);
+            root = reader.read(body);
         } catch (IOException | RuntimeException error) {
             LOG.warn("UAT_CHECK response_json_invalid");
             throw failure(UatVerificationException.Reason.UNAVAILABLE);
@@ -67,7 +69,6 @@ public final class PortalResultValidator {
         boolean matchedIdentity = false;
         boolean inactivePlan = false;
         boolean unknownStatus = false;
-        boolean caseOnlyActive = false;
         for (JsonNode program : programs) {
             JsonNode raw = program.path("raw");
             JsonNode rawMatricula = raw.path("Num_Matricula");
@@ -85,14 +86,25 @@ public final class PortalResultValidator {
                             && recognizedField(leaf)) addSituation(field.path("value"), situations);
                 }
             }
-            if (situations.size() == 1 && situations.iterator().next().equalsIgnoreCase("ACTIVO")
-                    && !situations.contains("ACTIVO")) caseOnlyActive = true;
             // Do not combine another plan, selection, global situation or the HTML page.
-            // Conflicting career fields must fail closed rather than choosing ACTIVO.
-            if (situations.equals(Set.of("ACTIVO"))) {
+            // Any unknown or inactive evidence in the same career still fails closed.
+            if (!situations.isEmpty() && ELIGIBLE_SITUATIONS.containsAll(situations)) {
                 String email = username.strip().contains("@")
                         ? "a" + matricula + "@alumnos.uat.edu.mx" : null;
-                return new VerifiedStudent(matricula, email);
+                String displayName = PortalDisplayName.from(raw);
+                JsonNode parameters = login.path("parametros");
+                JsonNode loginMatricula = parameters.path("Num_Matricula");
+                if (displayName == null && (loginMatricula.isMissingNode()
+                        || ((loginMatricula.isTextual() || loginMatricula.isIntegralNumber())
+                            && matricula.equals(loginMatricula.asText().strip())))) {
+                    displayName = PortalDisplayName.from(parameters);
+                }
+                if (displayName == null) {
+                    LOG.warnf("UAT_CHECK display_name_missing career_schema=%s login_schema=%s career_name_fields=%s login_name_fields=%s",
+                            schemaNames(raw), schemaNames(parameters),
+                            raw.path("_name_fields").asText(""), parameters.path("_name_fields").asText(""));
+                }
+                return new VerifiedStudent(matricula, email, displayName);
             }
             if (!situations.isEmpty() && Set.of("INACTIVO", "BAJA", "EGRESADO").containsAll(situations)) {
                 inactivePlan = true;
@@ -100,11 +112,12 @@ public final class PortalResultValidator {
                 unknownStatus = true;
             }
         }
-        LOG.warnf("UAT_CHECK academic_contract_unconfirmed programs_count=%d matching_identity=%s raw_matricula_type=%s case_only_active=%s first_program_schema=%s",
+        LOG.warnf("UAT_CHECK academic_contract_unconfirmed programs_count=%d matching_identity=%s raw_matricula_type=%s first_program_schema=%s",
                 programs.size(), matchedIdentity, programs.path(0).path("raw").path("Num_Matricula").getNodeType().name(),
-                caseOnlyActive, schemaNames(programs.path(0).path("raw")));
-        throw failure(matchedIdentity && inactivePlan && !unknownStatus
-                ? UatVerificationException.Reason.INACTIVE : UatVerificationException.Reason.UNAVAILABLE);
+                schemaNames(programs.path(0).path("raw")));
+        throw failure(!matchedIdentity ? UatVerificationException.Reason.UNAVAILABLE
+                : inactivePlan && !unknownStatus ? UatVerificationException.Reason.INACTIVE
+                : UatVerificationException.Reason.UNCONFIRMED_STATUS);
     }
 
     private static void collectRawSituations(JsonNode node, Set<String> values, int depth) {
@@ -117,11 +130,11 @@ public final class PortalResultValidator {
 
     private static void addSituation(JsonNode value, Set<String> values) {
         if (value.isTextual() && !value.asText().strip().isEmpty()) {
-            values.add(value.asText().strip());
+            values.add(value.asText().strip().toUpperCase(Locale.ROOT));
         }
     }
 
-    private static boolean recognizedField(String field) {
+    static boolean recognizedField(String field) {
         String normalized = Normalizer.normalize(field, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}+", "").toLowerCase(Locale.ROOT);
         return SITUATION_FIELDS.contains(normalized);
@@ -131,7 +144,7 @@ public final class PortalResultValidator {
     private static String schemaNames(JsonNode node) {
         if (!node.isObject()) return node.getNodeType().name();
         return node.properties().stream().map(java.util.Map.Entry::getKey)
-                .filter(key -> key.matches("(?:Id|Num|Txt|Cve|Situacion|Matricula|Ciclo)[A-Za-z0-9_]{0,48}"))
+                .filter(key -> key.matches("[A-Za-z][A-Za-z0-9_]{0,48}"))
                 .sorted().limit(24).collect(java.util.stream.Collectors.joining(","));
     }
 
