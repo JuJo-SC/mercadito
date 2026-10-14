@@ -14,6 +14,8 @@ Mercadito conserva Auth.js, sesiones en PostgreSQL y OIDC con Keycloak. Un auten
 
 El endpoint de alumnos es POST /api/v1/alumnos/scrape. Se envía usuario y contraseña con include.programPage=true, include.schedule=false, include.partialGrades=false e include.finalGrades=false. No se necesitan los endpoints de horarios, calificaciones, docentes ni asistencia.
 
+El formulario admite matrícula o correo de alumnos, incluido aMATRÍCULA@alumnos.uat.edu.mx. Si se escribe solo la matrícula, el usuario enviado al portal es aMATRÍCULA@alumnos.uat.edu.mx. Los formatos admitidos se normalizan siempre al mismo correo con prefijo a, también si se omite ese prefijo al escribir el correo. La autorización usa únicamente la matrícula numérica, conserva sus ceros iniciales y la contraseña no se recorta ni transforma. El portal confirmado para este piloto es https://alumnossur.uat.edu.mx/Login.
+
 El validador exige authenticated=true, login.exito=true y ausencia de cambio obligatorio de contraseña. La matrícula canónica debe coincidir con programs[].raw.Num_Matricula; no se eliminan ceros iniciales. La situación ACTIVO debe estar respaldada por el mismo programa y por campos de carrera reconocidos. No se autoriza usando el catálogo agregado situations, una coincidencia parcial de texto, CicloActivo, un correo o el HTML de otro plan. INACTIVO, EGRESADO, BAJA, campos ausentes o contradictorios se rechazan.
 
 El identificador interno de Keycloak es independiente y estable. Las notas de sesión university_id=uat y uat_student_verified=true se convierten en claims OIDC. El cliente UAT no hereda profile/email; solicita únicamente openid, evitando propagar matrícula o datos académicos en los tokens. Auth.js usa el sub y acepta email=null para UAT; no inventa un correo ni vincula identidades por correo. Una sesión previa no puede vincular otra identidad de portal a su cuenta local.
@@ -102,3 +104,9 @@ La lista vive en UAT_ALLOWED_MATRICULAS dentro de /srv/secrets/mercadito/uat.env
 No incluir esta lista en Git. Para cerrar nuevas entradas UAT, establecer UAT_LOGIN_ENABLED=false en uat.env y uat-auth.env y recrear Keycloak y web con el mismo overlay. El cierre también impide usar las rutas estudiantiles aunque exista una sesión previa.
 
 En este piloto se verificaron salud HTTPS, redirección HTTP a HTTPS, aviso publicado, recorrido del botón hasta Keycloak, formulario con contraseña oculta y aceptación desmarcada, rechazo de una matrícula ajena antes de consultar el gateway y configuración de tres cuentas autorizadas. No se enviaron contraseñas reales ni se copiaron publicaciones UMAN a UAT.
+
+## Diagnóstico del rechazo
+
+Los registros de Keycloak distinguen categorías UAT_CHECK de formato de usuario, contraseña ausente o fuera de límite, rechazo HTTP del portal, indicadores de login no confirmados y cambio obligatorio de contraseña. Solo se registran etiquetas constantes, tipos JSON, nombres de propiedades DTO limitados y filtrados, valores booleanos, estado HTTP y los dos códigos de rechazo reconocidos. No se registran usuarios, contraseñas, mensajes del portal ni cuerpos de respuesta. El diagnóstico no cambia los requisitos de acceso.
+
+Los errores de formato del usuario o de entrada de contraseña muestran un mensaje del formulario y no se presentan como rechazo del portal ni incrementan los contadores de contraseña incorrecta.

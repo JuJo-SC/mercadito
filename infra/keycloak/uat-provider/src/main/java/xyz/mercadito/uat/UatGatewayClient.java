@@ -1,6 +1,7 @@
 package xyz.mercadito.uat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jboss.logging.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public final class UatGatewayClient implements UatVerifier {
+    private static final Logger LOG = Logger.getLogger(UatGatewayClient.class);
     static final int MAX_RESPONSE_BYTES = 1_048_576;
     private final HttpClient http;
     private final URI endpoint;
@@ -51,15 +53,18 @@ public final class UatGatewayClient implements UatVerifier {
 
     @Override
     public VerifiedStudent verify(String username, String password) throws UatVerificationException {
-        PortalResultValidator.canonicalMatricula(username);
+        String matricula = PortalResultValidator.canonicalMatricula(username);
+        // All accepted forms identify the same prefixed UAT student account.
+        String portalUsername = "a" + matricula + "@alumnos.uat.edu.mx";
         if (password == null || password.isEmpty() || password.length() > 512) {
-            throw new UatVerificationException(UatVerificationException.Reason.CREDENTIALS);
+            LOG.warn("UAT_CHECK input_password_rejected");
+            throw new UatVerificationException(UatVerificationException.Reason.INPUT_PASSWORD);
         }
         CompletableFuture<HttpResponse<byte[]>> pending = null;
         try {
             // This stateless route does not retain portal cookies or create a gateway session.
             byte[] requestBody = mapper.writeValueAsBytes(Map.of(
-                    "username", username.strip(), "password", password,
+                    "username", portalUsername, "password", password,
                     "include", Map.of("programPage", true, "schedule", false,
                             "partialGrades", false, "finalGrades", false)));
             HttpRequest request = HttpRequest.newBuilder(endpoint).timeout(timeout)
@@ -71,15 +76,18 @@ public final class UatGatewayClient implements UatVerifier {
             HttpResponse<byte[]> response = pending.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
             String type = response.headers().firstValue("Content-Type").orElse("");
             if (!type.toLowerCase(java.util.Locale.ROOT).split(";", 2)[0].strip().equals("application/json")) {
+                LOG.warn("UAT_CHECK gateway_content_type_not_json");
                 throw new UatVerificationException(UatVerificationException.Reason.UNAVAILABLE);
             }
             if (response.statusCode() == 401) {
                 String code = mapper.readTree(response.body()).path("error").asText("");
                 if ("UAT_LOGIN_FAILED".equals(code) || "UAT_SESSION_EXPIRED".equals(code)) {
+                    LOG.warnf("UAT_CHECK portal_http_rejection code=%s", code);
                     throw new UatVerificationException(UatVerificationException.Reason.CREDENTIALS);
                 }
             }
             if (response.statusCode() != 200) {
+                LOG.warnf("UAT_CHECK gateway_status_unexpected status=%d", response.statusCode());
                 throw new UatVerificationException(UatVerificationException.Reason.UNAVAILABLE);
             }
             return validator.validate(response.body(), username);
@@ -91,6 +99,13 @@ public final class UatGatewayClient implements UatVerifier {
             throw new UatVerificationException(UatVerificationException.Reason.UNAVAILABLE);
         } catch (IOException | ExecutionException | TimeoutException | RuntimeException error) {
             if (pending != null) pending.cancel(true);
+            Throwable cause = error;
+            for (int depth = 0; cause.getCause() != null && depth < 8; depth++) {
+                cause = cause.getCause();
+            }
+            boolean responseLimit = "Respuesta UAT demasiado grande.".equals(cause.getMessage());
+            LOG.warnf("UAT_CHECK gateway_transport_error kind=%s cause=%s response_limit=%s",
+                    error.getClass().getSimpleName(), cause.getClass().getSimpleName(), responseLimit);
             // Never attach upstream messages, payloads, usernames or secrets to this exception.
             throw new UatVerificationException(UatVerificationException.Reason.UNAVAILABLE);
         }

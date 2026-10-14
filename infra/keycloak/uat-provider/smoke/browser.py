@@ -97,8 +97,8 @@ else:
     request = urllib.request.Request(profile_endpoint, json.dumps(profile).encode(), headers=headers, method="PUT")
     urllib.request.urlopen(request, timeout=20).close()
     subjects = []
-    for _ in range(2):
-        result = authenticate("000123")
+    for username in ("000123", "a000123@alumnos.uat.edu.mx"):
+        result = authenticate(username)
         location = result.headers.get("Location", "")
         code = urllib.parse.parse_qs(urllib.parse.urlsplit(location).query).get("code", [None])[0]
         if not code:

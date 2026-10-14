@@ -1,5 +1,6 @@
 """Deterministic portal fixture. Never deploy this gateway to a production network."""
 import json
+import re
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 
@@ -13,7 +14,8 @@ class Handler(BaseHTTPRequestHandler):
         assert self.path == "/api/v1/alumnos/scrape"
         assert self.headers.get("X-API-Key") == "fixture-key"
         assert body["include"] == expected and set(body) == {"username", "password", "include"}
-        username = body["username"]
+        assert re.fullmatch(r"a[0-9]+@alumnos\.uat\.edu\.mx", body["username"])
+        username = body["username"].split("@", 1)[0].removeprefix("a")
         if username == "000125" or body["password"] != "fixture-password":
             status, payload = 401, {"error": "UAT_LOGIN_FAILED"}
         else:
