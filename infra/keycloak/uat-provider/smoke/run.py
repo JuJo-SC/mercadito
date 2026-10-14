@@ -26,7 +26,7 @@ def start(name, *args):
 def mapper(name, note, data_type):
     return {"name": name, "protocol": "openid-connect", "protocolMapper": "oidc-usersessionmodel-note-mapper",
             "config": {"user.session.note": note, "claim.name": note, "jsonType.label": data_type,
-                       "id.token.claim": "true", "access.token.claim": "true", "userinfo.token.claim": "true"}}
+                       "id.token.claim": "true", "access.token.claim": "false" if note == "uat_private_name" else "true", "userinfo.token.claim": "true"}}
 
 
 with tempfile.TemporaryDirectory(prefix=PREFIX + "-") as temporary:
@@ -46,7 +46,8 @@ with tempfile.TemporaryDirectory(prefix=PREFIX + "-") as temporary:
                           "redirectUris": ["http://app.test/callback"], "defaultClientScopes": [], "optionalClientScopes": [],
                           "protocolMappers": [mapper("uat-university", "university_id", "String"),
                                               mapper("uat-student", "uat_student_verified", "boolean"),
-                                              mapper("uat-display-name", "uat_display_name", "String")]}]}
+                                              mapper("uat-display-name", "uat_display_name", "String"),
+                                              mapper("uat-private-name", "uat_private_name", "String")]}]}
     realm_file = root / "realm.json"
     realm_file.write_text(json.dumps(realm), encoding="utf-8")
     try:

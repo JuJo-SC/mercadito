@@ -69,3 +69,6 @@ La comparación de situaciones normaliza únicamente espacios exteriores y mayú
 
 
 El nombre del portal se reduce en PortalDisplayName a primer nombre e inicial del primer apellido, si este existe por separado. La nota de sesión uat_display_name usa un mapper específico hacia ID token/userinfo; no requiere profile y no guarda el nombre completo en UserModel. Ver docs/integracion-uat.md para la sincronización de perfiles existentes y las pruebas.
+
+
+Ampliación de perfil: uat_display_name contiene los nombres de pila y una inicial cuando el apellido está separado; uat_private_name contiene el nombre del portal para el servidor y se omite del access token. Mercadito lo guarda en StudentPrivateProfile después de comprobar el vínculo local y lo entrega exclusivamente en /perfil para la sesión propietaria. Nunca usar este claim privado como nombre del vendedor ni incorporarlo al callback session.

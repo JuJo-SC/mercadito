@@ -83,3 +83,6 @@ features/auth/lib/uat-access.ts centraliza el cierre por defecto del acceso UAT;
 
 
 `infra/keycloak/uat-provider/PortalDisplayName` reduce el nombre del portal validado a un nombre y una inicial antes de emitir `uat_display_name`. `features/auth/lib/uat-display-name.ts` valida ese claim específico; Auth.js guarda y actualiza el nombre abreviado que ya consumen cuenta, publicaciones y conversaciones. Consultar la política y las verificaciones en [integracion-uat.md](integracion-uat.md#nombre-del-estudiante-verificado).
+
+
+`StudentPrivateProfile` conserva el nombre completo separado de `User.name`, que sigue siendo la presentación pública. `features/auth/lib/private-profile.ts` obtiene solo el perfil propio mediante la sesión; `/perfil` muestra el nombre público y permite desplegar el completo. Las consultas de vendedores y conversaciones no seleccionan la relación privada. `infra/uat/test-private-profile.py` comprueba aislamiento y presentación con dos sesiones ficticias, migraciones y contenedores temporales.

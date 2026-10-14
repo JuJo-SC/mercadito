@@ -110,8 +110,9 @@ else:
         identity = claims(tokens["id_token"])
         assert identity["university_id"] == "uat"
         assert identity["uat_student_verified"] is True
-        assert identity["uat_display_name"] == "María L."
-        assert not any(value in json.dumps(identity, ensure_ascii=False) for value in ("ISABEL", "LÓPEZ", "GARCÍA"))
+        assert identity["uat_display_name"] == "María Isabel L."
+        assert identity["uat_private_name"] == "María Isabel López García"
+        assert "uat_private_name" not in claims(tokens["access_token"])
         assert "name" not in identity and "given_name" not in identity and "family_name" not in identity
         assert "preferred_username" not in identity and "email" not in identity
         assert "000123" not in json.dumps(identity)
@@ -121,7 +122,7 @@ else:
             userinfo = json.load(response)
             assert userinfo["sub"] == identity["sub"]
             assert userinfo["university_id"] == "uat" and userinfo["uat_student_verified"] is True
-            assert userinfo["uat_display_name"] == "María L."
+            assert userinfo["uat_display_name"] == "María Isabel L."
     assert subjects[0] == subjects[1], "Repeated portal login changed the OIDC subject"
 
     inactive = authenticate("000124").read().decode()

@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
   async headers() {
     return [
+      { source: "/perfil", headers: [{ key: "Cache-Control", value: "private, no-store" }] },
       {
         source: "/sw.js",
         headers: [

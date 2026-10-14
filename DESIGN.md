@@ -162,3 +162,8 @@ La página admite 320px de ancho, scroll horizontal de categorías, foco azul vi
 ## Verdad del producto
 
 Mercadito pertenece a una universidad activa. Las cuentas UMAN son sintéticas para recorrido; cualquier aviso asociado se etiqueta como ficticio. La plataforma no procesa pagos. La entrega y cualquier pago se acuerdan fuera de Mercadito.
+
+
+## Mi perfil
+
+La cuenta de la cabecera es un enlace a /perfil: muestra el nombre público en escritorio y conserva un icono con etiqueta accesible en móvil. La página sigue el marco compartido y separa «Así te ven los demás» de «Solo para ti». Un desplegable nativo permite consultar el nombre completo sin añadir un modal. La página usa el mismo verde, foco azul, tipografía y controles de al menos 44px; los nombres largos ajustan líneas dentro del contenido.

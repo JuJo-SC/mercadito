@@ -1,0 +1,9 @@
+.private-profile { max-width: 720px; padding-block: 32px 48px; }
+.private-profile h1 { margin: 24px 0 8px; font-size: 1.65rem; line-height: 1.2; letter-spacing: -.025em; }
+.private-profile .profile-intro { color: var(--muted); margin: 0 0 32px; }
+.private-profile section { padding-block: 24px; border-top: 1px solid var(--rule); }
+.private-profile h2 { font-size: 1rem; margin: 0 0 12px; }
+.private-profile p { max-width: 65ch; overflow-wrap: anywhere; }
+.private-profile .profile-display-name, .private-profile .profile-full-name { font-size: 1.25rem; font-weight: 600; }
+.profile-private-details summary { cursor: pointer; min-height: 44px; padding-block: 10px; color: var(--signal); font-weight: 600; }
+.profile-private-details summary:focus-visible { outline: 2px solid #087ff5; outline-offset: 4px; }

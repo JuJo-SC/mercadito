@@ -1,5 +1,5 @@
 PRUEBA RESTRINGIDA DE ACCESO UAT — MERCADITO
-Versión: prueba-restringida-nombre-2026-10-14
+Versión: prueba-restringida-perfil-2026-10-14
 
 Esta pantalla permite al operador y a sus testers probar Mercadito con sus propias cuentas UAT. El acceso está limitado a las matrículas autorizadas; no se ha abierto el registro general de estudiantes. Mercadito es un proyecto independiente de la UAT.
 
@@ -7,7 +7,7 @@ Al continuar, autorizas una comprobación del acceso y la situación académica 
 
 El servicio consulta los programas académicos necesarios para comprobar que la matrícula coincide y que existe un programa con situación elegible (ACTIVO, ACTIVO - REGULARES o REGULARES). En esta integración no se solicitan horarios ni calificaciones. La respuesta académica completa no se guarda en la base de datos de Mercadito.
 
-Si la validación es correcta, se crea una cuenta propia de esta comunidad con un identificador estable. Del nombre que devuelve el portal se guarda únicamente el primer nombre y, cuando el apellido está identificado por separado, la inicial del primer apellido (por ejemplo, «María L.»). Ese nombre abreviado aparece en tu cuenta, publicaciones y conversaciones para identificarte entre los participantes; no se guarda ni se publica el nombre completo. Se actualiza al volver a verificar tu acceso. Se conserva la relación con UAT, la sesión y la fecha y versión de esta aceptación. La sesión tiene una duración máxima de ocho horas. Las publicaciones y conversaciones que crees se guardan para que puedas probar esas funciones.
+Si la validación es correcta, se crea una cuenta propia de esta comunidad con un identificador estable. Del portal se conservan tus nombres de pila y apellidos para identificar tu propia cuenta. Las publicaciones y conversaciones muestran tus nombres de pila y únicamente la inicial del primer apellido, cuando el portal separa esos datos. Tu nombre completo se guarda por separado y solo se muestra al abrir tu perfil privado; no se comparte con otros estudiantes. Si el portal entrega un nombre combinado sin separar los apellidos, se mantiene una presentación pública reducida para evitar exponerlos. Ambos nombres se actualizan cuando vuelves a verificar tu acceso. Se conserva la relación con UAT, la sesión y la fecha y versión de esta aceptación. La sesión tiene una duración máxima de ocho horas. Las publicaciones y conversaciones que crees se guardan para que puedas probar esas funciones.
 
 La validación puede fallar si el portal no responde, rechaza las credenciales, solicita cambiar la contraseña o no permite confirmar tu situación académica. Si no quieres realizar la comprobación, cierra esta pantalla sin enviar el formulario.
 

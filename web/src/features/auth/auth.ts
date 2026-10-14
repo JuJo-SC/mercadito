@@ -3,7 +3,7 @@ import Keycloak from "next-auth/providers/keycloak";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { resolveActiveStudent } from "@/features/auth/lib/university-identity";
-import { uatDisplayName } from "@/features/auth/lib/uat-display-name";
+import { uatDisplayName, uatPrivateName } from "@/features/auth/lib/uat-display-name";
 import { activeUniversitySlug } from "@/features/community/lib/active-community";
 
 const keycloakConfigured = Boolean(
@@ -65,6 +65,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   pages: { signIn: "/ingresar" },
   trustHost: process.env.AUTH_TRUST_HOST === "true",
+  events: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider !== "keycloak" || !user.id || !profile || profile.sub !== account.providerAccountId) return;
+      const university = await resolveActiveStudent(profile as Record<string, unknown>);
+      const fullName = uatPrivateName(profile as Record<string, unknown>);
+      if (university?.slug !== "uat" || !fullName) return;
+      const linked = await prisma.account.findUnique({
+        where: { provider_providerAccountId: { provider: "keycloak", providerAccountId: account.providerAccountId } },
+        select: { userId: true },
+      });
+      if (linked?.userId !== user.id) return;
+      const eligible = await prisma.user.findFirst({
+        where: { id: user.id, universityId: university.id, role: "STUDENT", status: "ACTIVE", isDemo: false },
+        select: { id: true },
+      });
+      if (!eligible) return;
+      await prisma.studentPrivateProfile.upsert({
+        where: { userId: eligible.id },
+        create: { userId: eligible.id, fullName },
+        update: { fullName },
+      });
+    },
+  },
   callbacks: {
     async signIn({ user, account, profile }): Promise<boolean> {
       if (
