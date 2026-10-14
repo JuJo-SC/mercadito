@@ -1,0 +1,386 @@
+/* Tema de acceso UAT de Mercadito.
+   Solo estilos: reproduce el lenguaje visual de web/src/app/globals.css sobre
+   el marcado que ya generan uat-login.ftl y uat-disabled.ftl (tema padre
+   keycloak.v2 con PatternFly v5). No requiere cambiar las plantillas, así que
+   los nombres de campo, el formulario y el flujo de verificación no cambian. */
+
+:root {
+  --m-paper: #f5f5f7;
+  --m-surface: #ffffff;
+  --m-ink: #1d1d1f;
+  --m-muted: #6e6e73;
+  --m-rule: rgba(29, 29, 31, 0.13);
+  --m-field: #d2d2d7;
+  --m-signal: #167d62;
+  --m-signal-dark: #116850;
+  --m-signal-soft: #e7f4ee;
+  --m-focus: #087ff5;
+  --m-error: #a4262c;
+  --m-font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  --m-font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+
+  /* Paleta de PatternFly v5 reasignada al verde de Mercadito. */
+  --pf-v5-global--primary-color--100: var(--m-signal);
+  --pf-v5-global--primary-color--200: var(--m-signal-dark);
+  --pf-v5-global--link--Color: var(--m-signal);
+  --pf-v5-global--link--Color--hover: var(--m-signal-dark);
+  --pf-v5-global--danger-color--100: var(--m-error);
+  --pf-v5-global--FontFamily--text: var(--m-font-body);
+  --pf-v5-global--FontFamily--heading: var(--m-font-display);
+  --pf-v5-global--FontFamily--redhatfont--text: var(--m-font-body);
+  --pf-v5-global--FontFamily--redhatfont--heading: var(--m-font-display);
+
+  --pf-v5-c-button--m-primary--BackgroundColor: var(--m-signal);
+  --pf-v5-c-button--m-primary--hover--BackgroundColor: var(--m-signal-dark);
+  --pf-v5-c-button--m-primary--focus--BackgroundColor: var(--m-signal-dark);
+  --pf-v5-c-button--m-primary--active--BackgroundColor: var(--m-signal-dark);
+
+  --pf-v5-c-login__main--BackgroundColor: var(--m-surface);
+  --pf-v5-c-login__main--BoxShadow: 0 2px 7px rgba(29, 29, 31, 0.045);
+
+  /* El tema padre pinta una franja azul sobre la tarjeta. */
+  --keycloak-card-top-color: transparent;
+
+  color-scheme: light;
+}
+
+/* ---------------------------------------------------------------- Fondo */
+html.login-pf,
+.login-pf body,
+#keycloak-bg {
+  background: var(--m-paper);
+  background-image: none;
+  color: var(--m-ink);
+  font-family: var(--m-font-body);
+}
+
+.pf-v5-c-login {
+  padding: clamp(1.5rem, 5vw, 3rem) 1rem;
+}
+
+/* PatternFly reserva 6.125rem a cada lado para una columna ilustrada que este
+   acceso no usa, y fija la tarjeta en 34rem. */
+.pf-v5-c-login__container {
+  --pf-v5-c-login__container--PaddingLeft: 0;
+  --pf-v5-c-login__container--PaddingRight: 0;
+  grid-template-columns: minmax(0, 26rem);
+  justify-content: center;
+  max-width: 26rem;
+  margin-inline: auto;
+  gap: 0;
+}
+
+/* ---------------------------------------------------------- Marca arriba */
+#kc-header-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 0 1.25rem;
+  color: var(--m-ink) !important;
+  font-family: var(--m-font-display);
+  font-size: 1.4rem;
+  font-weight: 680;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: none;
+  white-space: normal;
+}
+
+/* Mismo símbolo que la cabecera de la aplicación (.brand-symbol). */
+#kc-header-wrapper::before {
+  content: "M";
+  content: "M" / "";
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--m-signal-soft);
+  color: var(--m-signal);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------- Tarjeta */
+.pf-v5-c-login__main {
+  --pf-v5-c-login__main-footer--PaddingBottom: 0;
+  border: 1px solid rgba(29, 29, 31, 0.09);
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.pf-v5-c-login__main-header {
+  padding: 1.75rem 1.75rem 0;
+  border-top: 0;
+}
+
+/* Sin selector de idioma, la columna vacía del encabezado descentra el título. */
+.pf-v5-c-login__main-header:not(:has(.pf-v5-c-login__main-header-utilities)) {
+  column-gap: 0;
+}
+
+.pf-v5-c-login__main-body {
+  padding: 1rem 1.75rem 1.75rem;
+}
+
+/* El tema padre deja pies vacíos que solo añaden relleno. */
+.pf-v5-c-login__main-footer:not(:has(*)) {
+  display: none;
+}
+
+#kc-page-title {
+  color: var(--m-ink);
+  font-family: var(--m-font-display);
+  font-size: 1.6rem;
+  font-weight: 680;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* ------------------------------------------------- Texto de introducción */
+/* Primer párrafo de la tarjeta (explicación de la verificación). */
+.pf-v5-c-login__main-body > p:first-of-type {
+  max-width: 36ch;
+  margin: 0 auto 1.4rem;
+  color: var(--m-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------ Formulario */
+#kc-form-login {
+  display: grid;
+  gap: 1rem;
+}
+
+#kc-form-login .pf-v5-c-form__group {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.pf-v5-c-form__label-text {
+  color: var(--m-ink);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+#kc-form-login .pf-v5-c-form-control {
+  --pf-v5-c-form-control--after--BorderBottomWidth: 0;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--m-field);
+  border-radius: 12px;
+  background: var(--m-surface);
+  color: var(--m-ink);
+  font: inherit;
+  font-size: 1rem;
+  outline: 0;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+#kc-form-login .pf-v5-c-form-control::before,
+#kc-form-login .pf-v5-c-form-control::after {
+  content: none;
+}
+
+#kc-form-login .pf-v5-c-form-control:focus {
+  border-color: var(--m-focus);
+  box-shadow: 0 0 0 4px rgba(8, 127, 245, 0.13);
+}
+
+#kc-form-login .pf-v5-c-form-control[aria-invalid="true"] {
+  border-color: var(--m-error);
+}
+
+/* Aviso de qué se consulta: párrafo del formulario que no es la casilla. */
+#kc-form-login > p:not(:has(input)) {
+  margin: 0.1rem 0 0;
+  padding: 0.8rem 0.9rem 0.8rem 2.6rem;
+  border: 1px solid rgba(22, 125, 98, 0.14);
+  border-radius: 15px;
+  background: var(--m-signal-soft)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23167d62' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3C/svg%3E")
+    no-repeat 0.9rem 0.85rem / 1.05rem;
+  color: #245c4d;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+/* Consentimiento: párrafo con la casilla y el enlace al aviso de privacidad. */
+#kc-form-login > p:has(input[type="checkbox"]) {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid var(--m-rule);
+  border-radius: 14px;
+  background: var(--m-surface);
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+#kc-form-login > p:has(input[type="checkbox"]:checked) {
+  border-color: rgba(22, 125, 98, 0.45);
+  background: #f6fbf8;
+}
+
+#kc-form-login > p:has(input[type="checkbox"]:focus-visible) {
+  outline: 3px solid var(--m-focus);
+  outline-offset: 3px;
+}
+
+#kc-form-login > p > label {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.7rem;
+  align-items: start;
+  margin: 0;
+  color: var(--m-ink);
+  font-size: 0.84rem;
+  font-weight: 400;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+#kc-form-login > p > label > input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0.1rem 0 0;
+  accent-color: var(--m-signal);
+  cursor: pointer;
+}
+
+#kc-form-login > p:has(input[type="checkbox"]) > a {
+  margin-left: 1.95rem;
+  font-size: 0.84rem;
+}
+
+/* -------------------------------------------------------------- Botones */
+.pf-v5-c-button.pf-m-primary {
+  min-height: 50px;
+  margin-top: 0.3rem;
+  border: 1px solid var(--m-signal);
+  border-radius: 13px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 650;
+  box-shadow: 0 2px 4px rgba(22, 125, 98, 0.13);
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.pf-v5-c-button.pf-m-primary:hover {
+  border-color: var(--m-signal-dark);
+  box-shadow: 0 5px 12px rgba(22, 125, 98, 0.18);
+  transform: translateY(-1px);
+}
+
+.pf-v5-c-button.pf-m-primary:active {
+  transform: translateY(0);
+}
+
+/* --------------------------------------------------------------- Enlaces */
+.pf-v5-c-login__main a {
+  color: var(--m-signal);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pf-v5-c-login__main a:hover {
+  color: var(--m-signal-dark);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+/* "Volver a Mercadito", separado del formulario por una línea. */
+.pf-v5-c-login__main-body > p:has(> a[href$="/ingresar"]) {
+  margin: 1.25rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--m-rule);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.pf-v5-c-login__main-body > p > a[href$="/ingresar"]::before {
+  content: "\2190";
+  content: "\2190" / "";
+  margin-right: 0.4rem;
+}
+
+/* En la página "en preparación" el texto va directo encima del enlace. */
+.pf-v5-c-login__main-body > p:first-of-type:has(> a[href$="/ingresar"]) {
+  max-width: none;
+  margin-top: 0;
+}
+
+/* -------------------------------------------------- Avisos de error */
+.pf-v5-c-alert.pf-m-inline {
+  --pf-v5-c-alert--BackgroundColor: var(--m-signal-soft);
+  border: 1px solid rgba(22, 125, 98, 0.14);
+  border-radius: 15px;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+.pf-v5-c-alert.pf-m-danger,
+.pf-v5-c-alert.pf-m-error {
+  --pf-v5-c-alert--BackgroundColor: #f8dfd9;
+  border-color: rgba(164, 38, 44, 0.16);
+  color: var(--m-error);
+}
+
+.pf-v5-c-alert.pf-m-danger .pf-v5-c-alert__title,
+.pf-v5-c-alert.pf-m-error .pf-v5-c-alert__title,
+.kc-feedback-text {
+  color: var(--m-error);
+}
+
+/* ----------------------------------------------------------- Accesible */
+:focus-visible {
+  outline: 3px solid var(--m-focus);
+  outline-offset: 3px;
+}
+
+#kc-form-login .pf-v5-c-form-control:focus-visible {
+  outline: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-v5-c-button.pf-m-primary,
+  #kc-form-login .pf-v5-c-form-control {
+    transition: none;
+  }
+
+  .pf-v5-c-button.pf-m-primary:hover {
+    transform: none;
+  }
+}
+
+/* -------------------------------------------------------------- Celular */
+@media (max-width: 540px) {
+  .pf-v5-c-login {
+    padding: 1.25rem 0.75rem 2rem;
+  }
+
+  .pf-v5-c-login__main {
+    border-radius: 18px;
+  }
+
+  .pf-v5-c-login__main-header {
+    padding: 1.4rem 1.15rem 0;
+  }
+
+  .pf-v5-c-login__main-body {
+    padding: 0.9rem 1.15rem 1.4rem;
+  }
+
+  #kc-page-title {
+    font-size: 1.4rem;
+  }
+}
