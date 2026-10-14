@@ -344,3 +344,9 @@ body:has(.app-header) .thread-composer-foot p { white-space: nowrap; }
   body:has(.app-header) .marketplace-sidebar .sort-button { white-space: normal; padding-inline: 4px; }
   body:has(.app-header) .marketplace-filter-panel { min-width: 0; }
 }
+
+.app-header .app-account { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; max-width: 200px; color: var(--ink); text-decoration: none; border-radius: 10px; }
+.app-header .app-account:hover { background: var(--signal-soft); }
+.app-header .app-account:focus-visible { outline: 2px solid #087ff5; outline-offset: 3px; }
+.app-header .account-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 767px) { .app-header .app-account { width: 36px; justify-content: center; } .app-header .app-account .account-name { display: none; } }

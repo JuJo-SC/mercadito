@@ -16,9 +16,9 @@ class PortalDisplayNameTest {
     }
 
     @Test void keepsOnlyFirstNameAndFirstSurnameInitialIncludingAccents() throws Exception {
-        assertEquals("José C.", PortalDisplayName.from(mapper.readTree(
+        assertEquals("José Luis C.", PortalDisplayName.from(mapper.readTree(
                 "{\"Txt_Nombre\":\" JOSÉ   LUIS \",\"Txt_Apellido_Paterno\":\"DE LA CRUZ\",\"Txt_Apellido_Materno\":\"GARCÍA\"}")));
-        assertEquals("María L.", PortalDisplayName.from(mapper.readTree(
+        assertEquals("María Isabel L.", PortalDisplayName.from(mapper.readTree(
                 "{\"Nombres\":\"MARÍA ISABEL\",\"ApellidoPaterno\":\"LÓPEZ\"}")));
     }
 
@@ -38,13 +38,13 @@ class PortalDisplayNameTest {
     @Test void takesNameOnlyFromTheMatchingEligibleProgram() throws Exception {
         var student = verify("[{\"raw\":{\"Num_Matricula\":\"99999\",\"Situacion\":\"ACTIVO\",\"Nombre\":\"Otra\"}},"
                 + "{\"raw\":{\"Num_Matricula\":\"00123\",\"Situacion\":\"REGULARES\",\"Nombre\":\"MARÍA ISABEL\",\"ApellidoPaterno\":\"LÓPEZ\"}}]", null);
-        assertEquals("María L.", student.displayName());
+        assertEquals("María Isabel L.", student.displayName());
     }
 
     @Test void canReadAuthenticatedLoginParametersWithoutCopyingOtherData() throws Exception {
         var student = verify("[{\"raw\":{\"Num_Matricula\":\"00123\",\"Situacion\":\"ACTIVO\"}}]",
                 "{\"Num_Matricula\":\"00123\",\"Txt_Nombre\":\"ANA ISABEL\",\"Txt_Apellido_Paterno\":\"LÓPEZ\",\"private\":\"discard\"}");
-        assertEquals("Ana L.", student.displayName());
+        assertEquals("Ana Isabel L.", student.displayName());
     }
 
     @Test void loginIdentityMismatchCannotSupplyAnotherStudentsName() throws Exception {
@@ -55,4 +55,13 @@ class PortalDisplayNameTest {
     @Test void missingNameDoesNotTurnAnEligibleStudentIntoAnAuthenticationFailure() throws Exception {
         assertNull(verify("[{\"raw\":{\"Num_Matricula\":\"00123\",\"Situacion\":\"ACTIVO\"}}]", null).displayName());
     }
+    @Test void keepsEachStudentsPrivateNameSeparate() throws Exception {
+        var maria = mapper.readTree("{\"Txt_Nombre\":\"MARÍA ISABEL\",\"Txt_Apellido_Paterno\":\"LÓPEZ\",\"Txt_Apellido_Materno\":\"GARCÍA\"}");
+        var carlos = mapper.readTree("{\"Txt_Nombre\":\"CARLOS ALBERTO\",\"Txt_Apellido_Paterno\":\"MÉNDEZ\",\"Txt_Apellido_Materno\":\"RUIZ\"}");
+        assertEquals("María Isabel L.", PortalDisplayName.from(maria));
+        assertEquals("Carlos Alberto M.", PortalDisplayName.from(carlos));
+        assertEquals("María Isabel López García", PortalDisplayName.fullName(maria));
+        assertEquals("Carlos Alberto Méndez Ruiz", PortalDisplayName.fullName(carlos));
+    }
+
 }

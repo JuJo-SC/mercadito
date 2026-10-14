@@ -67,10 +67,10 @@ export function SiteHeader({
             {signedIn ? (
               <>
                 {userName ? (
-                  <span className="app-account" title={userName}>
+                  <Link className="app-account" href="/perfil" title="Ver mi perfil" aria-label="Ver mi perfil">
                     <span className="app-avatar" aria-hidden="true"><UserRound size={18} strokeWidth={1.8} /></span>
                     <span className="account-name">{userName}</span>
-                  </span>
+                  </Link>
                 ) : null}
                 <form action={leaveAccount}>
                   <button

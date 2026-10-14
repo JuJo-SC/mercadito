@@ -84,3 +84,8 @@ Confirmado por el propietario: conservar una página web con apariencia y navega
 ## Orientación pública
 
 Corregido por petición del propietario: el lateral de la portada debe conservarse compacto. Las explicaciones y ejemplos visuales aparecen al pulsar Mensajes, Publicar y Mis publicaciones, en la pantalla de cada apartado antes de iniciar sesión. El chat se presenta para compradores y vendedores, sin exigir compartir teléfono. Publicar presenta artículos sin uso, ropa y emprendimientos sujetos al reglamento. Mis publicaciones presenta la administración de los artículos propios. Cada introducción conserva el acceso al login y su destino; con sesión se muestra la función real.
+
+
+## Nombres y perfil propio
+
+Por petición del propietario, cada estudiante UAT muestra sus propios nombres de pila e inicial del primer apellido en publicaciones y conversaciones cuando el portal separa esos campos. Al pulsar su nombre o icono de cuenta abre Mi perfil, donde puede consultar su nombre completo en un desplegable privado. El nombre completo se almacena por separado y no se envía a otros estudiantes. Las cuentas existentes actualizan los datos al volver a verificar el acceso UAT.

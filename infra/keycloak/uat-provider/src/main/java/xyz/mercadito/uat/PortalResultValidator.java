@@ -92,19 +92,21 @@ public final class PortalResultValidator {
                 String email = username.strip().contains("@")
                         ? "a" + matricula + "@alumnos.uat.edu.mx" : null;
                 String displayName = PortalDisplayName.from(raw);
+                String fullName = PortalDisplayName.fullName(raw);
                 JsonNode parameters = login.path("parametros");
                 JsonNode loginMatricula = parameters.path("Num_Matricula");
                 if (displayName == null && (loginMatricula.isMissingNode()
                         || ((loginMatricula.isTextual() || loginMatricula.isIntegralNumber())
                             && matricula.equals(loginMatricula.asText().strip())))) {
                     displayName = PortalDisplayName.from(parameters);
+                    fullName = PortalDisplayName.fullName(parameters);
                 }
                 if (displayName == null) {
                     LOG.warnf("UAT_CHECK display_name_missing career_schema=%s login_schema=%s career_name_fields=%s login_name_fields=%s",
                             schemaNames(raw), schemaNames(parameters),
                             raw.path("_name_fields").asText(""), parameters.path("_name_fields").asText(""));
                 }
-                return new VerifiedStudent(matricula, email, displayName);
+                return new VerifiedStudent(matricula, email, displayName, fullName);
             }
             if (!situations.isEmpty() && Set.of("INACTIVO", "BAJA", "EGRESADO").containsAll(situations)) {
                 inactivePlan = true;

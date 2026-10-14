@@ -3,15 +3,17 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import test from "node:test";
 import ts from "typescript";
-import { uatDisplayName } from "../src/features/auth/lib/uat-display-name.ts";
+import { uatDisplayName, uatPrivateName } from "../src/features/auth/lib/uat-display-name.ts";
 
 function setup({ status = "ACTIVE", name = "Estudiante UAT", session = null } = {}) {
   let config;
   const updates = [];
+  const privateWrites = [];
   const university = { id: "uat-id", slug: "uat", status: "ACTIVE", isDemo: false };
   const localUser = { id: "local-user", name, universityId: university.id, role: "STUDENT", status, isDemo: false, university };
   const prisma = {
-    user: { findUnique: async () => localUser, update: async (value) => { updates.push(value); return { ...localUser, ...value.data }; } },
+    studentPrivateProfile: { upsert: async (value) => { privateWrites.push(value); } },
+    user: { findFirst: async () => status === "ACTIVE" ? { id: "local-user" } : null, findUnique: async () => localUser, update: async (value) => { updates.push(value); return { ...localUser, ...value.data }; } },
     account: { findUnique: async () => ({ userId: "local-user" }) },
   };
   const modules = {
@@ -21,12 +23,12 @@ function setup({ status = "ACTIVE", name = "Estudiante UAT", session = null } = 
     "@/lib/prisma": { prisma },
     "@/features/auth/lib/university-identity": { resolveActiveStudent: async () => university },
     "@/features/community/lib/active-community": { activeUniversitySlug: "uat" },
-    "@/features/auth/lib/uat-display-name": { uatDisplayName },
+    "@/features/auth/lib/uat-display-name": { uatDisplayName, uatPrivateName },
   };
   const source = readFileSync(new URL("../src/features/auth/auth.ts", import.meta.url), "utf8");
   const output = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
   vm.runInNewContext(output, { exports: {}, require: (key) => { assert.ok(modules[key], key); return modules[key]; }, process: { env: { AUTH_KEYCLOAK_ID: "fixture", AUTH_KEYCLOAK_SECRET: "fixture", AUTH_KEYCLOAK_ISSUER: "https://fixture.test" } } });
-  return { config, updates, university };
+  return { config, updates, university, privateWrites };
 }
 
 function signInInput(claim = "María L.") {
@@ -59,4 +61,17 @@ test("new UAT profile uses only the reduced claim and does not accept full profi
   assert.equal(profile.email, null);
   const unknown = await config.providers[0].profile({ sub: "portal-subject", name: "Unverified Full Name" });
   assert.equal(unknown.name, "Estudiante UAT");
+});
+
+
+test("private name is stored only for its linked local account", async () => {
+  const { config, privateWrites } = setup();
+  const input = signInInput("María Isabel L.");
+  input.profile.uat_private_name = "María Isabel López García";
+  await config.events.signIn(input);
+  assert.equal(privateWrites.length, 1);
+  assert.equal(privateWrites[0].where.userId, "local-user");
+  assert.equal(privateWrites[0].create.fullName, "María Isabel López García");
+  await config.events.signIn({ ...input, user: { id: "another-user" } });
+  assert.equal(privateWrites.length, 1);
 });
