@@ -13,6 +13,8 @@ RUN /opt/keycloak/bin/kc.sh build
 
 FROM quay.io/keycloak/keycloak:26.7.4
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
+# El tema va después de copiar /opt/keycloak para que no lo sobrescriba.
+COPY --chown=1000:0 themes/mercadito/ /opt/keycloak/themes/mercadito/
 ENV KC_DB=postgres
 ENV KC_HEALTH_ENABLED=true
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
