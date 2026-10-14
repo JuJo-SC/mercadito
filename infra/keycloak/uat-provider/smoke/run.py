@@ -45,7 +45,8 @@ with tempfile.TemporaryDirectory(prefix=PREFIX + "-") as temporary:
                           "secret": "fixture-client-secret", "attributes": {"login_theme": "mercadito-uat"}, "standardFlowEnabled": True, "directAccessGrantsEnabled": False,
                           "redirectUris": ["http://app.test/callback"], "defaultClientScopes": [], "optionalClientScopes": [],
                           "protocolMappers": [mapper("uat-university", "university_id", "String"),
-                                              mapper("uat-student", "uat_student_verified", "boolean")]}]}
+                                              mapper("uat-student", "uat_student_verified", "boolean"),
+                                              mapper("uat-display-name", "uat_display_name", "String")]}]}
     realm_file = root / "realm.json"
     realm_file.write_text(json.dumps(realm), encoding="utf-8")
     try:

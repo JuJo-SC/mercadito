@@ -80,3 +80,6 @@ Las verificaciones y los límites del cambio están en [verificacion-mensajes-pu
 infra/keycloak/uat-provider contiene el autenticador, el cliente HTTP, el validador de matrícula/situación, el formulario y las pruebas aisladas. infra/uat reúne configuración operativa, la definición del gateway privado y la compilación candidata. El código del scraper privado permanece fuera de este repositorio, en /srv/apps/scrap-uat-service.
 
 features/auth/lib/uat-access.ts centraliza el cierre por defecto del acceso UAT; los claims, el acceso estudiantil y la página de ingreso respetan esa configuración. UAT es la comunidad activa del piloto y solo admite las matrículas autorizadas en la configuración externa de Keycloak. UMAN conserva sus datos, realm y cliente originales. Consultar [integracion-uat.md](integracion-uat.md) para administrar participantes y revisar los pendientes antes de ampliar el acceso.
+
+
+`infra/keycloak/uat-provider/PortalDisplayName` reduce el nombre del portal validado a un nombre y una inicial antes de emitir `uat_display_name`. `features/auth/lib/uat-display-name.ts` valida ese claim específico; Auth.js guarda y actualiza el nombre abreviado que ya consumen cuenta, publicaciones y conversaciones. Consultar la política y las verificaciones en [integracion-uat.md](integracion-uat.md#nombre-del-estudiante-verificado).

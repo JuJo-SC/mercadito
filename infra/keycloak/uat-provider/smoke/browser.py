@@ -110,6 +110,9 @@ else:
         identity = claims(tokens["id_token"])
         assert identity["university_id"] == "uat"
         assert identity["uat_student_verified"] is True
+        assert identity["uat_display_name"] == "María L."
+        assert not any(value in json.dumps(identity, ensure_ascii=False) for value in ("ISABEL", "LÓPEZ", "GARCÍA"))
+        assert "name" not in identity and "given_name" not in identity and "family_name" not in identity
         assert "preferred_username" not in identity and "email" not in identity
         assert "000123" not in json.dumps(identity)
         subjects.append(identity["sub"])
@@ -118,11 +121,12 @@ else:
             userinfo = json.load(response)
             assert userinfo["sub"] == identity["sub"]
             assert userinfo["university_id"] == "uat" and userinfo["uat_student_verified"] is True
+            assert userinfo["uat_display_name"] == "María L."
     assert subjects[0] == subjects[1], "Repeated portal login changed the OIDC subject"
 
     inactive = authenticate("000124").read().decode()
     invalid = authenticate("000125").read().decode()
-    assert "No encontramos un programa UAT" in inactive
+    assert "El portal UAT indica baja, inactividad o egreso" in inactive
     assert "El portal UAT rechazó el acceso" in invalid
 
     admin_body = urllib.parse.urlencode({"grant_type": "password", "client_id": "admin-cli",

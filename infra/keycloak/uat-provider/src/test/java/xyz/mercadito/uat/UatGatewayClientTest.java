@@ -124,6 +124,17 @@ class UatGatewayClientTest {
         denied(UatVerificationException.Reason.UNAVAILABLE);
     }
 
+    @Test void acceptsLargeUnusedPortalFieldsWithoutChangingIdentityChecks() throws Exception {
+        String large = "x".repeat(2 * 1_048_576);
+        response = "{\"source\":\"UAT\",\"authenticated\":true,"
+                + "\"login\":{\"exito\":true,\"cambiaPass\":false,\"parametros\":{\"extra\":\"" + large + "\"}},"
+                + "\"programs\":[{\"raw\":{\"Num_Matricula\":\"00123\",\"Situacion\":\"ACTIVO\",\"Foto\":\"" + large + "\"}}]}";
+        var student = new UatGatewayClient(base, "test-key").verify("00123", "test-password");
+        assertEquals("00123", student.matricula());
+        response = response.replace("\"Num_Matricula\":\"00123\"", "\"Num_Matricula\":\"99999\"");
+        denied(UatVerificationException.Reason.UNAVAILABLE);
+    }
+
     @Test void enforcesWholeRequestTimeout() {
         delay = 250;
         var error = assertThrows(UatVerificationException.class,

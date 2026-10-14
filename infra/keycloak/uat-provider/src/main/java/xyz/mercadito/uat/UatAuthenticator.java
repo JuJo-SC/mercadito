@@ -138,6 +138,9 @@ public final class UatAuthenticator implements Authenticator {
             context.setUser(user);
             context.getAuthenticationSession().setUserSessionNote("university_id", "uat");
             context.getAuthenticationSession().setUserSessionNote("uat_student_verified", "true");
+            if (identity.displayName() != null) {
+                context.getAuthenticationSession().setUserSessionNote("uat_display_name", identity.displayName());
+            }
             context.success(PasswordCredentialModel.TYPE);
         } catch (UatVerificationException error) {
             if (existing != null) context.getEvent().user(existing);
@@ -178,6 +181,11 @@ public final class UatAuthenticator implements Authenticator {
                 message = "uatInactiveStudent";
                 flowError = AuthenticationFlowError.INVALID_USER;
                 context.getEvent().error(Errors.USER_DISABLED);
+            }
+            case UNCONFIRMED_STATUS -> {
+                message = "uatUnconfirmedStatus";
+                flowError = AuthenticationFlowError.INVALID_USER;
+                context.getEvent().error(Errors.GENERIC_AUTHENTICATION_ERROR);
             }
             default -> {
                 message = "uatUnavailable";

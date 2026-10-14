@@ -21,7 +21,9 @@ import java.util.concurrent.TimeoutException;
 
 public final class UatGatewayClient implements UatVerifier {
     private static final Logger LOG = Logger.getLogger(UatGatewayClient.class);
-    static final int MAX_RESPONSE_BYTES = 1_048_576;
+    // Gateway responses may include large, unused portal fields (for example images).
+    // Bound transport separately from the small evidence retained by PortalResponseReader.
+    static final int MAX_RESPONSE_BYTES = 32 * 1_048_576;
     private final HttpClient http;
     private final URI endpoint;
     private final String apiKey;
@@ -144,6 +146,11 @@ public final class UatGatewayClient implements UatVerifier {
         public void onError(Throwable error) { result.completeExceptionally(error); }
 
         @Override
-        public void onComplete() { result.complete(output.toByteArray()); }
+        public void onComplete() {
+            if (output.size() > 1_048_576) {
+                LOG.warnf("UAT_CHECK gateway_large_response bytes=%d", output.size());
+            }
+            result.complete(output.toByteArray());
+        }
     }
 }
