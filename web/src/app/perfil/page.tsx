@@ -24,6 +24,11 @@ export default async function ProfilePage() {
         <p className="profile-display-name">{student.name ?? "Estudiante"}</p>
         <p>Este nombre identifica tus publicaciones y tus conversaciones.</p>
       </section>
+      <section aria-labelledby="profile-faculty">
+        <h2 id="profile-faculty">Facultad</h2>
+        <p>{student.facultyName ?? "Pendiente de actualizar desde UAT. Cierra sesión y vuelve a entrar para consultar este dato."}</p>
+        <p>Se muestra junto a tus publicaciones para orientar a los compradores.</p>
+      </section>
       <section aria-labelledby="profile-private-name">
         <h2 id="profile-private-name">Solo para ti</h2>
         {fullName ? <details className="profile-private-details">

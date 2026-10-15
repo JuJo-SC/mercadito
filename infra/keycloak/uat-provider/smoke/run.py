@@ -47,7 +47,8 @@ with tempfile.TemporaryDirectory(prefix=PREFIX + "-") as temporary:
                           "protocolMappers": [mapper("uat-university", "university_id", "String"),
                                               mapper("uat-student", "uat_student_verified", "boolean"),
                                               mapper("uat-display-name", "uat_display_name", "String"),
-                                              mapper("uat-private-name", "uat_private_name", "String")]}]}
+                                              mapper("uat-private-name", "uat_private_name", "String"),
+                                              mapper("uat-faculty", "uat_faculty_name", "String")]}]}
     realm_file = root / "realm.json"
     realm_file.write_text(json.dumps(realm), encoding="utf-8")
     try:

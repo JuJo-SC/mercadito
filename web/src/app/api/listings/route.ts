@@ -138,7 +138,7 @@ export async function GET(request: Request) {
       photos: { select: { position: true }, orderBy: { position: "asc" } },
       isDemo: true,
       createdAt: true,
-      seller: { select: { id: true, name: true } },
+      seller: { select: { id: true, name: true, facultyName: true } },
     },
   });
 

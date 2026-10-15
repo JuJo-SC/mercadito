@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import test from "node:test";
 import ts from "typescript";
+import { uatFaculty } from "../src/features/auth/lib/uat-faculty.ts";
 import { uatDisplayName, uatPrivateName } from "../src/features/auth/lib/uat-display-name.ts";
 
 function setup({ status = "ACTIVE", name = "Estudiante UAT", session = null } = {}) {
@@ -23,6 +24,7 @@ function setup({ status = "ACTIVE", name = "Estudiante UAT", session = null } = 
     "@/lib/prisma": { prisma },
     "@/features/auth/lib/university-identity": { resolveActiveStudent: async () => university },
     "@/features/community/lib/active-community": { activeUniversitySlug: "uat" },
+    "@/features/auth/lib/uat-faculty": { uatFaculty },
     "@/features/auth/lib/uat-display-name": { uatDisplayName, uatPrivateName },
   };
   const source = readFileSync(new URL("../src/features/auth/auth.ts", import.meta.url), "utf8");
@@ -74,4 +76,17 @@ test("private name is stored only for its linked local account", async () => {
   assert.equal(privateWrites[0].create.fullName, "María Isabel López García");
   await config.events.signIn({ ...input, user: { id: "another-user" } });
   assert.equal(privateWrites.length, 1);
+});
+
+
+test("faculty updates the verified local seller and unknown faculty preserves the previous value", async () => {
+  const { config, updates } = setup();
+  const input = signInInput();
+  input.profile.uat_faculty_name = "Facultad de Enfermería";
+  assert.equal(await config.callbacks.signIn(input), true);
+  assert.equal(updates[0].where.id, "local-user");
+  assert.equal(updates[0].data.facultyName, "Facultad de Enfermería");
+  const next = setup({ name: "María L." });
+  assert.equal(await next.config.callbacks.signIn(signInInput()), true);
+  assert.equal(next.updates.length, 0);
 });

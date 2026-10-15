@@ -30,7 +30,7 @@ export default async function MarketplacePage() {
     photos: { select: { position: true }, orderBy: { position: "asc" as const } },
     isDemo: true,
     createdAt: true,
-    seller: { select: { id: true, name: true } },
+    seller: { select: { id: true, name: true, facultyName: true } },
     _count: { select: { conversations: true } },
   };
 

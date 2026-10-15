@@ -1,0 +1,1 @@
+ALTER TABLE "User" ADD COLUMN "facultyName" VARCHAR(180);

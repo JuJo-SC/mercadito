@@ -3,6 +3,7 @@ import Keycloak from "next-auth/providers/keycloak";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { resolveActiveStudent } from "@/features/auth/lib/university-identity";
+import { uatFaculty } from "@/features/auth/lib/uat-faculty";
 import { uatDisplayName, uatPrivateName } from "@/features/auth/lib/uat-display-name";
 import { activeUniversitySlug } from "@/features/community/lib/active-community";
 
@@ -45,6 +46,7 @@ const providers = keycloakConfigured
               ? uatDisplayName(profile) ?? "Estudiante UAT"
               : typeof profile.name === "string" ? profile.name : fullName || null,
             email,
+            facultyName: university.slug === "uat" ? uatFaculty(profile) : null,
             image:
               typeof profile.picture === "string" ? profile.picture : null,
             universityId: university.id,
@@ -143,9 +145,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         !localUser.university.isDemo
       );
       const displayName = currentUniversity.slug === "uat" ? uatDisplayName(identityProfile) : null;
-      if (allowed && displayName && localUser.name !== displayName) {
-        await prisma.user.update({ where: { id: localUser.id }, data: { name: displayName } });
-        user.name = displayName;
+      const facultyName = currentUniversity.slug === "uat" ? uatFaculty(identityProfile) : null;
+      const updates = {
+        ...(displayName && localUser.name !== displayName ? { name: displayName } : {}),
+        ...(facultyName && localUser.facultyName !== facultyName ? { facultyName } : {}),
+      };
+      if (allowed && Object.keys(updates).length) {
+        await prisma.user.update({ where: { id: localUser.id }, data: updates });
+        if (displayName) user.name = displayName;
       }
       return allowed;
     },

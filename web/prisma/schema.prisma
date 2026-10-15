@@ -97,6 +97,7 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
+  facultyName   String?   @db.VarChar(180)
   emailVerified DateTime?
   image         String?
   universityId  String

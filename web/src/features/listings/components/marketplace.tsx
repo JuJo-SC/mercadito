@@ -37,7 +37,7 @@ type MarketplaceListing = {
   imageUrls: string[];
   isDemo: boolean;
   createdAt: string;
-  seller: { id: string; name: string | null };
+  seller: { id: string; name: string | null; facultyName?: string | null };
 };
 
 type MarketplaceProps = {
@@ -729,6 +729,10 @@ export function Marketplace({
                 <div>
                   <dt>Fecha de publicación</dt>
                   <dd>{formatListingDate(selectedListing.createdAt)}</dd>
+                </div>
+                <div>
+                  <dt>Facultad</dt>
+                  <dd>{selectedListing.seller.facultyName ?? "Por confirmar"}</dd>
                 </div>
               </dl>
               {selectedListing.isDemo ? (

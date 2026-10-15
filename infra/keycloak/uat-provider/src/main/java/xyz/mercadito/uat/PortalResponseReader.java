@@ -93,8 +93,12 @@ final class PortalResponseReader {
                 String schema = raw.path("_name_fields").asText("");
                 if (schema.length() < 400) raw.put("_name_fields", schema.isEmpty() ? name : schema + "," + name);
             }
+            if (depth == 0 && name.matches("(?i)[A-Za-z0-9_]*(?:des|facul|depend|escuela|unidad)[A-Za-z0-9_]*")) {
+                String schema = raw.path("_faculty_fields").asText("");
+                if (schema.length() < 400) raw.put("_faculty_fields", schema.isEmpty() ? name : schema + "," + name);
+            }
             if ((depth == 0 && "Num_Matricula".equals(name)) || PortalResultValidator.recognizedField(name)
-                    || (depth == 0 && PortalDisplayName.recognizedField(name))) {
+                    || (depth == 0 && (PortalDisplayName.recognizedField(name) || PortalFaculty.recognizedField(name)))) {
                 raw.set(name, scalar(parser));
             } else if (parser.currentToken() == JsonToken.START_OBJECT && depth < 3) {
                 JsonNode nested = rawCareer(parser, depth + 1);

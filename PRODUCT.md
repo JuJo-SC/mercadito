@@ -89,3 +89,8 @@ Corregido por petición del propietario: el lateral de la portada debe conservar
 ## Nombres y perfil propio
 
 Por petición del propietario, cada estudiante UAT muestra sus propios nombres de pila e inicial del primer apellido en publicaciones y conversaciones cuando el portal separa esos campos. Al pulsar su nombre o icono de cuenta abre Mi perfil, donde puede consultar su nombre completo en un desplegable privado. El nombre completo se almacena por separado y no se envía a otros estudiantes. Las cuentas existentes actualizan los datos al volver a verificar el acceso UAT.
+
+
+## Facultad en publicaciones
+
+Cada publicación muestra la facultad del vendedor obtenida de su programa UAT verificado. Es un dato público dentro de la comunidad, actualizado al revalidar la cuenta, y orienta a compradores sin fijar automáticamente el lugar de entrega. Ante ausencia de información aparece Por confirmar.

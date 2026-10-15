@@ -167,3 +167,8 @@ Mercadito pertenece a una universidad activa. Las cuentas UMAN son sintéticas p
 ## Mi perfil
 
 La cuenta de la cabecera es un enlace a /perfil: muestra el nombre público en escritorio y conserva un icono con etiqueta accesible en móvil. La página sigue el marco compartido y separa «Así te ven los demás» de «Solo para ti». Un desplegable nativo permite consultar el nombre completo sin añadir un modal. La página usa el mismo verde, foco azul, tipografía y controles de al menos 44px; los nombres largos ajustan líneas dentro del contenido.
+
+
+## Facultad del vendedor
+
+La cuadrícula de datos de la ficha conserva Condición y Publicado por en su primera fila. Fecha de publicación y Facultad ocupan la segunda fila. Se reutilizan tipografía, espaciado y adaptación existentes; la facultad pertenece al autor y muestra Por confirmar cuando falta el dato.

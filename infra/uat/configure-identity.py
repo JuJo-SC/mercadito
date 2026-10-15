@@ -141,6 +141,7 @@ def main():
             note_mapper("uat-student-session", "uat_student_verified", "boolean"),
             note_mapper("uat-display-name-session", "uat_display_name", "String"),
             note_mapper("uat-private-name-session", "uat_private_name", "String"),
+            note_mapper("uat-faculty-session", "uat_faculty_name", "String"),
         ],
     }
     if clients:
@@ -157,7 +158,7 @@ def main():
                 raise RuntimeError("El cliente UAT difiere en " + name + ".")
         expected = {(mapper["name"], mapper["protocolMapper"]): mapper["config"] for mapper in config["protocolMappers"]}
         actual = {(mapper["name"], mapper["protocolMapper"]): mapper["config"] for mapper in client.get("protocolMappers", [])}
-        name_key = ("uat-private-name-session", "oidc-usersessionmodel-note-mapper")
+        name_key = ("uat-faculty-session", "oidc-usersessionmodel-note-mapper")
         if actual == {key: value for key, value in expected.items() if key != name_key}:
             request(endpoint + "/clients/" + client["id"] + "/protocol-mappers/models",
                     method="POST", token=token, body=config["protocolMappers"][-1])

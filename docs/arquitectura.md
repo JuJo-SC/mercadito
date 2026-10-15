@@ -86,3 +86,6 @@ features/auth/lib/uat-access.ts centraliza el cierre por defecto del acceso UAT;
 
 
 `StudentPrivateProfile` conserva el nombre completo separado de `User.name`, que sigue siendo la presentación pública. `features/auth/lib/private-profile.ts` obtiene solo el perfil propio mediante la sesión; `/perfil` muestra el nombre público y permite desplegar el completo. Las consultas de vendedores y conversaciones no seleccionan la relación privada. `infra/uat/test-private-profile.py` comprueba aislamiento y presentación con dos sesiones ficticias, migraciones y contenedores temporales.
+
+
+`PortalFaculty` extrae la facultad del programa validado; el claim `uat_faculty_name` se valida en `features/auth/lib/uat-faculty.ts` y se sincroniza en `User.facultyName`. Las consultas del catálogo seleccionan la facultad del vendedor para la ficha de publicación. El nombre completo sigue aislado en `StudentPrivateProfile`.
