@@ -92,3 +92,8 @@ features/auth/lib/uat-access.ts centraliza el cierre por defecto del acceso UAT;
 
 
 `features/conversations/lib/submit-message-on-enter.ts` comparte el manejo de teclado entre `start-conversation-form.tsx` y `message-thread.tsx`. Usa `requestSubmit()` para conservar validación y el flujo de envío existente; ignora composición, repetición, texto vacío y solicitudes pendientes. Ver [verificacion-envio-enter.md](verificacion-envio-enter.md).
+
+
+## Pantalla de acceso
+
+`app/ingresar/page.tsx` conserva la acción de autenticación, la validación de returnTo y las condiciones de sesión, disponibilidad y privacidad. `app/ingresar/sign-in.css`, importado por esa ruta, centra la tarjeta de acceso y limita sus estilos a las clases sign-in. Ver [verificacion-acceso-centrado.md](verificacion-acceso-centrado.md).

@@ -99,3 +99,8 @@ Cada publicación muestra la facultad del vendedor obtenida de su programa UAT v
 ## Envío de mensajes con teclado
 
 Desde una publicación y dentro de una conversación, Enter envía el mensaje y Shift+Enter inserta otra línea. Los campos muestran esta ayuda. Se conservan el botón de envío, el límite de 2,000 caracteres y la protección de reintentos.
+
+
+## Pantalla de acceso institucional
+
+Por petición del propietario, /ingresar usa una explicación breve y genérica: iniciar sesión con la cuenta institucional para explorar, publicar y conversar. El título y el botón no mencionan una universidad específica. Conserva el acceso configurado, el aviso de privacidad, la condición de prueba cuando corresponda y los destinos de navegación validados.

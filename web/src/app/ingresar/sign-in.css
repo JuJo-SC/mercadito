@@ -1,0 +1,87 @@
+body:has(.app-header) .sign-in-page {
+  display: flex;
+  flex-direction: column;
+  padding-block: 24px;
+}
+
+.sign-in-content {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding-block: 32px 56px;
+}
+
+.sign-in-card {
+  width: 100%;
+  max-width: 480px;
+  padding: clamp(24px, 4vw, 40px);
+  border-radius: 16px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.sign-in-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 20px;
+  border-radius: 14px;
+  background: var(--signal-soft);
+  color: var(--signal);
+}
+
+.sign-in-card h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.5rem, 3vw, 1.85rem);
+  font-weight: 680;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.sign-in-card > p {
+  margin: 14px auto 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.sign-in-card form,
+.sign-in-card > .button-ink {
+  margin-top: 24px;
+}
+
+.sign-in-card .button-ink {
+  width: 100%;
+  min-height: 48px;
+  justify-content: center;
+}
+
+.sign-in-card > .sign-in-privacy {
+  margin-top: 16px;
+  font-size: 0.82rem;
+}
+
+.sign-in-privacy a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--signal);
+  text-underline-offset: 3px;
+}
+
+.sign-in-card > .sign-in-test-note {
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--signal-soft);
+  color: var(--signal);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 767px) {
+  .sign-in-content { padding-block: 24px; }
+}
