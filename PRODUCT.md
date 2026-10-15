@@ -94,3 +94,8 @@ Por petición del propietario, cada estudiante UAT muestra sus propios nombres d
 ## Facultad en publicaciones
 
 Cada publicación muestra la facultad del vendedor obtenida de su programa UAT verificado. Es un dato público dentro de la comunidad, actualizado al revalidar la cuenta, y orienta a compradores sin fijar automáticamente el lugar de entrega. Ante ausencia de información aparece Por confirmar.
+
+
+## Envío de mensajes con teclado
+
+Desde una publicación y dentro de una conversación, Enter envía el mensaje y Shift+Enter inserta otra línea. Los campos muestran esta ayuda. Se conservan el botón de envío, el límite de 2,000 caracteres y la protección de reintentos.

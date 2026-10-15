@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { submitMessageOnEnter } from "@/features/conversations/lib/submit-message-on-enter";
 import Link from "next/link";
 import { ArrowRight, Send } from "lucide-react";
 
@@ -226,13 +227,18 @@ export function MessageThread({
           <textarea
             id="thread-message"
             name="body"
+            aria-describedby="thread-message-keyboard-help"
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={(event) => submitMessageOnEnter(event, sending)}
             placeholder="Escribe una pregunta o acuerda dónde encontrarse…"
             maxLength={2000}
             rows={2}
             required
           />
+          <p className="message-keyboard-hint" id="thread-message-keyboard-help">
+            Enter para enviar · Shift+Enter para otra línea
+          </p>
           <div className="thread-composer-foot">
             <p>Solo texto · {draft.length}/2,000</p>
             <button className="button-ink thread-send" type="submit" disabled={sending || !draft.trim()}>

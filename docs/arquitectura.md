@@ -89,3 +89,6 @@ features/auth/lib/uat-access.ts centraliza el cierre por defecto del acceso UAT;
 
 
 `PortalFaculty` extrae la facultad del programa validado; el claim `uat_faculty_name` se valida en `features/auth/lib/uat-faculty.ts` y se sincroniza en `User.facultyName`. Las consultas del catálogo seleccionan la facultad del vendedor para la ficha de publicación. El nombre completo sigue aislado en `StudentPrivateProfile`.
+
+
+`features/conversations/lib/submit-message-on-enter.ts` comparte el manejo de teclado entre `start-conversation-form.tsx` y `message-thread.tsx`. Usa `requestSubmit()` para conservar validación y el flujo de envío existente; ignora composición, repetición, texto vacío y solicitudes pendientes. Ver [verificacion-envio-enter.md](verificacion-envio-enter.md).

@@ -172,3 +172,8 @@ La cuenta de la cabecera es un enlace a /perfil: muestra el nombre público en e
 ## Facultad del vendedor
 
 La cuadrícula de datos de la ficha conserva Condición y Publicado por en su primera fila. Fecha de publicación y Facultad ocupan la segunda fila. Se reutilizan tipografía, espaciado y adaptación existentes; la facultad pertenece al autor y muestra Por confirmar cuando falta el dato.
+
+
+## Teclado de mensajes
+
+El primer mensaje de una publicación y el compositor del hilo comparten Enter para enviar y Shift+Enter para otra línea. Una ayuda breve debajo del campo, enlazada mediante aria-describedby, comunica el atajo sin cambiar los botones ni el contador. La composición de caracteres conserva su comportamiento nativo.

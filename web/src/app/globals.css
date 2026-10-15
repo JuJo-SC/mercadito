@@ -3344,7 +3344,8 @@ select {
 }
 
 .thread-composer-foot p,
-.notice-contact-foot p {
+.notice-contact-foot p,
+.message-keyboard-hint {
   margin: 0;
   color: var(--muted);
   font-size: 0.76rem;

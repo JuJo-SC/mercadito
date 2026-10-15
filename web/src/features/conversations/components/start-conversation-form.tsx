@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { submitMessageOnEnter } from "@/features/conversations/lib/submit-message-on-enter";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Send } from "lucide-react";
@@ -90,6 +91,7 @@ export function StartConversationForm({
   }
 
   const limitId = `first-message-limit-${listingId}`;
+  const keyboardHelpId = `first-message-keyboard-help-${listingId}`;
 
   return (
     <form className="notice-contact-form" onSubmit={startConversation}>
@@ -97,14 +99,18 @@ export function StartConversationForm({
       <label htmlFor={`first-message-${listingId}`}>Primer mensaje para {sellerName}</label>
       <textarea
         id={`first-message-${listingId}`}
-        aria-describedby={limitId}
+        aria-describedby={`${limitId} ${keyboardHelpId}`}
         value={body}
         onChange={(event) => setBody(event.target.value)}
+        onKeyDown={(event) => submitMessageOnEnter(event, sending)}
         placeholder="¿Sigue disponible? ¿Podemos acordar un lugar para el intercambio?"
         maxLength={2000}
         rows={2}
         required
       />
+      <p className="message-keyboard-hint" id={keyboardHelpId}>
+        Enter para enviar · Shift+Enter para otra línea
+      </p>
       <div className="notice-contact-foot">
         <div className="notice-contact-meta">
           <p id={limitId}>{body.length}/2,000 caracteres</p>
