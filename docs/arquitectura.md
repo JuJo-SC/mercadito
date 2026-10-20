@@ -97,3 +97,9 @@ features/auth/lib/uat-access.ts centraliza el cierre por defecto del acceso UAT;
 ## Pantalla de acceso
 
 `app/ingresar/page.tsx` conserva la acción de autenticación, la validación de returnTo y las condiciones de sesión, disponibilidad y privacidad. `app/ingresar/sign-in.css`, importado por esa ruta, centra la tarjeta de acceso y limita sus estilos a las clases sign-in. Ver [verificacion-acceso-centrado.md](verificacion-acceso-centrado.md).
+
+## Publicaciones con sesión
+
+La portada pública solo consulta la configuración de comunidad, sin consultar publicaciones ni generar miniaturas. Se retiraron el componente y la consulta de vista previa. El catálogo y sus API conservan la validación de estudiante activo y campus; el detalle valida la sesión antes de consultar el artículo y no admite excepciones públicas por ser un campus de demostración. No se devuelve el campo heredado imageUrl: las fotos y miniaturas usan exclusivamente la ruta privada de fotos.
+
+Las respuestas de publicaciones usan private, no-store y Vary: Cookie. Next.js sirve las páginas dinámicas sin caché compartida. El service worker solo almacena offline.html, sin publicaciones ni imágenes privadas. Ver [verificacion-publicaciones-privadas.md](verificacion-publicaciones-privadas.md).

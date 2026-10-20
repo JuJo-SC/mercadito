@@ -12,7 +12,7 @@ import {
 
 export const runtime = "nodejs";
 
-const privateNoStore = { "Cache-Control": "private, no-store" };
+const privateNoStore = { "Cache-Control": "private, no-store", Vary: "Cookie" };
 
 function listingPhotoUrl(id: string, position: number) {
   return `/api/listings/${encodeURIComponent(id)}/photo?position=${position}`;
@@ -58,6 +58,7 @@ export async function GET(request: Request) {
   const where = {
     universityId: university.id,
     status: "PUBLISHED" as const,
+    ...(university.isTest ? {} : { isDemo: false }),
     ...(validCategory ? { category: category as ListingCategory } : {}),
     ...(query
       ? {
@@ -134,7 +135,6 @@ export async function GET(request: Request) {
       currency: true,
       category: true,
       condition: true,
-      imageUrl: true,
       photos: { select: { position: true }, orderBy: { position: "asc" } },
       isDemo: true,
       createdAt: true,

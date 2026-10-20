@@ -17,7 +17,7 @@ export default async function MarketplacePage() {
   });
   if (!university) redirect("/ingresar");
 
-  const where = { universityId: university.id, status: "PUBLISHED" as const };
+  const where = { universityId: university.id, status: "PUBLISHED" as const, ...(university.isTest ? {} : { isDemo: false }) };
   const listingSelect = {
     id: true,
     title: true,
@@ -26,7 +26,6 @@ export default async function MarketplacePage() {
     currency: true,
     category: true,
     condition: true,
-    imageUrl: true,
     photos: { select: { position: true }, orderBy: { position: "asc" as const } },
     isDemo: true,
     createdAt: true,

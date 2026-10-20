@@ -111,7 +111,7 @@ La pila del sistema usa SF Pro en dispositivos Apple y sus equivalentes nativos 
 
 ## Catálogo
 
-La portada pública muestra una introducción compacta y una cuadrícula estática de hasta ocho productos: foto, precio y nombre. Mantiene las etiquetas de ejemplo y el acceso protegido; no muestra vendedores ni fotos originales. Las tarjetas llevan al inicio de sesión. El catálogo autenticado conserva búsqueda, categorías, orden y fichas completas. El precio precede visualmente al título, y la fotografía ocupa una superficie cuadrada con radio de 12px.
+La portada pública conserva la bienvenida, la explicación de uso y los botones de acceso, sin tarjetas, fotografías, títulos ni precios de publicaciones. El catálogo autenticado conserva búsqueda, categorías, orden y fichas completas. El precio precede visualmente al título, y la fotografía ocupa una superficie cuadrada con radio de 12px.
 
 En móvil, un botón verde de «Filtros» permanece fijo en el costado inferior derecho, incluso después de recorrer el catálogo. Abre un panel desde la derecha con búsqueda, categorías, orden y avisos completos. El panel tiene desplazamiento independiente y protege el foco mediante un diálogo nativo. Cerrar o Escape recupera la posición del catálogo; buscar o elegir «Ver productos» vuelve al inicio de los resultados. El contador indica filtros activos. El catálogo conserva una indicación breve de campus de prueba junto al total. En escritorio, los filtros se integran debajo de las cuatro tareas principales en el mismo lateral fijo de 280px (248px en tablet). Tienen desplazamiento independiente y dejan libre la identificación de comunidad al pie.
 

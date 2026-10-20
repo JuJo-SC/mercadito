@@ -31,7 +31,7 @@ const allowedTransitions: Record<ListingStatus, readonly ListingStatus[]> = {
 
 export const runtime = "nodejs";
 
-const privateNoStore = { "Cache-Control": "private, no-store" };
+const privateNoStore = { "Cache-Control": "private, no-store", Vary: "Cookie" };
 
 function listingPhotoUrl(id: string, position: number) {
   return `/api/listings/${encodeURIComponent(id)}/photo?position=${position}`;
@@ -64,12 +64,25 @@ export async function GET(
   _request: Request,
   context: RouteContext<"/api/listings/[id]">,
 ) {
+  const student = await getActiveStudent();
+  if (!student) {
+    return Response.json(
+      { error: "Inicia sesión con tu cuenta institucional." },
+      { status: 401, headers: privateNoStore },
+    );
+  }
+
   const { id } = await context.params;
   const listing = await prisma.listing.findFirst({
     where: {
       id,
       status: "PUBLISHED",
-      university: { status: "ACTIVE" },
+      universityId: student.universityId,
+      university: { status: "ACTIVE", isDemo: false },
+      OR: [
+        { isDemo: false },
+        { isDemo: true, university: { isTest: true } },
+      ],
     },
     select: {
       id: true,
@@ -80,7 +93,6 @@ export async function GET(
       currency: true,
       category: true,
       condition: true,
-      imageUrl: true,
       photos: { select: { position: true }, orderBy: { position: "asc" } },
       isDemo: true,
       createdAt: true,
@@ -94,16 +106,6 @@ export async function GET(
       { error: "No encontramos esta publicación." },
       { status: 404, headers: privateNoStore },
     );
-  }
-
-  if (!listing.university.isDemo) {
-    const student = await getActiveStudent();
-    if (!student || student.universityId !== listing.universityId) {
-      return Response.json(
-        { error: "No encontramos esta publicación." },
-        { status: 404, headers: privateNoStore },
-      );
-    }
   }
 
   const { photos, ...listingData } = listing;

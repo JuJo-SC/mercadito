@@ -3,8 +3,6 @@ import { ArrowRight } from "lucide-react";
 import { redirect } from "next/navigation";
 import { activeUniversityName, getActiveCommunity } from "@/features/community/lib/active-community";
 import { getActiveStudent } from "@/features/auth/lib/require-student";
-import { getLandingProducts } from "@/features/listings/lib/landing-products";
-import { LandingProducts } from "@/features/listings/components/landing-products";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +10,7 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const student = await getActiveStudent();
   if (student) redirect("/mercadito");
-  const [community, products] = await Promise.all([getActiveCommunity(), getLandingProducts()]);
+  const community = await getActiveCommunity();
 
   return (
     <>
@@ -29,7 +27,6 @@ export default async function Home() {
           </Link>
         </section>
 
-        <LandingProducts products={products} />
         </div>
 
         <section className="landing-how page-width" id="como-funciona" aria-labelledby="how-title">

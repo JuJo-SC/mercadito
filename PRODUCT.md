@@ -42,11 +42,11 @@ La pertenencia a una universidad define el acceso al mercadito de esa comunidad.
 - Apartar retira temporalmente el artículo del catálogo e impide iniciar nuevas conversaciones; los hilos existentes continúan abiertos. No reserva para una persona ni registra pagos. Quitar apartado vuelve al estado publicado.
 - Mensajes separa Ventas y Compras por el papel del estudiante como vendedor o comprador, aunque cambie el último emisor. La foto y el título del producto preceden al nombre de la otra persona; se conservan actividad, disponibilidad, Por responder/Esperando respuesta y mensajes sin leer.
 - El chat del MVP permite mensajes de texto entre estudiantes del mismo campus; no admite adjuntos.
-- Cada aviso puede incluir hasta cinco fotos JPG, PNG o WebP. Cada archivo de entrada pesa como máximo 8 MB; la suma de la carga no supera 20 MB. Las fotos se convierten a WebP de hasta 1280 px, con un objetivo de 700 KB y un límite de 1.2 MB por imagen, se guardan como filas vinculadas al aviso y sus originales solo se entregan a estudiantes activos del mismo campus; la portada puede mostrar miniaturas reducidas de anuncios publicados. El recorrido de demostración previsualiza las fotos, pero no guarda publicaciones.
+- Cada aviso puede incluir hasta cinco fotos JPG, PNG o WebP. Cada archivo de entrada pesa como máximo 8 MB; la suma de la carga no supera 20 MB. Las fotos se convierten a WebP de hasta 1280 px, con un objetivo de 700 KB y un límite de 1.2 MB por imagen, se guardan como filas vinculadas al aviso y sus originales solo se entregan a estudiantes activos del mismo campus; las miniaturas y los originales requieren sesión y autorización del mismo campus. El recorrido de demostración previsualiza las fotos, pero no guarda publicaciones.
 - Las fotos privadas requieren una sesión estudiantil activa del mismo campus. El vendedor puede ver las fotos de sus publicaciones en cualquier estado; un comprador con un hilo existente conserva la referencia visual cuando el artículo está apartado, vendido o archivado. Los resúmenes de conversaciones y publicaciones seleccionan solo la posición de la primera foto y construyen su URL; los bytes se solicitan al endpoint privado y no se envían en el resumen.
 - Si una navegación falla por red o disponibilidad, la PWA muestra una página estática; no almacena ni reenvía publicaciones, mensajes o datos privados.
 
-- Actualizado por petición del usuario: sin sesión se muestran nombre, precio y miniatura de hasta ocho productos publicados de la comunidad activa. Las tarjetas llevan al acceso; no se exponen vendedores, conversaciones ni fotos originales. Una cuenta estudiantil activa solo puede acceder si pertenece a la única universidad configurada. Los antiguos registros de demostración se conservan, pero no se exponen en el catálogo público.
+- Actualizado por petición del usuario: la portada pública conserva bienvenida y acceso, sin consultar ni mostrar publicaciones, fotos, títulos o precios. Toda publicación y sus fotos requieren una sesión estudiantil activa del campus configurado, incluso en comunidades y artículos de prueba.
 
 ## Evidence on Hand
 
@@ -58,7 +58,7 @@ Aún se necesita el aviso de privacidad aprobado por quien operará el servicio,
 
 ## Flujo del estudiante
 
-1. La portada pública presenta el mercadito de la universidad configurada y su condición de prueba cuando corresponde. Muestra una cuadrícula estática de hasta ocho productos publicados, con foto, precio y nombre. No ofrece integrar otras comunidades.
+1. La portada pública presenta el mercadito de la universidad configurada y su condición de prueba cuando corresponde. No consulta ni presenta publicaciones; invita a iniciar sesión. No ofrece integrar otras comunidades.
 2. Al iniciar sesión, Keycloak entrega los claims que permiten asociar la cuenta con la universidad activa configurada. Otra universidad se rechaza, incluso con claims válidos. El correo por sí solo no determina el campus.
 3. El alumno entra a /mercadito, donde ve el catálogo de su universidad, busca por texto o categoría y compara publicaciones.
 4. El catálogo empieza por publicaciones con más conversaciones iniciadas cuando hay actividad suficiente; si no, muestra las más recientes. Mercadito no procesa pagos.
