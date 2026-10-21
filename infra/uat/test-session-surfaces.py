@@ -75,15 +75,15 @@ try:
     '''
     docker("exec", database, "psql", "-U", "fixture", "-d", "mercadito", "-v", "ON_ERROR_STOP=1", "-c", sql)
     if check_details:
-        def image(color):
-            width = height = 400
+        def image(color, width=400, height=400):
             def chunk(kind, data):
                 return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data) & 0xffffffff)
             pixels = b"".join(b"\0" + bytes(color) * width for _ in range(height))
             return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)) + chunk(b"IDAT", zlib.compress(pixels)) + chunk(b"IEND", b"")
         values = []
-        for listing, position, color in [("shirt", 0, (41, 113, 86)), ("shirt", 1, (180, 203, 189)), ("shirt", 2, (200, 210, 190)), ("shirt", 3, (210, 220, 200)), ("shirt", 4, (220, 230, 210)), ("calculator", 0, (218, 221, 226))]:
-            values.append("('%s',%d,'image/png',400,400,decode('%s','hex'))" % (listing, position, image(color).hex()))
+        for listing, position, color in [("shirt", 0, (41, 113, 86)), ("shirt", 1, (180, 203, 189)), ("shirt", 2, (200, 210, 190)), ("shirt", 3, (210, 220, 200)), ("shirt", 4, (220, 230, 210)), ("calculator", 0, (218, 221, 226)), ("book", 0, (216, 196, 161))]:
+            width, height = (800, 400) if listing == "calculator" else (400, 800) if listing == "book" or position == 1 else (400, 400)
+            values.append("('%s',%d,'image/png',%d,%d,decode('%s','hex'))" % (listing, position, width, height, image(color, width, height).hex()))
         photos_sql = 'INSERT INTO "ListingPhoto" ("listingId",position,"mimeType",width,height,data) VALUES ' + ",".join(values)
         docker("exec", database, "psql", "-U", "fixture", "-d", "mercadito", "-v", "ON_ERROR_STOP=1", "-c", photos_sql)
     docker("run", "-d", "--name", web, "--network", network, "--network-alias", "web",

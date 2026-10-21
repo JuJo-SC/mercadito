@@ -33,3 +33,12 @@ La ficha pasó cinco variantes: escritorio, móvil de 390px, móvil de poca altu
 La revisión visual confirmó la ficha en escritorio y móvil. Se corrigió la interceptación del clic por la capa de las flechas; el cierre nativo se verifica esperando su evento y desmontaje. La fecha usa America/Mexico_City para mantener la misma representación entre servidor y navegador. El detector de diseño local no se ejecuta sobre el código porque este proyecto solo admite herramientas y pruebas en Oracle; se verificaron directamente contraste, foco, geometría, controles táctiles y movimiento reducido.
 
 La petición del propietario incluye aplicar los cambios a la web. El despliegue reemplaza únicamente el servicio web con la imagen candidata validada, sin migraciones ni cambios en las redes, secretos, Caddy o autenticación.
+
+
+## Corrección de fidelidad al ejemplo
+
+El propietario indicó que la ficha publicada dejaba demasiado espacio vacío y una foto pequeña. La versión anterior fijaba la foto móvil en 196px y forzaba una hoja de toda la altura de la pantalla. La corrección recupera la tarjeta acotada del ejemplo, deja que la altura dependa del contenido y adapta el ancho de la foto al espacio disponible. Conserva la reducción a 48px, la ampliación y el contenido aprobado. El escritorio conserva la presentación previa.
+
+La prueba añade imágenes de 800x400 y 400x800, además de las cuadradas, y comprueba el caso de una publicación propia sin formulario. Verifica que la ficha no reserve espacio vacío al final y que el marco de la foto aproveche el ancho del contenido. Los resultados de esta corrección se guardan en .opendesign/artifacts/photo-fidelity-fix/.
+
+Resultado de la corrección: lint, tipos, compilación, las 18 superficies/tamaños y las cinco variantes de ficha pasaron. La prueba adicional con foto vertical y publicación propia también pasó, sin espacio final forzado ni errores JavaScript. En 390px la foto dispone de un marco de 342px de ancho, frente a los 196px anteriores; se reduce hasta 48px y recupera su ancho al regresar arriba. Se mantienen HTTPS, restricciones anónimas y privacidad. El propietario confirmó que el problema era en el celular; el escritorio se conserva.

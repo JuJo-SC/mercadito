@@ -43,28 +43,32 @@ export function ListingDetailDialog({
     if (!scroll || !gallery || !hasPhotos) return;
     const mobile = window.matchMedia("(max-width: 760px)");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const initialHeight = multiplePhotos ? 284 : 220;
-    const distance = initialHeight - 72;
     let frame = 0;
 
-    // The reserved photo space stays fixed; only its overlay is clipped and scaled.
+    // Keep the scroll geometry fixed; resize only the isolated photo overlay.
+    // object-fit: contain preserves each real photo while its frame contracts.
     const paint = () => {
       frame = 0;
       if (!mobile.matches || reduced.matches) {
         gallery.style.removeProperty("--photo-collapse");
         gallery.style.removeProperty("--photo-x");
-        gallery.style.removeProperty("--photo-scale");
+        gallery.style.removeProperty("--photo-width");
+        gallery.style.removeProperty("--photo-height");
         gallery.style.removeProperty("--photo-context-opacity");
         delete gallery.dataset.collapsed;
         return;
       }
+      const initialHeight = gallery.clientHeight;
+      const initialWidth = Math.max(48, scroll.clientWidth - 24);
+      const imageHeight = initialHeight - 24;
+      const distance = Math.max(1, initialHeight - 72);
       const amount = Math.min(distance, Math.max(0, scroll.scrollTop));
       const progress = amount / distance;
-      const x = ((scroll.clientWidth - 196) / 2) * (1 - progress) + 16 * progress;
       gallery.style.setProperty("--photo-collapse", amount + "px");
-      gallery.style.setProperty("--photo-x", x + "px");
-      gallery.style.setProperty("--photo-scale", String(1 - (1 - 48 / 196) * progress));
-      gallery.style.setProperty("--photo-context-opacity", String(Math.max(0, (progress - .94) / .06)));
+      gallery.style.setProperty("--photo-x", (12 + 4 * progress) + "px");
+      gallery.style.setProperty("--photo-width", (initialWidth + (48 - initialWidth) * progress) + "px");
+      gallery.style.setProperty("--photo-height", (imageHeight + (48 - imageHeight) * progress) + "px");
+      gallery.style.setProperty("--photo-context-opacity", String(Math.max(0, (progress - .98) / .02)));
       gallery.dataset.collapsed = progress > .5 ? "true" : "false";
     };
     const schedule = () => {

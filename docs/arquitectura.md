@@ -114,6 +114,6 @@ Las respuestas de publicaciones usan private, no-store y Vary: Cookie. Next.js s
 
 features/listings/lib/listing-presentation.ts reúne el tipo de resumen, los nombres de condición y el formato de precio y fechas del catálogo. features/listings/components/listing-detail-dialog.tsx contiene la ficha, la galería y la ampliación de fotos; marketplace.tsx conserva búsqueda, paginación y selección. app/listing-detail.css, cargado después del sistema de sesión, limita los nuevos estilos a las tarjetas del catálogo y al detalle refinado.
 
-La animación transforma y recorta una superposición sobre un espacio reservado; el contenido mantiene su geometría. Los listeners se retiran al desmontar. La variante compact del formulario inicial cambia solo la presentación del contacto en la ficha. Las consultas, rutas de fotos, autorización y envío permanecen en sus módulos originales.
+La animación ajusta el marco de la foto y recorta una superposición sobre un espacio reservado; el contenido mantiene su geometría. Los listeners se retiran al desmontar. La variante compact del formulario inicial cambia solo la presentación del contacto en la ficha. Las consultas, rutas de fotos, autorización y envío permanecen en sus módulos originales.
 
 La prueba aislada infra/uat/check-listing-details.cjs reutiliza el entorno sintético de test-session-surfaces.py; las opciones MERCADITO_TEST_IMAGE, MERCADITO_TEST_OUTPUT y MERCADITO_CHECK_LISTING_DETAILS permiten seleccionar la imagen candidata, la carpeta de resultados y las fotos de prueba sin acceder a producción.

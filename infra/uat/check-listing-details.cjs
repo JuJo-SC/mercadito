@@ -24,10 +24,20 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   assert.equal(await dialog.locator('.notice-contact-form h3').count(),0);
   if(device==='desktop'||device==='mobile')await dialog.screenshot({path:'/out/detail-'+device+'-initial.png'});
   const scroll=dialog.locator('.listing-detail-scroll');
+  const initial=await dialog.evaluate(e=>{
+   const image=e.querySelector('.listing-detail-photo-button').getBoundingClientRect(),gallery=e.querySelector('.listing-detail-gallery'),region=e.querySelector('.listing-detail-scroll'),info=e.querySelector('.listing-detail-info');
+   return {width:image.width,height:image.height,galleryHeight:gallery.clientHeight,dialogHeight:e.getBoundingClientRect().height,dialogWidth:e.clientWidth,contentWidth:region.clientWidth,bottomGap:region.clientHeight-(info.getBoundingClientRect().bottom-region.getBoundingClientRect().top+region.scrollTop)};
+  });
+  if(device!=='desktop'){
+   assert.ok(initial.dialogHeight<=Math.min(560,viewport.height-24)+2,'The mobile sheet matches the bounded preview');
+   assert.ok(initial.width>=initial.contentWidth-26,'The photo uses the available width');
+   assert.ok(initial.bottomGap<=2,'No forced empty space below the content');
+  }
   const max=await scroll.evaluate(e=>e.scrollHeight-e.clientHeight);
-  await scroll.evaluate(e=>e.scrollTop=148);await page.waitForTimeout(80);
+  await scroll.evaluate((e,distance)=>e.scrollTop=distance,initial.galleryHeight-72);await page.waitForTimeout(80);
   const photoWidth=await dialog.locator('.listing-detail-photo-button').evaluate(e=>e.getBoundingClientRect().width);
-  const expected=device==='desktop'?null:motion==='reduce'?120:196-Math.min(148,max);
+  const progress=motion==='reduce'?0:Math.min(initial.galleryHeight-72,max)/(initial.galleryHeight-72);
+  const expected=device==='desktop'?null:initial.width+(48-initial.width)*progress;
   if(expected!==null)assert.ok(Math.abs(photoWidth-expected)<2,JSON.stringify({device,max,photoWidth,expected}));
   if(device!=='desktop'&&motion!=='reduce'){
    const overlay=await dialog.evaluate(e=>{const p=e.querySelector('.listing-detail-photo-button').getBoundingClientRect(),m=e.querySelector('.listing-detail-mini-context');return {opacity:Number(getComputedStyle(m).opacity),right:p.right,left:m.getBoundingClientRect().left}});
@@ -43,11 +53,11 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   assert.equal(await dialog.count(),1,'Escape closes only the enlarged photo');
   await scroll.evaluate(e=>e.scrollTop=0);await page.waitForTimeout(80);
   const restored=await dialog.locator('.listing-detail-photo-button').evaluate(e=>e.getBoundingClientRect().width);
-  if(device!=='desktop')assert.ok(Math.abs(restored-(motion==='reduce'?120:196))<2);
+  if(device!=='desktop')assert.ok(Math.abs(restored-initial.width)<2);
   await dialog.locator('.listing-detail-more summary').click();
   assert.equal(await dialog.locator('.listing-detail-more').evaluate(e=>e.open),true);
   const input=dialog.getByRole('textbox',{name:'Escribir a Carlos M.'});await input.fill('Hola');await input.press('Shift+Enter');await input.pressSequentially('Me interesa.');assert.ok((await input.inputValue()).includes('\n'));
-  await dialog.getByRole('button',{name:'Cerrar detalles',exact:true}).click();await page.waitForTimeout(50);
+  await dialog.getByRole('button',{name:'Cerrar detalles',exact:true}).click();await page.locator('.listing-detail-dialog').waitFor({state:'detached'});
   assert.equal(await page.locator('.listing-detail-dialog').count(),0);
   await page.getByRole('button',{name:/Ver publicación: Sudadera/}).click();await dialog.waitFor();
   await dialog.getByRole('button',{name:'Ver foto siguiente',exact:true}).click();
@@ -61,7 +71,17 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   assert.equal(await dialog.locator('.listing-detail-no-image').count(),1);
   assert.equal(await dialog.locator('.listing-detail-photo-button').count(),0);
   await page.keyboard.press('Escape');
-  results.push({device,maxScroll:max,photoWidth,restored,overflow,lightbox:true,multiplePhotos:true,noPhoto:true});
+  await page.locator('.listing-detail-dialog').waitFor({state:'detached'});
+  await page.getByRole('button',{name:/Ver publicación: Libro/}).click();await dialog.waitFor();
+  await dialog.locator('.listing-detail-photo-button img').evaluate(e=>e.decode());
+  if(device!=='desktop'){
+   const owner=await dialog.evaluate(e=>{const region=e.querySelector('.listing-detail-scroll'),info=e.querySelector('.listing-detail-info');return {gap:region.clientHeight-(info.getBoundingClientRect().bottom-region.getBoundingClientRect().top+region.scrollTop),height:e.getBoundingClientRect().height}});
+   assert.ok(owner.gap<=2,'Own listings must not force empty sheet space');
+   assert.ok(owner.height<=Math.min(560,viewport.height-24)+2);
+  }
+  if(device==='mobile')await dialog.screenshot({path:'/out/detail-mobile-portrait.png'});
+  await page.keyboard.press('Escape');
+  results.push({device,initial,maxScroll:max,photoWidth,restored,overflow,lightbox:true,multiplePhotos:true,noPhoto:true});
   await context.close();
  }
  assert.equal(errors.length,0,JSON.stringify(errors));fs.writeFileSync('/out/listing-details.json',JSON.stringify({results,errors},null,2));console.log(JSON.stringify({results,errors}));await browser.close();
