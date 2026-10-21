@@ -49,6 +49,7 @@ export function MessageThread({
   otherStudentName,
   listing,
   initialMessages,
+  testCampusName,
 }: {
   conversationId: string;
   currentUserId: string;
@@ -62,6 +63,7 @@ export function MessageThread({
     status: string;
   };
   initialMessages: ThreadMessage[];
+  testCampusName?: string;
 }) {
   const [messages, setMessages] = useState(initialMessages);
   const [draft, setDraft] = useState("");
@@ -182,27 +184,33 @@ export function MessageThread({
 
   return (
     <main className="message-thread-page page-width">
-      <Link className="back-link" href="/mensajes">
-        <ArrowRight aria-hidden="true" size={16} />
-        Volver a mensajes
-      </Link>
-      <div className="message-thread-heading">
-        <h1>Con {otherStudentName}</h1>
-        <p>Coordinen aquí los detalles del intercambio.</p>
-      </div>
-
-      <section className="thread-listing" aria-label="Producto de esta conversación">
-        <div className="thread-listing-copy">
-          <h2>{listing.title}</h2>
-          <p>{listing.condition} · {availabilityName(listing.status)}</p>
+      <div className="thread-overview">
+        {testCampusName ? <p className="task-page-test-note" role="note">Campus de prueba {testCampusName}. Usa solo mensajes ficticios.</p> : null}
+        <Link className="back-link" href="/mensajes">
+          <ArrowRight aria-hidden="true" size={16} />
+          Volver a mensajes
+        </Link>
+        <div className="message-thread-heading">
+          <h1>Con {otherStudentName}</h1>
+          <p>Coordinen aquí los detalles del intercambio.</p>
         </div>
-        <strong>{formatPrice(listing.price, listing.currency)}</strong>
-      </section>
 
-      <p className="thread-payment-note">
-        Mercadito facilita la coordinación, no recibe ni procesa pagos. Si ambas
-        personas lo deciden, pueden continuar por otro medio.
-      </p>
+        <section className="thread-listing" aria-label="Producto de esta conversación">
+          <div className="thread-listing-copy">
+            <h2>{listing.title}</h2>
+            <p>{listing.condition} · {availabilityName(listing.status)}</p>
+          </div>
+          <strong>{formatPrice(listing.price, listing.currency)}</strong>
+        </section>
+
+        <details className="thread-payment-help">
+          <summary>Información del intercambio</summary>
+          <p className="thread-payment-note">
+            Mercadito facilita la coordinación, no recibe ni procesa pagos. Si ambas
+            personas lo deciden, pueden continuar por otro medio.
+          </p>
+        </details>
+      </div>
 
       <section className="thread-exchange" aria-label={`Mensajes con ${otherStudentName}`}>
         <ol className="thread-messages" ref={messageListRef} aria-live="polite" aria-relevant="additions">
@@ -247,10 +255,6 @@ export function MessageThread({
             </button>
           </div>
         </form>
-        <Link className="thread-index-link" href="/mensajes">
-          Ir a la bandeja
-          <ArrowRight aria-hidden="true" size={16} />
-        </Link>
       </section>
     </main>
   );

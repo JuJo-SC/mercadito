@@ -52,13 +52,8 @@ export default async function ConversationPage({ params }: MessagePageProps) {
   return (
     <>
       <SiteHeader signedIn userName={student.name} universityName={student.university.name} unreadMessageCount={unreadMessageCount} excludeUnreadConversationId={conversation.id} />
-      {university?.isTest ? (
-        <p className="demo-banner page-width thread-test-note" role="note">
-          <span className="demo-mark" aria-hidden="true">P</span>
-          Campus de prueba {university.name}. Usa solo mensajes ficticios.
-        </p>
-      ) : null}
       <MessageThread
+        testCampusName={university?.isTest ? university.name : undefined}
         conversationId={conversation.id}
         currentUserId={student.id}
         otherStudentName={otherStudentName}

@@ -70,6 +70,7 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
       <main className="form-page page-width publish-page task-page">
         <TaskPageHeading
           title={demoMode ? "Probar publicación" : editRequested ? "Editar publicación" : "Publicar producto"}
+          description={editRequested ? "Actualiza los datos sin cambiar su disponibilidad." : "Fotos y detalles claros para encontrar a quien le sirva."}
           testCampus={Boolean(student && university?.isTest)}
           demo={demoMode}
         >

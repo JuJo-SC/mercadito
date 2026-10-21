@@ -153,9 +153,9 @@ Estas superficies extienden el mismo sistema claro, con superficies blancas, tip
 
 Mensajes abre en Ventas y permite cambiar a Compras mediante dos controles de al menos 44px, con selección y contadores visibles. Ventas reúne conversaciones donde el estudiante es vendedor; Compras, donde es comprador. El último emisor modifica «Por responder» o «Esperando respuesta», sin cambiar esa pertenencia. Cada sección conserva el orden por actividad reciente. La fila presenta foto y título antes del nombre de la otra persona, además de precio, último mensaje, actividad, disponibilidad y mensajes sin leer. En móvil la miniatura se reduce a 72px y la flecha se oculta para dar espacio al contenido.
 
-Mis publicaciones presenta la foto propia junto a estado, fecha, título, precio, categoría y condición. Las secciones aparecen en este orden: En venta (publicadas y apartadas), Borradores, Archivadas y Vendidas; las vacías se omiten. Las tarjetas forman una columna y pasan a dos desde 1200px. Editar y las acciones disponibles para cada estado se distribuyen en una cuadrícula de dos columnas, con controles de al menos 44px. Una respuesta correcta mueve la publicación a su grupo sin recargar; durante el guardado se indica actividad y un fallo conserva el estado anterior con su explicación.
+Mis publicaciones presenta la foto propia junto a estado, fecha, título, precio, categoría y condición. Las secciones aparecen en este orden: En venta (publicadas y apartadas), Borradores, Archivadas y Vendidas; las vacías se omiten. Cada grupo ocupa un panel blanco con filas separadas. Editar queda visible y Más acciones reúne los cambios de disponibilidad, con controles de al menos 44px. Una respuesta correcta mueve la publicación a su grupo sin recargar; durante el guardado se indica actividad y un fallo conserva el estado anterior con su explicación.
 
-Apartar pausa el catálogo y la apertura de nuevos hilos, mientras las conversaciones existentes continúan. No implica reserva para una persona ni pago. «Quitar apartado» vuelve a publicar el artículo. La explicación completa permanece en «Información» y el índice conserva una ayuda breve junto a las acciones.
+Apartar pausa el catálogo y la apertura de nuevos hilos, mientras las conversaciones existentes continúan. No implica reserva para una persona ni pago. «Quitar apartado» vuelve a publicar el artículo. La explicación completa permanece en «Información».
 
 ## Accesibilidad y adaptación
 
@@ -184,3 +184,12 @@ El primer mensaje de una publicación y el compositor del hilo comparten Enter p
 ## Acceso institucional
 
 /ingresar centra una tarjeta blanca de hasta 480px en el área disponible del marco de aplicación. Icono de candado, título, frase breve, botón de ancho completo y enlace de privacidad comparten el eje central. Se elimina la explicación repetida y el pie promocional de esta pantalla. Conserva colores, foco visible, navegación y áreas táctiles de al menos 44px. El contenido habla de cuenta institucional sin nombrar una universidad; el marco compartido conserva la comunidad configurada. En móvil, la tarjeta se adapta al ancho disponible y queda sobre la barra inferior.
+
+
+## Superficies con sesión aprobadas
+
+El diseño privado aprobado el 21 de octubre de 2026 prolonga el verde, los paneles blancos y el orden de la portada. `web/src/app/session-surfaces.css` se limita al marco autenticado. Los títulos y una descripción breve ocupan un panel; Información agrupa las explicaciones completas, con un icono de ayuda en móvil. Los avisos de prueba permanecen visibles. Los desplegables de ayuda y acciones cierran con Escape o al pulsar fuera.
+
+Explorar agrupa título y resultados; cada producto tiene una tarjeta y la explicación extensa de los filtros queda en Información del mercadito. Mensajes reúne selector y conversaciones en un panel. Publicar conserva sus tres pasos dentro de una superficie alineada con el título. Mis publicaciones conserva todos los estados y acciones en grupos de filas, sin repetir la descripción del producto. El perfil separa nombre público, facultad y nombre privado en paneles.
+
+El hilo agrupa producto, ayuda y aviso de pruebas sobre el intercambio; los mensajes desplazan dentro de su área y el compositor queda sobre la navegación móvil. La fotografía responde al cursor en 180 ms y la última burbuja aparece una vez en 180 ms. `prefers-reduced-motion` desactiva estos efectos. Las consultas, API, autorización y almacenamiento siguen usando la aplicación real, sin datos ni servicios de la maqueta.

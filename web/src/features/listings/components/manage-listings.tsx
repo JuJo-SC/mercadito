@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { DismissibleDetails } from "@/components/dismissible-details";
 import { useRef, useState } from "react";
-import { Archive, Check, Pencil, Bookmark, RotateCcw } from "lucide-react";
+import { Archive, Check, Pencil, Bookmark, RotateCcw, ChevronDown } from "lucide-react";
 import { ProductThumbnail } from "@/features/listings/components/product-thumbnail";
 
 type ListingStatus = "DRAFT" | "PUBLISHED" | "RESERVED" | "SOLD" | "ARCHIVED";
@@ -143,7 +144,6 @@ export function ManageListings({ initialListings }: { initialListings: ManagedLi
     <>
       <p className="seller-feedback" role="status" aria-live="polite" aria-atomic="true">{message}</p>
       {error ? <p className="seller-error" role="alert">{error}</p> : null}
-      <p className="seller-reservation-help">Apartar pausa la publicación mientras acuerdas la entrega. Puedes quitar el apartado cuando quieras.</p>
       {groups.map((group) => (
         <section className="seller-product-group" key={group.id} aria-labelledby={"seller-group-" + group.id}>
           <div className="seller-product-group-heading">
@@ -165,23 +165,27 @@ export function ManageListings({ initialListings }: { initialListings: ManagedLi
                     <p className="seller-product-meta">{categoryLabels[listing.category] ?? "Otros"} · {conditionLabels[listing.condition] ?? "Condición no especificada"}</p>
                   </div>
                 </div>
-                <p className="seller-product-description">{listing.description}</p>
                 <div className="seller-product-actions" role="group" aria-label={"Acciones para " + listing.title}>
                   <Link href={"/publicar?editar=" + encodeURIComponent(listing.id)} aria-label={"Editar contenido: " + listing.title}>
                     <Pencil aria-hidden="true" size={16} />Editar
                   </Link>
-                  {statusActions[listing.status].map((action) => {
-                    const Icon = action.status === "SOLD" ? Check : action.status === "RESERVED" ? Bookmark : action.status === "ARCHIVED" ? Archive : RotateCcw;
-                    return (
-                      <button key={action.status} type="button" disabled={pendingId !== null}
-                        className={action.status === "SOLD" || action.status === "PUBLISHED" ? "seller-action-primary" : ""}
-                        aria-label={action.label + ": " + listing.title}
-                        onClick={() => void changeStatus(listing, action.status)}>
-                        <Icon aria-hidden="true" size={16} />
-                        {pendingId === listing.id ? "Guardando…" : action.label}
-                      </button>
-                    );
-                  })}
+                  <DismissibleDetails className="seller-more-actions">
+                    <summary>Más acciones <ChevronDown size={15} aria-hidden="true" /></summary>
+                    <div className="seller-action-menu">
+                      {statusActions[listing.status].map((action) => {
+                        const Icon = action.status === "SOLD" ? Check : action.status === "RESERVED" ? Bookmark : action.status === "ARCHIVED" ? Archive : RotateCcw;
+                        return (
+                          <button key={action.status} type="button" disabled={pendingId !== null}
+                            className={action.status === "SOLD" || action.status === "PUBLISHED" ? "seller-action-primary" : ""}
+                            aria-label={action.label + ": " + listing.title}
+                            onClick={() => void changeStatus(listing, action.status)}>
+                            <Icon aria-hidden="true" size={16} />
+                            {pendingId === listing.id ? "Guardando…" : action.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </DismissibleDetails>
                 </div>
               </li>
             ))}

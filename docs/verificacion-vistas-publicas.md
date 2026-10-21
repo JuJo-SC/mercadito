@@ -19,4 +19,4 @@ Cambio aprobado por el propietario el 21 de octubre de 2026. La propuesta de Ope
 - No hubo solicitudes a /api/listings desde las vistas publicas. Sin sesion, /api/listings conserva respuesta 404 y /mercadito redirige con 307 al acceso.
 - DNS publico vigente, certificado HTTPS publico y de origen validos; Caddy valido sin cambios de configuracion.
 
-Las capturas y el registro detallado permanecen fuera de Git en .opendesign/artifacts/public-implementation/. La propuesta de las pantallas con sesion sigue pendiente de saldo y aprobacion; esta entrega solo aplica la parte publica ya aprobada.
+Las capturas y el registro detallado permanecen fuera de Git en .opendesign/artifacts/public-implementation/. Esta entrega original solo aplicó la parte pública. La integración posterior del diseño privado aprobado se documenta en [verificacion-vistas-con-sesion.md](verificacion-vistas-con-sesion.md).

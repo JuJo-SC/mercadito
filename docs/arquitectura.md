@@ -103,3 +103,8 @@ features/auth/lib/uat-access.ts centraliza el cierre por defecto del acceso UAT;
 La portada pública solo consulta la configuración de comunidad, sin consultar publicaciones ni generar miniaturas. Se retiraron el componente y la consulta de vista previa. El catálogo y sus API conservan la validación de estudiante activo y campus; el detalle valida la sesión antes de consultar el artículo y no admite excepciones públicas por ser un campus de demostración. No se devuelve el campo heredado imageUrl: las fotos y miniaturas usan exclusivamente la ruta privada de fotos.
 
 Las respuestas de publicaciones usan private, no-store y Vary: Cookie. Next.js sirve las páginas dinámicas sin caché compartida. El service worker solo almacena offline.html, sin publicaciones ni imágenes privadas. Ver [verificacion-publicaciones-privadas.md](verificacion-publicaciones-privadas.md).
+
+
+## Presentación autenticada
+
+`web/src/app/session-surfaces.css` extiende el sistema de superficies después del acceso. `components/task-page-heading.tsx` comparte título, descripción, ayuda y avisos; `components/dismissible-details.tsx` añade cierre por Escape y pulsación exterior al desplegable nativo. Los módulos de publicaciones y conversaciones conservan sus solicitudes y estado. Las pruebas aisladas y su ejecución están en [verificacion-vistas-con-sesion.md](verificacion-vistas-con-sesion.md).

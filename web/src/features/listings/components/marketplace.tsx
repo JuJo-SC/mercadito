@@ -395,16 +395,19 @@ export function Marketplace({
         </div>
       </div>
 
-      <p className="sort-context" aria-live="polite">
-        {sortMode === "INTEREST"
-          ? "Ordenados por conversaciones iniciadas; el contenido de los mensajes no se muestra."
-          : hasInterestSignals
-            ? "Ordenados por fecha de publicación."
-            : "Aún no hay suficiente actividad para marcar tendencias; mostramos lo más reciente."}
-      </p>
-      <p className="marketplace-sidebar-disclosure">
-        Pregunta por chat. La entrega y cualquier pago se acuerdan fuera de Mercadito.
-      </p>
+      <details className="filter-information">
+        <summary>Información del mercadito</summary>
+        <p className="sort-context" aria-live="polite">
+          {sortMode === "INTEREST"
+            ? "Ordenados por conversaciones iniciadas; el contenido de los mensajes no se muestra."
+            : hasInterestSignals
+              ? "Ordenados por fecha de publicación."
+              : "Aún no hay suficiente actividad para marcar tendencias; mostramos lo más reciente."}
+        </p>
+        <p className="marketplace-sidebar-disclosure">
+          Pregunta por chat. La entrega y cualquier pago se acuerdan fuera de Mercadito.
+        </p>
+      </details>
       <div className="marketplace-filter-actions">
         {hasActiveFilters ? (
           <button className="marketplace-filter-reset" type="button" onClick={clearFilters} disabled={loading}>

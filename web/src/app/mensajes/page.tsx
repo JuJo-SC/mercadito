@@ -31,7 +31,7 @@ export default async function MessagesPage() {
     <>
       <SiteHeader signedIn userName={student.name} universityName={student.university.name} unreadMessageCount={unreadMessageCount} />
       <main className="messages-page page-width task-page">
-        <TaskPageHeading title="Mensajes" testCampus={Boolean(university?.isTest)}>
+        <TaskPageHeading title="Mensajes" description="Retoma tus conversaciones y acuerda la entrega." testCampus={Boolean(university?.isTest)}>
           <p>Retoma cada intercambio desde la publicación que lo inició. Puedes coordinar aquí y decidir con la otra persona si continúan por otro medio.</p>
           {university?.isTest ? <p>Campus de prueba {university.name}. Escribe solo mensajes ficticios.</p> : null}
           <p>Mercadito no procesa ni resguarda pagos. Cualquier pago se acuerda fuera de la plataforma.</p>

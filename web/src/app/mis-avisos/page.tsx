@@ -1,7 +1,7 @@
 import { PublicFeatureIntro } from "@/components/public-feature-guide";
 import Link from "next/link";
 import { TaskPageHeading } from "@/components/task-page-heading";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getActiveStudent } from "@/features/auth/lib/require-student";
 import { countUnreadMessagesForStudent } from "@/features/conversations/lib/conversations";
@@ -58,10 +58,11 @@ export default async function MyListingsPage() {
       <main className="form-page page-width seller-page task-page">
         <TaskPageHeading
           title="Mis publicaciones"
+          description="Administra lo que ofreces y mantén su disponibilidad al día."
           testCampus={Boolean(student && university?.isTest)}
           actions={student ? (
-            <Link className="text-action task-page-new-listing" href="/publicar">
-              Publicar <ArrowRight aria-hidden="true" size={16} />
+            <Link className="button-ink task-page-new-listing" href="/publicar">
+              <Plus aria-hidden="true" size={16} /> Publicar
             </Link>
           ) : undefined}
         >
@@ -72,11 +73,7 @@ export default async function MyListingsPage() {
         </TaskPageHeading>
 
         {student ? (
-          <section className="seller-inventory" aria-labelledby="seller-inventory-title">
-            <div className="seller-inventory-heading">
-              <h2 id="seller-inventory-title">Publicaciones</h2>
-              <p>{listings.length} {listings.length === 1 ? "publicación" : "publicaciones"}</p>
-            </div>
+          <section className="seller-inventory" aria-label="Publicaciones propias">
             <ManageListings initialListings={serializedListings} />
           </section>
         ) : (
