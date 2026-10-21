@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { StartConversationForm } from "@/features/conversations/components/start-conversation-form";
+import { ListingDetailDialog } from "@/features/listings/components/listing-detail-dialog";
+import { conditionNames, formatListingDate, formatPrice, fullListingDate, type MarketplaceListing } from "@/features/listings/lib/listing-presentation";
 import type { FormEvent } from "react";
 import Link from "next/link";
 import {
@@ -9,10 +10,7 @@ import {
   ArrowRight,
 
   Camera,
-  ChevronLeft,
-  ChevronRight,
   Search,
-
   X,
 } from "lucide-react";
 
@@ -24,20 +22,6 @@ type University = {
   slug: string;
   isDemo: boolean;
   isTest: boolean;
-};
-
-type MarketplaceListing = {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  currency: string;
-  category: string;
-  condition: string;
-  imageUrls: string[];
-  isDemo: boolean;
-  createdAt: string;
-  seller: { id: string; name: string | null; facultyName?: string | null };
 };
 
 type MarketplaceProps = {
@@ -71,32 +55,6 @@ const categoryNames: Record<string, string> = {
   SERVICES: "Servicios",
   OTHER: "Otros",
 };
-
-const conditionNames: Record<string, string> = {
-  NEW: "Nuevo",
-  LIKE_NEW: "Como nuevo",
-  GOOD: "Buen estado",
-  FAIR: "Con detalles",
-};
-
-function formatPrice(price: number, currency: string) {
-  try {
-    return new Intl.NumberFormat("es-MX", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 2,
-    }).format(price);
-  } catch {
-    return "$" + price.toFixed(2);
-  }
-}
-
-function formatListingDate(value: string) {
-  return new Intl.DateTimeFormat("es-MX", {
-    day: "2-digit",
-    month: "short",
-  }).format(new Date(value)).replace(".", "");
-}
 
 export function Marketplace({
   university,
@@ -145,9 +103,7 @@ export function Marketplace({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const currentRequest = useRef<AbortController | null>(null);
-  const detailDialogRef = useRef<HTMLDialogElement>(null);
   const [selectedListing, setSelectedListing] = useState<MarketplaceListing | null>(null);
-  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
 
   useEffect(() => {
     if (!selectedListing && !filtersOpen) return;
@@ -309,17 +265,6 @@ export function Marketplace({
 
   function openListing(listing: MarketplaceListing) {
     setSelectedListing(listing);
-    setSelectedPhotoIndex(0);
-    if (detailDialogRef.current && !detailDialogRef.current.open) {
-      detailDialogRef.current.showModal();
-    }
-  }
-
-  function moveSelectedPhoto(direction: -1 | 1) {
-    if (!selectedListing || selectedListing.imageUrls.length < 2) return;
-    setSelectedPhotoIndex((current) =>
-      (current + direction + selectedListing.imageUrls.length) % selectedListing.imageUrls.length,
-    );
   }
 
   const activeFilterCount = Number(Boolean(query.trim())) + Number(category !== "ALL");
@@ -534,7 +479,7 @@ export function Marketplace({
                           <span>Sin foto</span>
                         </span>
                       )}
-                      {listing.imageUrls.length ? (
+                      {listing.imageUrls.length > 1 ? (
                         <span className="product-card-photo-count">
                           <Camera aria-hidden="true" size={13} strokeWidth={2} />
                           {listing.imageUrls.length} {listing.imageUrls.length === 1 ? "foto" : "fotos"}
@@ -545,25 +490,12 @@ export function Marketplace({
                       ) : null}
                     </span>
                     <span className="product-card-copy">
-                      <span className="product-card-meta">
-                        <span className="product-card-category">
-                          {categoryNames[listing.category] ?? "Otros"}
-                        </span>
-                        <span className="product-card-separator" aria-hidden="true">·</span>
-                        <span className="product-card-condition">
-                          {conditionNames[listing.condition] ?? "Condición no indicada"}
-                        </span>
-                      </span>
+                      <span className="product-card-price">{formatPrice(listing.price, listing.currency)}</span>
                       <span className="product-card-title">{listing.title}</span>
-                      <span className="product-card-price">
-                        {formatPrice(listing.price, listing.currency)}
-                      </span>
+                      <span className="product-card-condition">{conditionNames[listing.condition] ?? "Condición no indicada"}</span>
                       <span className="product-card-seller">
-                        Por {listing.seller.name ?? "Estudiante"}
-                      </span>
-                      <span className="product-card-disclosure">
-                        Ver detalles
-                        <ArrowRight aria-hidden="true" size={16} strokeWidth={1.8} />
+                        <span className="product-card-seller-name">{listing.seller.name ?? "Estudiante"}</span>
+                        <time dateTime={listing.createdAt} title={fullListingDate(listing.createdAt)}>{formatListingDate(listing.createdAt)}</time>
                       </span>
                     </span>
                   </button>
@@ -625,139 +557,15 @@ export function Marketplace({
         </div>
       </div>
 
-      <dialog
-        ref={detailDialogRef}
-        className="listing-detail-dialog"
-        aria-labelledby="listing-detail-title"
-        onClose={() => {
-          setSelectedListing(null);
-          setSelectedPhotoIndex(0);
-        }}
-        onClick={(event) => {
-          if (event.target === event.currentTarget) event.currentTarget.close();
-        }}
-      >
-        {selectedListing ? (
-          <div className="listing-detail-shell">
-            <button
-              className="listing-detail-close"
-              type="button"
-              aria-label="Cerrar detalles"
-              onClick={() => detailDialogRef.current?.close()}
-            >
-              <X aria-hidden="true" size={19} strokeWidth={1.9} />
-            </button>
-            <div className="listing-detail-gallery" aria-label="Fotos del producto">
-              {selectedListing.imageUrls.length ? (
-                <>
-                  <div className="listing-detail-image-wrap">
-                    {/* eslint-disable-next-line @next/next/no-img-element -- Fotos privadas requieren la sesión del navegador, sin proxy de optimización. */}
-                    <img
-                      key={selectedListing.imageUrls[selectedPhotoIndex]}
-                      src={selectedListing.imageUrls[selectedPhotoIndex]}
-                      alt={`Foto ${selectedPhotoIndex + 1} de ${selectedListing.title}`}
-                      decoding="async"
-                    />
-                    {selectedListing.imageUrls.length > 1 ? (
-                      <div className="listing-gallery-arrows">
-                        <button
-                          type="button"
-                          aria-label="Ver foto anterior"
-                          onClick={() => moveSelectedPhoto(-1)}
-                        >
-                          <ChevronLeft aria-hidden="true" size={20} />
-                        </button>
-                        <button
-                          type="button"
-                          aria-label="Ver foto siguiente"
-                          onClick={() => moveSelectedPhoto(1)}
-                        >
-                          <ChevronRight aria-hidden="true" size={20} />
-                        </button>
-                      </div>
-                    ) : null}
-                  </div>
-                  {selectedListing.imageUrls.length > 1 ? (
-                    <div className="listing-gallery-pagination">
-                      <span aria-live="polite">
-                        {selectedPhotoIndex + 1} de {selectedListing.imageUrls.length} fotos
-                      </span>
-                      <div role="group" aria-label="Elegir foto">
-                        {selectedListing.imageUrls.map((_, index) => (
-                          <button
-                            className={index === selectedPhotoIndex ? "is-selected" : ""}
-                            key={index}
-                            type="button"
-                            aria-label={`Mostrar foto ${index + 1} de ${selectedListing.imageUrls.length}`}
-                            aria-pressed={index === selectedPhotoIndex}
-                            onClick={() => setSelectedPhotoIndex(index)}
-                          >
-                            <span aria-hidden="true" />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
-                </>
-              ) : (
-                <div className="listing-detail-no-image">
-                  <Camera aria-hidden="true" size={36} strokeWidth={1.5} />
-                  <span>Este artículo aún no tiene fotos.</span>
-                </div>
-              )}
-            </div>
-            <div className="listing-detail-info">
-              <div className="listing-detail-meta">
-                <span>{categoryNames[selectedListing.category] ?? "Otros"}</span>
-                <span aria-hidden="true">·</span>
-                <span>{conditionNames[selectedListing.condition] ?? "Condición no indicada"}</span>
-              </div>
-              <h2 id="listing-detail-title">{selectedListing.title}</h2>
-              <p className="listing-detail-price">
-                {formatPrice(selectedListing.price, selectedListing.currency)}
-              </p>
-              <section className="listing-detail-description">
-                <h3>Descripción</h3>
-                <p>{selectedListing.description}</p>
-              </section>
-              <dl className="listing-detail-facts">
-                <div>
-                  <dt>Condición</dt>
-                  <dd>{conditionNames[selectedListing.condition] ?? "No indicada"}</dd>
-                </div>
-                <div>
-                  <dt>Publicado por</dt>
-                  <dd>{selectedListing.seller.name ?? "Estudiante"}</dd>
-                </div>
-                <div>
-                  <dt>Fecha de publicación</dt>
-                  <dd>{formatListingDate(selectedListing.createdAt)}</dd>
-                </div>
-                <div>
-                  <dt>Facultad</dt>
-                  <dd>{selectedListing.seller.facultyName ?? "Por confirmar"}</dd>
-                </div>
-              </dl>
-              {selectedListing.isDemo ? (
-                <p className="listing-detail-demo-note" role="note">
-                  Publicación ficticia de demostración. No representa una oferta real.
-                </p>
-              ) : null}
-              <div className="listing-detail-contact">
-                <StartConversationForm
-                  listingId={selectedListing.id}
-                  sellerId={selectedListing.seller.id}
-                  sellerName={selectedListing.seller.name ?? "Estudiante"}
-                  currentUserId={currentUserId}
-                  signedIn
-                  isDemo={selectedListing.isDemo}
-                />
-                <p>La entrega y cualquier pago se acuerdan fuera de Mercadito.</p>
-              </div>
-            </div>
-          </div>
-        ) : null}
-      </dialog>
+      {selectedListing ? (
+        <ListingDetailDialog
+          key={selectedListing.id}
+          listing={selectedListing}
+          categoryLabel={categoryNames[selectedListing.category] ?? "Otros"}
+          currentUserId={currentUserId}
+          onDismiss={() => setSelectedListing(null)}
+        />
+      ) : null}
     </section>
   );
 }

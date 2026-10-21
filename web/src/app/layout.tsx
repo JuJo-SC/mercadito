@@ -4,6 +4,7 @@ import "./app-shell.css";
 import "./account-pages.css";
 import "./public-feature-pages.css";
 import "./session-surfaces.css";
+import "./listing-detail.css";
 import { RouteScrollReset } from "@/components/route-scroll-reset";
 
 export const metadata: Metadata = {

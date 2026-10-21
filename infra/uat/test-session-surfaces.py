@@ -6,11 +6,16 @@ postgres:17-alpine and the installed mercadito-qa-chromium:20260926 QA image.
 """
 from pathlib import Path
 import subprocess
+import os
+import struct
+import zlib
 import time
 import uuid
 
 root = Path(__file__).resolve().parents[2]
-output = root / ".opendesign/artifacts/session-surfaces"
+output = root / ".opendesign/artifacts" / os.environ.get("MERCADITO_TEST_OUTPUT", "session-surfaces")
+web_image = os.environ.get("MERCADITO_TEST_IMAGE", "mercadito-web:sesion-candidato")
+check_details = os.environ.get("MERCADITO_CHECK_LISTING_DETAILS") == "1"
 output.mkdir(parents=True, exist_ok=True)
 prefix = "mercadito-session-test-" + uuid.uuid4().hex[:8]
 network, database, web = (prefix + suffix for suffix in ["-net", "-db", "-web"])
@@ -69,15 +74,30 @@ try:
     ('m3','cv-calculator','carlos','La calculadora está disponible.',1);
     '''
     docker("exec", database, "psql", "-U", "fixture", "-d", "mercadito", "-v", "ON_ERROR_STOP=1", "-c", sql)
+    if check_details:
+        def image(color):
+            width = height = 400
+            def chunk(kind, data):
+                return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data) & 0xffffffff)
+            pixels = b"".join(b"\0" + bytes(color) * width for _ in range(height))
+            return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)) + chunk(b"IDAT", zlib.compress(pixels)) + chunk(b"IEND", b"")
+        values = []
+        for listing, position, color in [("shirt", 0, (41, 113, 86)), ("shirt", 1, (180, 203, 189)), ("shirt", 2, (200, 210, 190)), ("shirt", 3, (210, 220, 200)), ("shirt", 4, (220, 230, 210)), ("calculator", 0, (218, 221, 226))]:
+            values.append("('%s',%d,'image/png',400,400,decode('%s','hex'))" % (listing, position, image(color).hex()))
+        photos_sql = 'INSERT INTO "ListingPhoto" ("listingId",position,"mimeType",width,height,data) VALUES ' + ",".join(values)
+        docker("exec", database, "psql", "-U", "fixture", "-d", "mercadito", "-v", "ON_ERROR_STOP=1", "-c", photos_sql)
     docker("run", "-d", "--name", web, "--network", network, "--network-alias", "web",
            "-e", "DATABASE_URL=" + url, "-e", "AUTH_SECRET=fixture-session-secret-at-least-thirty-two-characters",
            "-e", "AUTH_URL=http://web:3000", "-e", "AUTH_TRUST_HOST=true",
            "-e", "ACTIVE_UNIVERSITY_SLUG=uat", "-e", "ACTIVE_UNIVERSITY_NAME=UAT",
            "-e", "UAT_LOGIN_ENABLED=true", "-e", "UAT_PRIVACY_URL=https://example.test/privacy",
-           "mercadito-web:sesion-candidato")
+           web_image)
     containers.append(web)
     ready("exec", web, "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))")
-    for script in ["review-session-surfaces.cjs", "check-session-surfaces.cjs"]:
+    scripts = ["review-session-surfaces.cjs", "check-session-surfaces.cjs"]
+    if check_details:
+        scripts.insert(0, "check-listing-details.cjs")
+    for script in scripts:
         result = docker("run", "--rm", "--network", network, "-v", str(root / "infra/uat") + ":/qa:ro",
                         "-v", str(output) + ":/out", "mercadito-qa-chromium:20260926", "node", "/qa/" + script)
         print(result.stdout, flush=True)

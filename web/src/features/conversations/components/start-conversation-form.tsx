@@ -14,6 +14,7 @@ export function StartConversationForm({
   currentUserId,
   signedIn,
   isDemo,
+  compact = false,
 }: {
   listingId: string;
   sellerId: string;
@@ -21,6 +22,7 @@ export function StartConversationForm({
   currentUserId: string | null;
   signedIn: boolean;
   isDemo: boolean;
+  compact?: boolean;
 }) {
   const router = useRouter();
   const [body, setBody] = useState("");
@@ -95,15 +97,15 @@ export function StartConversationForm({
 
   return (
     <form className="notice-contact-form" onSubmit={startConversation}>
-      <h3>Pregunta por esta publicación</h3>
-      <label htmlFor={`first-message-${listingId}`}>Primer mensaje para {sellerName}</label>
+      {!compact ? <h3>Pregunta por esta publicación</h3> : null}
+      <label htmlFor={`first-message-${listingId}`}>{compact ? "Escribir a " : "Primer mensaje para "}{sellerName}</label>
       <textarea
         id={`first-message-${listingId}`}
         aria-describedby={`${limitId} ${keyboardHelpId}`}
         value={body}
         onChange={(event) => setBody(event.target.value)}
         onKeyDown={(event) => submitMessageOnEnter(event, sending)}
-        placeholder="¿Sigue disponible? ¿Podemos acordar un lugar para el intercambio?"
+        placeholder={compact ? "Hola, ¿sigue disponible?" : "¿Sigue disponible? ¿Podemos acordar un lugar para el intercambio?"}
         maxLength={2000}
         rows={2}
         required
@@ -113,8 +115,8 @@ export function StartConversationForm({
       </p>
       <div className="notice-contact-foot">
         <div className="notice-contact-meta">
-          <p id={limitId}>{body.length}/2,000 caracteres</p>
-          <p>Solo texto · pagos fuera de Mercadito</p>
+          <p id={limitId}>{body.length}/2,000{compact ? "" : " caracteres"}</p>
+          {!compact ? <p>Solo texto · pagos fuera de Mercadito</p> : null}
         </div>
         <button className="button-ink" type="submit" disabled={sending || !body.trim()}>
           {sending ? "Enviando…" : "Enviar pregunta"}

@@ -193,3 +193,14 @@ El diseño privado aprobado el 21 de octubre de 2026 prolonga el verde, los pane
 Explorar agrupa título y resultados; cada producto tiene una tarjeta y la explicación extensa de los filtros queda en Información del mercadito. Mensajes reúne selector y conversaciones en un panel. Publicar conserva sus tres pasos dentro de una superficie alineada con el título. Mis publicaciones conserva todos los estados y acciones en grupos de filas, sin repetir la descripción del producto. El perfil separa nombre público, facultad y nombre privado en paneles.
 
 El hilo agrupa producto, ayuda y aviso de pruebas sobre el intercambio; los mensajes desplazan dentro de su área y el compositor queda sobre la navegación móvil. La fotografía responde al cursor en 180 ms y la última burbuja aparece una vez en 180 ms. `prefers-reduced-motion` desactiva estos efectos. Las consultas, API, autorización y almacenamiento siguen usando la aplicación real, sin datos ni servicios de la maqueta.
+
+
+## Tarjetas y ficha de publicación simplificadas
+
+La tarjeta ordena precio, título y condición; autor y fecha corta comparten una fila. Se omiten la categoría repetida, el texto Ver detalles y el contador si solo hay una foto. La categoría se conserva en los filtros y en Más información del detalle.
+
+La ficha agrupa título, precio y condición, conserva la descripción completa y reúne autor y fecha abreviada con la fecha completa disponible en el atributo title. Más información contiene categoría, facultad y la explicación de entrega y pagos. El contacto utiliza su variante compacta sin duplicar instrucciones; mantiene el límite y los atajos del formulario.
+
+En móvil la foto ocupa inicialmente 220px; con varias fotos, 284px reservan los controles de galería. Al desplazar se recorta la zona a 72px y la imagen se transforma en una miniatura de 48px con título y precio. Un espacio reservado conserva la geometría del contenido para evitar saltos. El efecto usa un listener pasivo y requestAnimationFrame; se limpia al cerrar la ficha. En movimiento reducido la galería queda fija en 144px, o 208px con varias fotos. Sin fotos usa una zona de 144px.
+
+Pulsar la foto abre una ampliación mediante otro diálogo nativo; conserva la selección, flechas y cierre por Escape sin cerrar la ficha inferior. La foto conserva object-fit: contain y las rutas privadas originales. No se alteran permisos, almacenamiento ni caché. Ver [verificación de fichas](docs/verificacion-fichas-publicaciones.md).
