@@ -141,9 +141,11 @@ Mensajes, Mis publicaciones y Publicar usan títulos breves en una línea, con u
 
 ## Introducciones antes del acceso
 
-El lateral y la barra inferior permanecen compactos, con los cuatro enlaces habituales. Al pulsar Mensajes, Publicar o Mis publicaciones sin sesión, la ruta muestra una presentación propia: título, explicación breve, acceso al login y una muestra visual amplia. En escritorio, texto y ejemplo comparten dos columnas; en tablet y móvil se apilan, con el botón de acceso antes del ejemplo.
+La vista publica aprobada conserva el marco compartido y agrupa texto e ilustracion en un panel blanco con borde tenue. En escritorio, las dos columnas separan la explicacion de una superficie verde suave con interfaz ilustrada; en movil se apilan. Explorar conserva el unico boton principal Entrar al mercadito y un recorrido Asi funciona que integra Entra, Encuentra o publica y Conversa. No se repite la explicacion en otro panel inferior.
 
-Mensajes ilustra una conversación sobre un producto y explica el contacto con compradores y vendedores sin exigir teléfono. Publicar muestra ropa, libros y emprendimientos sujetos al reglamento, y permite abrir el recorrido de demostración. Mis publicaciones ilustra los estados En venta, Apartado y Vendido. Las muestras se identifican como datos ilustrativos; no contienen controles falsamente interactivos. Con sesión, cada apartado conserva la interfaz operativa.
+Mensajes, Publicar y Mis publicaciones conservan titulo, descripcion, nota agrupada e ilustracion, sin botones introductorios. Publicar ilustra fotos y campos reales; Mensajes presenta contexto del producto y burbujas; Mis publicaciones presenta filas con estados. Las ilustraciones son estaticas, usan contenido sintetico, no consultan publicaciones ni fotos privadas y no llevan las etiquetas visibles de ejemplo o datos ilustrativos que el propietario pidio retirar. Los articulos ficticios del catalogo autenticado conservan sus indicaciones existentes.
+
+Las animaciones son una mejora progresiva: resaltado breve y finito del recorrido, aparicion de burbujas y ensamblado de la publicacion. El contenido se entrega visible desde el servidor y permanece estatico con movimiento reducido. Los estilos quedan limitados a .public-preview y al marco que contiene .public-page; las funciones y superficies autenticadas no cambian.
 
 ## Mensajes y Mis publicaciones
 

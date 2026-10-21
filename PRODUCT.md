@@ -83,7 +83,7 @@ Confirmado por el propietario: conservar una página web con apariencia y navega
 
 ## Orientación pública
 
-Corregido por petición del propietario: el lateral de la portada debe conservarse compacto. Las explicaciones y ejemplos visuales aparecen al pulsar Mensajes, Publicar y Mis publicaciones, en la pantalla de cada apartado antes de iniciar sesión. El chat se presenta para compradores y vendedores, sin exigir compartir teléfono. Publicar presenta artículos sin uso, ropa y emprendimientos sujetos al reglamento. Mis publicaciones presenta la administración de los artículos propios. Cada introducción conserva el acceso al login y su destino; con sesión se muestra la función real.
+Corregido por petición del propietario: el lateral de la portada debe conservarse compacto. Las explicaciones y ejemplos visuales aparecen al pulsar Mensajes, Publicar y Mis publicaciones, en la pantalla de cada apartado antes de iniciar sesión. El chat se presenta para compradores y vendedores, sin exigir compartir teléfono. Publicar presenta artículos sin uso, ropa y emprendimientos sujetos al reglamento. Mis publicaciones presenta la administración de los artículos propios. El acceso principal se concentra en Explorar y en la cabecera compartida; las otras introducciones no tienen botones de acceso. Con sesión se muestra la función real.
 
 
 ## Nombres y perfil propio
