@@ -212,3 +212,11 @@ Esta especificación sustituye la presentación anterior de la tarjeta del catá
 El catálogo omite vendedor, fecha y condición en las tarjetas; la ficha conserva esos datos. No hay panel visible de Explorar publicaciones ni contadores de resultados. El h1 se conserva únicamente para lectores de pantalla. Cargar más publicaciones conserva su función y los avisos del campus de prueba permanecen cuando corresponden.
 
 Las publicaciones empiezan después de 12px de padding superior en escritorio y 10px en móvil, sin margen superior adicional de cuadrícula. La separación entre filas es 10px; entre columnas, 8px en escritorio y 6px en móvil. La franja de precio y título conserva 7px de padding superior en escritorio y 6px en móvil. Foco, filtros, fotos privadas y ficha mantienen sus funciones. Ver [verificación del catálogo compacto](docs/verificacion-catalogo-compacto.md).
+
+## Ficha con fotografía amplia y contacto en línea, 22 de octubre de 2026
+
+La fotografía móvil usa un marco cuadrado de hasta 406px, con 12px alrededor, sin deformar ni recortar el archivo. La ficha conserva el estilo y su posición centrada y admite hasta 740px de alto, siempre limitada por el viewport. En escritorio admite 74rem y amplía la columna de galería, con 16px de padding.
+
+Se conservan título, precio, condición y descripción. La fecha discreta aparece después de la descripción; el contacto sigue inmediatamente con etiqueta próxima, campo de una línea de 44px y botón lateral de solo icono, con nombre accesible. El contador y la ayuda de teclado no se muestran en esta variante; el límite interno, los atajos, los estados de envío, el error y la protección de reintentos se conservan. Estudiante, categoría y facultad quedan visibles debajo del contacto, seguidos de la nota de entrega y pagos.
+
+La reducción de imagen conserva por ahora el recorrido nativo aprobado. Cuando el contenido es corto, puede no alcanzar la miniatura final; hay una alternativa privada con recorrido corto pendiente de elección del propietario. No se incorpora automáticamente por aprobar el diseño de la ficha. Ver [verificación de la ficha amplia](docs/verificacion-ficha-amplia.md).

@@ -121,3 +121,7 @@ La prueba aislada infra/uat/check-listing-details.cjs reutiliza el entorno sint�
 ### Catálogo compacto
 
 marketplace.tsx presenta únicamente foto, precio y título en las tarjetas. El título de página permanece accesible sin panel visual, y el catálogo no muestra contadores; la paginación mantiene initialTotal, hasMore y nextCursor. listing-detail.css reúne el contorno de la foto y los espacios del catálogo; no se cambian consultas, API ni el componente de ficha. Ver [verificación del catálogo compacto](verificacion-catalogo-compacto.md).
+
+### Ficha amplia y contacto compacto
+
+listing-detail-dialog.tsx dispone descripción, fecha, contacto y datos del vendedor en ese orden. start-conversation-form.tsx conserva el envío y la idempotencia y presenta su variante compact como campo y botón lateral con nombre accesible. La galería y los límites de la hoja se ajustan en listing-detail.css; no cambian API, permisos ni almacenamiento de fotos. Ver [verificación de ficha amplia](verificacion-ficha-amplia.md).

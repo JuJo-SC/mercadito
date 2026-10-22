@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Camera, ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Camera, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { StartConversationForm } from "@/features/conversations/components/start-conversation-form";
 import {
   conditionNames,
@@ -165,24 +165,23 @@ export function ListingDetailDialog({
             <section className="listing-detail-description" aria-label="Descripción">
               <p>{listing.description}</p>
             </section>
-            <div className="listing-detail-author">
-              <span>Por <strong>{seller}</strong></span>
-              <time dateTime={listing.createdAt} title={fullListingDate(listing.createdAt)}>{formatListingDate(listing.createdAt, true)}</time>
-            </div>
-            <details className="listing-detail-more">
-              <summary>Más información <ChevronDown aria-hidden="true" size={16} /></summary>
-              <dl>
-                <div><dt>Categoría</dt><dd>{categoryLabel}</dd></div>
-                <div><dt>Facultad</dt><dd>{listing.seller.facultyName ?? "Por confirmar"}</dd></div>
-              </dl>
-              <p>La entrega y cualquier pago se acuerdan fuera de Mercadito.</p>
-            </details>
+            <time className="listing-detail-date" dateTime={listing.createdAt} title={fullListingDate(listing.createdAt)}>
+              Publicado el {formatListingDate(listing.createdAt, true)}
+            </time>
             {listing.isDemo ? (
               <p className="listing-detail-demo-note" role="note">Publicación ficticia de demostración. No representa una oferta real.</p>
             ) : null}
             <div className="listing-detail-contact">
               <StartConversationForm listingId={listing.id} sellerId={listing.seller.id} sellerName={seller} currentUserId={currentUserId} signedIn isDemo={listing.isDemo} compact />
             </div>
+            <section className="listing-detail-publisher" aria-label="Datos de la publicación">
+              <dl>
+                <div><dt>Estudiante</dt><dd><strong>{seller}</strong></dd></div>
+                <div><dt>Categoría</dt><dd>{categoryLabel}</dd></div>
+                <div><dt>Facultad</dt><dd>{listing.seller.facultyName ?? "Por confirmar"}</dd></div>
+              </dl>
+              <p>La entrega y cualquier pago se acuerdan fuera de Mercadito.</p>
+            </section>
           </div>
         </div>
       </div>

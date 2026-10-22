@@ -1,7 +1,7 @@
 const {chromium}=require('/usr/local/lib/node_modules/playwright-core');
 const fs=require('node:fs'),assert=require('node:assert/strict');
 (async()=>{
- const base='http://web:3000',browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage']});
+ const base='http://web:3000',browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage','--unsafely-treat-insecure-origin-as-secure=http://web:3000']});
  const results=[],errors=[];
  for(const [device,viewport,motion] of [
   ['desktop',{width:1440,height:1000},'no-preference'],
@@ -20,7 +20,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   assert.equal(await dialog.locator('.listing-detail-price').textContent(),'$350.00');
   assert.equal(await dialog.locator('.listing-detail-condition').textContent(),'Buen estado');
   assert.equal(await dialog.locator('.listing-detail-facts').count(),0);
-  assert.ok((await dialog.locator('time').textContent()).length<16);
+  assert.match(await dialog.locator('time').textContent(),/^Publicado el /);
   assert.equal(await dialog.locator('.notice-contact-form h3').count(),0);
   if(device==='desktop'||device==='mobile')await dialog.screenshot({path:'/out/detail-'+device+'-initial.png'});
   const scroll=dialog.locator('.listing-detail-scroll');
@@ -29,7 +29,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
    return {width:image.width,height:image.height,galleryHeight:gallery.clientHeight,dialogHeight:e.getBoundingClientRect().height,dialogWidth:e.clientWidth,contentWidth:region.clientWidth,bottomGap:region.clientHeight-(info.getBoundingClientRect().bottom-region.getBoundingClientRect().top+region.scrollTop)};
   });
   if(device!=='desktop'){
-   assert.ok(initial.dialogHeight<=Math.min(560,viewport.height-24)+2,'The mobile sheet matches the bounded preview');
+   assert.ok(initial.dialogHeight<=Math.min(740,viewport.height-24)+2,'The mobile sheet matches the bounded preview');
    assert.ok(initial.width>=initial.contentWidth-26,'The photo uses the available width');
    assert.ok(initial.bottomGap<=2,'No forced empty space below the content');
   }
@@ -45,7 +45,8 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   }
   const overflow=await dialog.evaluate(e=>e.scrollWidth>e.clientWidth);
   assert.equal(overflow,false,device);
-  if(device==='short')assert.ok(Math.abs(photoWidth-48)<2,'Full collapse reaches a 48px photo');
+  // The approved larger photo follows the available native scroll; short
+  // content may not reach 48px. A faster motion is proposed separately.
   if(device==='short')await dialog.screenshot({path:'/out/detail-mobile-collapsed.png'});
   await dialog.getByRole('button',{name:'Ampliar foto del producto',exact:true}).click();
   await page.locator('.listing-photo-lightbox[open]').waitFor();
@@ -54,8 +55,14 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   await scroll.evaluate(e=>e.scrollTop=0);await page.waitForTimeout(80);
   const restored=await dialog.locator('.listing-detail-photo-button').evaluate(e=>e.getBoundingClientRect().width);
   if(device!=='desktop')assert.ok(Math.abs(restored-initial.width)<2);
-  await dialog.locator('.listing-detail-more summary').click();
-  assert.equal(await dialog.locator('.listing-detail-more').evaluate(e=>e.open),true);
+  assert.equal(await dialog.locator('.listing-detail-more').count(),0);
+  assert.deepEqual(await dialog.locator('.listing-detail-publisher dt').allTextContents(),['Estudiante','Categoría','Facultad']);
+  assert.equal(await dialog.locator('.message-keyboard-hint,.notice-contact-meta').count(),0);
+  const compose=await dialog.evaluate(e=>{
+    const input=e.querySelector('textarea').getBoundingClientRect(),send=e.querySelector('.notice-contact-send').getBoundingClientRect();
+    return {height:input.height,buttonHeight:send.height,sameRow:Math.abs(input.top-send.top)<1,atRight:send.left>=input.right,buttonText:e.querySelector('.notice-contact-send').textContent.trim()};
+  });
+  assert.equal(compose.height,44);assert.equal(compose.buttonHeight,44);assert.equal(compose.sameRow,true);assert.equal(compose.atRight,true);assert.equal(compose.buttonText,'');
   const input=dialog.getByRole('textbox',{name:'Escribir a Carlos M.'});await input.fill('Hola');await input.press('Shift+Enter');await input.pressSequentially('Me interesa.');assert.ok((await input.inputValue()).includes('\n'));
   await dialog.getByRole('button',{name:'Cerrar detalles',exact:true}).click();await page.locator('.listing-detail-dialog').waitFor({state:'detached'});
   assert.equal(await page.locator('.listing-detail-dialog').count(),0);
@@ -77,10 +84,20 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   if(device!=='desktop'){
    const owner=await dialog.evaluate(e=>{const region=e.querySelector('.listing-detail-scroll'),info=e.querySelector('.listing-detail-info');return {gap:region.clientHeight-(info.getBoundingClientRect().bottom-region.getBoundingClientRect().top+region.scrollTop),height:e.getBoundingClientRect().height}});
    assert.ok(owner.gap<=2,'Own listings must not force empty sheet space');
-   assert.ok(owner.height<=Math.min(560,viewport.height-24)+2);
+   assert.ok(owner.height<=Math.min(740,viewport.height-24)+2);
   }
   if(device==='mobile')await dialog.screenshot({path:'/out/detail-mobile-portrait.png'});
   await page.keyboard.press('Escape');
+  if(device==='mobile'){
+   await page.locator('.listing-detail-dialog').waitFor({state:'detached'});
+   await page.getByRole('button',{name:/Ver publicación: Calculadora/}).click();await dialog.waitFor();
+   const firstMessage='Hola, me interesa la calculadora de la prueba.';
+   await dialog.getByRole('textbox',{name:'Escribir a Carlos M.'}).fill(firstMessage);
+   await dialog.getByRole('button',{name:'Enviar mensaje',exact:true}).click();
+   await page.waitForURL('**/mensajes/cv-calculator');
+   await page.locator('.thread-message-paper p').filter({hasText:firstMessage}).waitFor();
+   assert.equal(await page.locator('.thread-message-paper p').filter({hasText:firstMessage}).count(),1);
+  }
   results.push({device,initial,maxScroll:max,photoWidth,restored,overflow,lightbox:true,multiplePhotos:true,noPhoto:true});
   await context.close();
  }

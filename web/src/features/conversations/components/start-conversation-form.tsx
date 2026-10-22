@@ -95,35 +95,64 @@ export function StartConversationForm({
   const limitId = `first-message-limit-${listingId}`;
   const keyboardHelpId = `first-message-keyboard-help-${listingId}`;
 
-  return (
-    <form className="notice-contact-form" onSubmit={startConversation}>
-      {!compact ? <h3>Pregunta por esta publicación</h3> : null}
-      <label htmlFor={`first-message-${listingId}`}>{compact ? "Escribir a " : "Primer mensaje para "}{sellerName}</label>
-      <textarea
-        id={`first-message-${listingId}`}
-        aria-describedby={`${limitId} ${keyboardHelpId}`}
-        value={body}
-        onChange={(event) => setBody(event.target.value)}
-        onKeyDown={(event) => submitMessageOnEnter(event, sending)}
-        placeholder={compact ? "Hola, ¿sigue disponible?" : "¿Sigue disponible? ¿Podemos acordar un lugar para el intercambio?"}
-        maxLength={2000}
-        rows={2}
-        required
-      />
-      <p className="message-keyboard-hint" id={keyboardHelpId}>
-        Enter para enviar · Shift+Enter para otra línea
-      </p>
-      <div className="notice-contact-foot">
-        <div className="notice-contact-meta">
-          <p id={limitId}>{body.length}/2,000{compact ? "" : " caracteres"}</p>
-          {!compact ? <p>Solo texto · pagos fuera de Mercadito</p> : null}
-        </div>
-        <button className="button-ink" type="submit" disabled={sending || !body.trim()}>
+  const errorId = "first-message-error-" + listingId;
+  const messageInput = (
+    <textarea
+      id={"first-message-" + listingId}
+      aria-describedby={compact ? (error ? errorId : undefined) : limitId + " " + keyboardHelpId}
+      value={body}
+      onChange={(event) => setBody(event.target.value)}
+      onKeyDown={(event) => submitMessageOnEnter(event, sending)}
+      placeholder={compact ? "Hola, ¿sigue disponible?" : "¿Sigue disponible? ¿Podemos acordar un lugar para el intercambio?"}
+      maxLength={2000}
+      rows={compact ? 1 : 2}
+      required
+    />
+  );
+  const submitButton = (
+    <button
+      className={compact ? "notice-contact-send" : "button-ink"}
+      type="submit"
+      aria-label={compact ? (sending ? "Enviando mensaje" : "Enviar mensaje") : undefined}
+      aria-busy={sending}
+      disabled={sending || !body.trim()}
+    >
+      {compact ? (
+        <Send aria-hidden="true" size={19} strokeWidth={1.8} />
+      ) : (
+        <>
           {sending ? "Enviando…" : "Enviar pregunta"}
           {sending ? null : <Send aria-hidden="true" size={16} strokeWidth={1.8} />}
-        </button>
-      </div>
-      {error ? <p className="thread-error" role="alert">{error}</p> : null}
+        </>
+      )}
+    </button>
+  );
+
+  return (
+    <form className={"notice-contact-form" + (compact ? " is-inline" : "")} onSubmit={startConversation}>
+      {!compact ? <h3>Pregunta por esta publicación</h3> : null}
+      <label htmlFor={"first-message-" + listingId}>{compact ? "Escribir a " : "Primer mensaje para "}{sellerName}</label>
+      {compact ? (
+        <div className="notice-contact-compose">
+          {messageInput}
+          {submitButton}
+        </div>
+      ) : (
+        <>
+          {messageInput}
+          <p className="message-keyboard-hint" id={keyboardHelpId}>
+            Enter para enviar · Shift+Enter para otra línea
+          </p>
+          <div className="notice-contact-foot">
+            <div className="notice-contact-meta">
+              <p id={limitId}>{body.length}/2,000 caracteres</p>
+              <p>Solo texto · pagos fuera de Mercadito</p>
+            </div>
+            {submitButton}
+          </div>
+        </>
+      )}
+      {error ? <p className="thread-error" id={errorId} role="alert">{error}</p> : null}
     </form>
   );
 }
