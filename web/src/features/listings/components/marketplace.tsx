@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ListingDetailDialog } from "@/features/listings/components/listing-detail-dialog";
-import { conditionNames, formatListingDate, formatPrice, fullListingDate, type MarketplaceListing } from "@/features/listings/lib/listing-presentation";
+import { formatPrice, type MarketplaceListing } from "@/features/listings/lib/listing-presentation";
 import type { FormEvent } from "react";
 import Link from "next/link";
 import {
@@ -65,7 +65,6 @@ export function Marketplace({
   currentUserId,
 }: MarketplaceProps) {
   const [listings, setListings] = useState(initialListings);
-  const [total, setTotal] = useState(initialTotal);
   const [hasMore, setHasMore] = useState(initialTotal > initialListings.length);
   const [nextCursor, setNextCursor] = useState(initialListings.at(-1)?.id ?? null);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -187,7 +186,6 @@ export function Marketplace({
       const payload = (await response.json().catch(() => null)) as
         | {
             error?: string;
-            total?: number;
             listings?: MarketplaceListing[];
             hasMore?: boolean;
             nextCursor?: string | null;
@@ -208,7 +206,6 @@ export function Marketplace({
       } else {
         setListings(incoming);
       }
-      setTotal(payload?.total ?? 0);
       setHasMore(payload?.hasMore ?? false);
       setNextCursor(payload?.nextCursor ?? null);
       setSortMode(payload?.sortMode ?? nextSort);
@@ -368,7 +365,7 @@ export function Marketplace({
   );
 
   return (
-    <section className="marketplace-section campus-marketplace page-width" id="productos">
+    <section className="marketplace-section campus-marketplace page-width" id="productos" aria-labelledby="marketplace-title">
 
       {university.isTest ? (
         <p className="demo-banner campus-test-banner campus-test-banner-top" role="note">
@@ -424,15 +421,7 @@ export function Marketplace({
           )}
         </aside>
         <div className="marketplace-results">
-          <div className="listing-heading">
-            <div>
-              <h1>Explorar publicaciones</h1>
-              <p className="listing-meta">
-                <span>{total} {total === 1 ? "publicación" : "publicaciones"}</span>
-                {university.isTest ? <span className="mobile-campus-note">Campus de prueba</span> : null}
-              </p>
-            </div>
-          </div>
+          <h1 className="sr-only" id="marketplace-title">Explorar publicaciones</h1>
 
           {error ? (
             <div className="result-message result-error" role="alert">
@@ -491,21 +480,13 @@ export function Marketplace({
                     </span>
                     <span className="product-card-copy">
                       <span className="product-card-price">{formatPrice(listing.price, listing.currency)}</span>
-                      <span className="product-card-title">{listing.title}</span>
-                      <span className="product-card-condition">{conditionNames[listing.condition] ?? "Condición no indicada"}</span>
-                      <span className="product-card-seller">
-                        <span className="product-card-seller-name">{listing.seller.name ?? "Estudiante"}</span>
-                        <time dateTime={listing.createdAt} title={fullListingDate(listing.createdAt)}>{formatListingDate(listing.createdAt)}</time>
-                      </span>
+                      <span className="product-card-title" title={listing.title}>{listing.title}</span>
                     </span>
                   </button>
                 ))}
               </div>
               {hasMore ? (
                 <div className="product-pagination" aria-busy={loadingMore}>
-                  <p className="product-pagination-count" aria-live="polite" aria-atomic="true">
-                    Mostrando {listings.length} de {total} publicaciones
-                  </p>
                   <button
                     className="button-ink"
                     type="button"

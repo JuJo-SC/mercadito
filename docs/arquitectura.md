@@ -117,3 +117,7 @@ features/listings/lib/listing-presentation.ts reúne el tipo de resumen, los nom
 La animación ajusta el marco de la foto y recorta una superposición sobre un espacio reservado; el contenido mantiene su geometría. Los listeners se retiran al desmontar. La variante compact del formulario inicial cambia solo la presentación del contacto en la ficha. Las consultas, rutas de fotos, autorización y envío permanecen en sus módulos originales.
 
 La prueba aislada infra/uat/check-listing-details.cjs reutiliza el entorno sintético de test-session-surfaces.py; las opciones MERCADITO_TEST_IMAGE, MERCADITO_TEST_OUTPUT y MERCADITO_CHECK_LISTING_DETAILS permiten seleccionar la imagen candidata, la carpeta de resultados y las fotos de prueba sin acceder a producción.
+
+### Catálogo compacto
+
+marketplace.tsx presenta únicamente foto, precio y título en las tarjetas. El título de página permanece accesible sin panel visual, y el catálogo no muestra contadores; la paginación mantiene initialTotal, hasMore y nextCursor. listing-detail.css reúne el contorno de la foto y los espacios del catálogo; no se cambian consultas, API ni el componente de ficha. Ver [verificación del catálogo compacto](verificacion-catalogo-compacto.md).
