@@ -23,34 +23,27 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   assert.match(await dialog.locator('time').textContent(),/^Publicado el /);
   assert.equal(await dialog.locator('.notice-contact-form h3').count(),0);
   if(device==='desktop'||device==='mobile')await dialog.screenshot({path:'/out/detail-'+device+'-initial.png'});
-  const scroll=dialog.locator('.listing-detail-scroll');
+  await dialog.locator('.listing-detail-photo-button img').evaluate(e=>e.decode());
+  const scroll=dialog.locator(device==='desktop'?'.listing-detail-scroll':'.listing-detail-shell');
   const initial=await dialog.evaluate(e=>{
-   const image=e.querySelector('.listing-detail-photo-button').getBoundingClientRect(),gallery=e.querySelector('.listing-detail-gallery'),region=e.querySelector('.listing-detail-scroll'),info=e.querySelector('.listing-detail-info');
+   const image=e.querySelector('.listing-detail-photo-button').getBoundingClientRect(),gallery=e.querySelector('.listing-detail-gallery'),region=e.querySelector(window.innerWidth<=760?'.listing-detail-shell':'.listing-detail-scroll'),info=e.querySelector('.listing-detail-info');
    return {width:image.width,height:image.height,galleryHeight:gallery.clientHeight,dialogHeight:e.getBoundingClientRect().height,dialogWidth:e.clientWidth,contentWidth:region.clientWidth,bottomGap:region.clientHeight-(info.getBoundingClientRect().bottom-region.getBoundingClientRect().top+region.scrollTop)};
   });
   if(device!=='desktop'){
-   assert.ok(initial.dialogHeight<=Math.min(740,viewport.height-24)+2,'The mobile sheet matches the bounded preview');
+   assert.ok(initial.dialogHeight<=(viewport.height-24)+2,'The mobile sheet matches the bounded preview');
    assert.ok(initial.width>=initial.contentWidth-26,'The photo uses the available width');
    assert.ok(initial.bottomGap<=2,'No forced empty space below the content');
   }
   const max=await scroll.evaluate(e=>e.scrollHeight-e.clientHeight);
   await scroll.evaluate((e,distance)=>e.scrollTop=distance,Math.min(80,max));await page.waitForTimeout(80);
   const photoWidth=await dialog.locator('.listing-detail-photo-button').evaluate(e=>e.getBoundingClientRect().width);
-  const progress=motion==='reduce'||max===0?0:1;
-  const expected=device==='desktop'?null:initial.width+(48-initial.width)*progress;
-  if(expected!==null)assert.ok(Math.abs(photoWidth-expected)<2,JSON.stringify({device,max,photoWidth,expected}));
-  if(device!=='desktop'&&motion!=='reduce'){
-   const overlay=await dialog.evaluate(e=>{const p=e.querySelector('.listing-detail-photo-button').getBoundingClientRect(),m=e.querySelector('.listing-detail-mini-context');return {opacity:Number(getComputedStyle(m).opacity),right:p.right,left:m.getBoundingClientRect().left}});
-   if(overlay.opacity>0)assert.ok(overlay.right+8<=overlay.left,'The compact title must not overlap the photo');
-  }
+  const photoHeight=await dialog.locator('.listing-detail-photo-button').evaluate(e=>e.getBoundingClientRect().height);
+  assert.ok(Math.abs(photoWidth-initial.width)<2,'Scrolling must preserve photo width');
+  assert.ok(Math.abs(photoHeight-initial.height)<2,'Scrolling must preserve photo height');
+  if(device==='mobile'||device==='narrow')assert.equal(max,0,'Normal content fits without scroll');
   const overflow=await dialog.evaluate(e=>e.scrollWidth>e.clientWidth);
   assert.equal(overflow,false,device);
-  if(device!=='desktop'&&motion!=='reduce'&&max>0){
-   assert.ok(Math.abs(photoWidth-48)<2,'Short native scroll completes the collapse');
-   const range=await scroll.evaluate(e=>e.scrollHeight-e.clientHeight);
-   assert.ok(Math.abs(range-max)<2,'Collapse must preserve the native scroll range');
-  }
-  if(device==='short')await dialog.screenshot({path:'/out/detail-mobile-collapsed.png'});
+  if(device==='short')await dialog.screenshot({path:'/out/detail-mobile-scrolled.png'});
   await dialog.getByRole('button',{name:'Ampliar foto del producto',exact:true}).click();
   await page.locator('.listing-photo-lightbox[open]').waitFor();
   await page.keyboard.press('Escape');assert.equal(await page.locator('.listing-photo-lightbox[open]').count(),0);
@@ -65,12 +58,13 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
    await page.waitForTimeout(80);
    const longRange=await scroll.evaluate(e=>e.scrollHeight-e.clientHeight);
    assert.ok(longRange>max);
-   await scroll.evaluate(e=>e.scrollTop=80);await page.waitForTimeout(80);
-   assert.ok(Math.abs((await dialog.locator('.listing-detail-photo-button').boundingBox()).width-48)<2);
-   assert.ok(Math.abs((await scroll.evaluate(e=>e.scrollHeight-e.clientHeight))-longRange)<2);
    await scroll.evaluate(e=>e.scrollTop=e.scrollHeight);await page.waitForTimeout(80);
-   const footer=await dialog.evaluate(e=>({bottom:e.querySelector('.listing-detail-info').getBoundingClientRect().bottom,viewport:e.querySelector('.listing-detail-scroll').getBoundingClientRect().bottom}));
+   const longPhoto=await dialog.locator('.listing-detail-photo-button').boundingBox();
+   assert.ok(Math.abs(longPhoto.width-initial.width)<2&&Math.abs(longPhoto.height-initial.height)<2);
+   const footer=await dialog.evaluate(e=>({bottom:e.querySelector('.listing-detail-info').getBoundingClientRect().bottom,viewport:e.querySelector('.listing-detail-shell').getBoundingClientRect().bottom,close:e.querySelector('.listing-detail-close').getBoundingClientRect().top}));
    assert.ok(Math.abs(footer.bottom-footer.viewport)<2,'No blank band at the end of long content');
+   assert.ok(footer.close>=0&&footer.close<viewport.height-44,'Close remains available after scrolling');
+   await dialog.screenshot({path:'/out/detail-mobile-long-description.png'});
    await scroll.evaluate(e=>e.scrollTop=0);
    await description.evaluate((e,text)=>e.textContent=text,original);await page.waitForTimeout(80);
    assert.ok(Math.abs((await dialog.locator('.listing-detail-photo-button').boundingBox()).width-initial.width)<2);
@@ -102,14 +96,14 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   await page.getByRole('button',{name:/Ver publicación: Libro/}).click();await dialog.waitFor();
   await dialog.locator('.listing-detail-photo-button img').evaluate(e=>e.decode());
   if(device!=='desktop'){
-   const owner=await dialog.evaluate(e=>{const region=e.querySelector('.listing-detail-scroll'),info=e.querySelector('.listing-detail-info');return {gap:region.clientHeight-(info.getBoundingClientRect().bottom-region.getBoundingClientRect().top+region.scrollTop),height:e.getBoundingClientRect().height}});
+   const owner=await dialog.evaluate(e=>{const region=e.querySelector(window.innerWidth<=760?'.listing-detail-shell':'.listing-detail-scroll'),info=e.querySelector('.listing-detail-info');return {gap:region.clientHeight-(info.getBoundingClientRect().bottom-region.getBoundingClientRect().top+region.scrollTop),height:e.getBoundingClientRect().height}});
    assert.ok(owner.gap<=2,'Own listings must not force empty sheet space');
-   assert.ok(owner.height<=Math.min(740,viewport.height-24)+2);
+   assert.ok(owner.height<=(viewport.height-24)+2);
   }
-  const ownRange=await dialog.locator('.listing-detail-scroll').evaluate(e=>e.scrollHeight-e.clientHeight);
-  if(device!=='desktop'&&motion!=='reduce'&&ownRange===0){
+  const ownRange=await scroll.evaluate(e=>e.scrollHeight-e.clientHeight);
+  if(device!=='desktop'&&ownRange===0){
    const photo=dialog.locator('.listing-detail-photo-button'),before=(await photo.boundingBox()).width;
-   await dialog.locator('.listing-detail-scroll').evaluate(e=>e.scrollTop=80);await page.waitForTimeout(80);
+   await scroll.evaluate(e=>e.scrollTop=80);await page.waitForTimeout(80);
    assert.ok(Math.abs((await photo.boundingBox()).width-before)<2,'Content that fits retains the large photo');
   }
   if(device==='mobile')await dialog.screenshot({path:'/out/detail-mobile-portrait.png'});
@@ -124,7 +118,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
    await page.locator('.thread-message-paper p').filter({hasText:firstMessage}).waitFor();
    assert.equal(await page.locator('.thread-message-paper p').filter({hasText:firstMessage}).count(),1);
   }
-  results.push({device,initial,maxScroll:max,photoWidth,restored,overflow,lightbox:true,multiplePhotos:true,noPhoto:true});
+  results.push({device,initial,maxScroll:max,photoWidth,photoHeight,restored,overflow,lightbox:true,multiplePhotos:true,noPhoto:true});
   await context.close();
  }
  assert.equal(errors.length,0,JSON.stringify(errors));fs.writeFileSync('/out/listing-details.json',JSON.stringify({results,errors},null,2));console.log(JSON.stringify({results,errors}));await browser.close();

@@ -23,3 +23,5 @@ La versión inicial conservó el recorrido original y dejó una alternativa priv
 ## Despliegue
 
 Se reemplaza únicamente web con la imagen validada, sin migraciones ni cambios de datos, Caddy, redes o credenciales. Commit e imagen se registran en el deployment.json privado de esta tarea.
+
+La presentación vigente retira la reducción de la foto y compacta espacios. Ver [ficha estática](verificacion-ficha-estatica.md).

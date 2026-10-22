@@ -114,7 +114,7 @@ Las respuestas de publicaciones usan private, no-store y Vary: Cookie. Next.js s
 
 features/listings/lib/listing-presentation.ts reúne el tipo de resumen, los nombres de condición y el formato de precio y fechas del catálogo. features/listings/components/listing-detail-dialog.tsx contiene la ficha, la galería y la ampliación de fotos; marketplace.tsx conserva búsqueda, paginación y selección. app/listing-detail.css, cargado después del sistema de sesión, limita los nuevos estilos a las tarjetas del catálogo y al detalle refinado.
 
-La animación ajusta el marco de la foto y recorta una superposición sobre un espacio reservado; el contenido mantiene su geometría. Los listeners se retiran al desmontar. La variante compact del formulario inicial cambia solo la presentación del contacto en la ficha. Las consultas, rutas de fotos, autorización y envío permanecen en sus módulos originales.
+La foto y los datos siguen el flujo normal en móvil, dentro de listing-detail-shell con desplazamiento nativo. El cierre es hermano de esa región y permanece disponible. No hay listeners de scroll, espacios reservados ni medidas animadas. La variante compact del formulario inicial cambia solo la presentación del contacto en la ficha. Las consultas, rutas de fotos, autorización y envío permanecen en sus módulos originales.
 
 La prueba aislada infra/uat/check-listing-details.cjs reutiliza el entorno sintético de test-session-surfaces.py; las opciones MERCADITO_TEST_IMAGE, MERCADITO_TEST_OUTPUT y MERCADITO_CHECK_LISTING_DETAILS permiten seleccionar la imagen candidata, la carpeta de resultados y las fotos de prueba sin acceder a producción.
 
@@ -126,6 +126,6 @@ marketplace.tsx presenta únicamente foto, precio y título en las tarjetas. El 
 
 listing-detail-dialog.tsx dispone descripción, fecha, contacto y datos del vendedor en ese orden. start-conversation-form.tsx conserva el envío y la idempotencia y presenta su variante compact como campo y botón lateral con nombre accesible. La galería y los límites de la hoja se ajustan en listing-detail.css; no cambian API, permisos ni almacenamiento de fotos. Ver [verificación de ficha amplia](verificacion-ficha-amplia.md).
 
-### Reducción con recorrido corto
+### Foto estática y desplazamiento natural
 
-listing-detail-dialog.tsx mide el recorrido expandido al abrir la ficha y cuando cambia el contenido, tamaño o preferencia de movimiento. Un ResizeObserver del contenido invalida esa medida sin observar los márgenes animados. requestAnimationFrame actualiza la foto y --detail-collapse-extra; listing-detail.css compensa el margen del contenido y la altura máxima de la ficha con el mismo valor. Así se conserva el rango nativo sin una banda vacía. La reducción completa requiere hasta 80px o el recorrido disponible, y no se activa si todo cabe o el usuario prefiere movimiento reducido. Ver [verificación de animación corta](verificacion-animacion-corta.md).
+La ficha móvil ajusta su altura al contenido hasta calc(100dvh - 24px). listing-detail-shell es una región accesible que desplaza toda la ficha cuando hace falta; listing-detail-scroll conserva su desplazamiento independiente solo en escritorio. La galería mantiene posición relativa para anclar flechas y contador sin alterar el flujo. La foto cuadrada conserva su tamaño; el botón de cerrar queda fuera del área desplazable. Ver [verificación de ficha estática](verificacion-ficha-estatica.md).
