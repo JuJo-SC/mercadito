@@ -125,3 +125,7 @@ marketplace.tsx presenta únicamente foto, precio y título en las tarjetas. El 
 ### Ficha amplia y contacto compacto
 
 listing-detail-dialog.tsx dispone descripción, fecha, contacto y datos del vendedor en ese orden. start-conversation-form.tsx conserva el envío y la idempotencia y presenta su variante compact como campo y botón lateral con nombre accesible. La galería y los límites de la hoja se ajustan en listing-detail.css; no cambian API, permisos ni almacenamiento de fotos. Ver [verificación de ficha amplia](verificacion-ficha-amplia.md).
+
+### Reducción con recorrido corto
+
+listing-detail-dialog.tsx mide el recorrido expandido al abrir la ficha y cuando cambia el contenido, tamaño o preferencia de movimiento. Un ResizeObserver del contenido invalida esa medida sin observar los márgenes animados. requestAnimationFrame actualiza la foto y --detail-collapse-extra; listing-detail.css compensa el margen del contenido y la altura máxima de la ficha con el mismo valor. Así se conserva el rango nativo sin una banda vacía. La reducción completa requiere hasta 80px o el recorrido disponible, y no se activa si todo cabe o el usuario prefiere movimiento reducido. Ver [verificación de animación corta](verificacion-animacion-corta.md).

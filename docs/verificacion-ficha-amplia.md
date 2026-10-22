@@ -18,9 +18,7 @@ El protocolo exige ejecutar código y pruebas en Oracle; no se usa el detector l
 
 ## Animación con poco contenido
 
-La implementación conserva la interpolación original basada en el recorrido disponible. Con contenido corto se reduce parcialmente; la prueba conserva su comprobación matemática y deja de exigir una miniatura de 48px cuando no existe recorrido suficiente.
-
-El propietario pidió una recomendación para este caso. La alternativa privada animacion-corta.html completa la reducción en hasta 80px o en el recorrido disponible si es menor; compensa el espacio para evitar una franja vacía y recupera la fotografía al volver arriba. Sus comprobaciones privadas incluyen 38px y 30px de recorrido, pantalla corta y movimiento reducido. Está pendiente de aprobación y no forma parte de esta publicación.
+La versión inicial conservó el recorrido original y dejó una alternativa privada pendiente de elección. El propietario aprobó después la animación corta. La actualización completa la reducción en hasta 80px o en el recorrido disponible si es menor; sincroniza el desplazamiento de contenido y la altura de la ficha para evitar un hueco. Conserva la foto grande cuando todo cabe y respeta movimiento reducido. Los resultados de esta actualización están en [verificación de animación corta](verificacion-animacion-corta.md).
 
 ## Despliegue
 

@@ -34,9 +34,9 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
    assert.ok(initial.bottomGap<=2,'No forced empty space below the content');
   }
   const max=await scroll.evaluate(e=>e.scrollHeight-e.clientHeight);
-  await scroll.evaluate((e,distance)=>e.scrollTop=distance,initial.galleryHeight-72);await page.waitForTimeout(80);
+  await scroll.evaluate((e,distance)=>e.scrollTop=distance,Math.min(80,max));await page.waitForTimeout(80);
   const photoWidth=await dialog.locator('.listing-detail-photo-button').evaluate(e=>e.getBoundingClientRect().width);
-  const progress=motion==='reduce'?0:Math.min(initial.galleryHeight-72,max)/(initial.galleryHeight-72);
+  const progress=motion==='reduce'||max===0?0:1;
   const expected=device==='desktop'?null:initial.width+(48-initial.width)*progress;
   if(expected!==null)assert.ok(Math.abs(photoWidth-expected)<2,JSON.stringify({device,max,photoWidth,expected}));
   if(device!=='desktop'&&motion!=='reduce'){
@@ -45,8 +45,11 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   }
   const overflow=await dialog.evaluate(e=>e.scrollWidth>e.clientWidth);
   assert.equal(overflow,false,device);
-  // The approved larger photo follows the available native scroll; short
-  // content may not reach 48px. A faster motion is proposed separately.
+  if(device!=='desktop'&&motion!=='reduce'&&max>0){
+   assert.ok(Math.abs(photoWidth-48)<2,'Short native scroll completes the collapse');
+   const range=await scroll.evaluate(e=>e.scrollHeight-e.clientHeight);
+   assert.ok(Math.abs(range-max)<2,'Collapse must preserve the native scroll range');
+  }
   if(device==='short')await dialog.screenshot({path:'/out/detail-mobile-collapsed.png'});
   await dialog.getByRole('button',{name:'Ampliar foto del producto',exact:true}).click();
   await page.locator('.listing-photo-lightbox[open]').waitFor();
@@ -55,6 +58,23 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   await scroll.evaluate(e=>e.scrollTop=0);await page.waitForTimeout(80);
   const restored=await dialog.locator('.listing-detail-photo-button').evaluate(e=>e.getBoundingClientRect().width);
   if(device!=='desktop')assert.ok(Math.abs(restored-initial.width)<2);
+  if(device==='mobile'){
+   const description=dialog.locator('.listing-detail-description p');
+   const original=await description.textContent();
+   await description.evaluate(e=>e.textContent=('Descripción larga para probar la ficha. ').repeat(60));
+   await page.waitForTimeout(80);
+   const longRange=await scroll.evaluate(e=>e.scrollHeight-e.clientHeight);
+   assert.ok(longRange>max);
+   await scroll.evaluate(e=>e.scrollTop=80);await page.waitForTimeout(80);
+   assert.ok(Math.abs((await dialog.locator('.listing-detail-photo-button').boundingBox()).width-48)<2);
+   assert.ok(Math.abs((await scroll.evaluate(e=>e.scrollHeight-e.clientHeight))-longRange)<2);
+   await scroll.evaluate(e=>e.scrollTop=e.scrollHeight);await page.waitForTimeout(80);
+   const footer=await dialog.evaluate(e=>({bottom:e.querySelector('.listing-detail-info').getBoundingClientRect().bottom,viewport:e.querySelector('.listing-detail-scroll').getBoundingClientRect().bottom}));
+   assert.ok(Math.abs(footer.bottom-footer.viewport)<2,'No blank band at the end of long content');
+   await scroll.evaluate(e=>e.scrollTop=0);
+   await description.evaluate((e,text)=>e.textContent=text,original);await page.waitForTimeout(80);
+   assert.ok(Math.abs((await dialog.locator('.listing-detail-photo-button').boundingBox()).width-initial.width)<2);
+  }
   assert.equal(await dialog.locator('.listing-detail-more').count(),0);
   assert.deepEqual(await dialog.locator('.listing-detail-publisher dt').allTextContents(),['Estudiante','Categoría','Facultad']);
   assert.equal(await dialog.locator('.message-keyboard-hint,.notice-contact-meta').count(),0);
@@ -85,6 +105,12 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
    const owner=await dialog.evaluate(e=>{const region=e.querySelector('.listing-detail-scroll'),info=e.querySelector('.listing-detail-info');return {gap:region.clientHeight-(info.getBoundingClientRect().bottom-region.getBoundingClientRect().top+region.scrollTop),height:e.getBoundingClientRect().height}});
    assert.ok(owner.gap<=2,'Own listings must not force empty sheet space');
    assert.ok(owner.height<=Math.min(740,viewport.height-24)+2);
+  }
+  const ownRange=await dialog.locator('.listing-detail-scroll').evaluate(e=>e.scrollHeight-e.clientHeight);
+  if(device!=='desktop'&&motion!=='reduce'&&ownRange===0){
+   const photo=dialog.locator('.listing-detail-photo-button'),before=(await photo.boundingBox()).width;
+   await dialog.locator('.listing-detail-scroll').evaluate(e=>e.scrollTop=80);await page.waitForTimeout(80);
+   assert.ok(Math.abs((await photo.boundingBox()).width-before)<2,'Content that fits retains the large photo');
   }
   if(device==='mobile')await dialog.screenshot({path:'/out/detail-mobile-portrait.png'});
   await page.keyboard.press('Escape');

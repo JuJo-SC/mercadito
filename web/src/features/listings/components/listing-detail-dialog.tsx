@@ -40,16 +40,21 @@ export function ListingDetailDialog({
   useEffect(() => {
     const scroll = scrollRef.current;
     const gallery = galleryRef.current;
-    if (!scroll || !gallery || !hasPhotos) return;
+    const dialog = dialogRef.current;
+    if (!scroll || !gallery || !dialog || !hasPhotos) return;
+    const info = scroll.querySelector<HTMLElement>(".listing-detail-info");
     const mobile = window.matchMedia("(max-width: 760px)");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0;
+    let expandedScrollRange = -1;
 
-    // Keep the scroll geometry fixed; resize only the isolated photo overlay.
-    // object-fit: contain preserves each real photo while its frame contracts.
+    // Match the approved short-scroll preview. Offset content and viewport
+    // together so the native scroll range stays stable without an empty band.
     const paint = () => {
       frame = 0;
       if (!mobile.matches || reduced.matches) {
+        dialog.style.removeProperty("--detail-collapse-extra");
+        expandedScrollRange = -1;
         gallery.style.removeProperty("--photo-collapse");
         gallery.style.removeProperty("--photo-x");
         gallery.style.removeProperty("--photo-width");
@@ -58,12 +63,20 @@ export function ListingDetailDialog({
         delete gallery.dataset.collapsed;
         return;
       }
+      if (expandedScrollRange < 0) {
+        dialog.style.removeProperty("--detail-collapse-extra");
+        expandedScrollRange = Math.max(0, scroll.scrollHeight - scroll.clientHeight);
+      }
       const initialHeight = gallery.clientHeight;
       const initialWidth = Math.max(48, scroll.clientWidth - 24);
       const imageHeight = initialHeight - 24;
       const distance = Math.max(1, initialHeight - 72);
-      const amount = Math.min(distance, Math.max(0, scroll.scrollTop));
-      const progress = amount / distance;
+      const threshold = Math.min(80, expandedScrollRange);
+      const position = Math.max(0, scroll.scrollTop);
+      const progress = threshold > 0 ? Math.min(1, position / threshold) : 0;
+      const amount = distance * progress;
+      const consumed = Math.min(threshold, position);
+      dialog.style.setProperty("--detail-collapse-extra", Math.max(0, amount - consumed) + "px");
       gallery.style.setProperty("--photo-collapse", amount + "px");
       gallery.style.setProperty("--photo-x", (12 + 4 * progress) + "px");
       gallery.style.setProperty("--photo-width", (initialWidth + (48 - initialWidth) * progress) + "px");
@@ -74,17 +87,24 @@ export function ListingDetailDialog({
     const schedule = () => {
       if (!frame) frame = window.requestAnimationFrame(paint);
     };
+    const invalidate = () => {
+      expandedScrollRange = -1;
+      schedule();
+    };
+    const observer = new ResizeObserver(invalidate);
+    if (info) observer.observe(info);
     scroll.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-    mobile.addEventListener("change", schedule);
-    reduced.addEventListener("change", schedule);
+    window.addEventListener("resize", invalidate);
+    mobile.addEventListener("change", invalidate);
+    reduced.addEventListener("change", invalidate);
     paint();
     return () => {
       window.cancelAnimationFrame(frame);
       scroll.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      mobile.removeEventListener("change", schedule);
-      reduced.removeEventListener("change", schedule);
+      window.removeEventListener("resize", invalidate);
+      mobile.removeEventListener("change", invalidate);
+      reduced.removeEventListener("change", invalidate);
+      observer.disconnect();
     };
   }, [hasPhotos, multiplePhotos]);
 

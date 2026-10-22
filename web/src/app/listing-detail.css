@@ -95,3 +95,10 @@ body .campus-marketplace .product-card .product-card-title{font-size:.76rem}
 .listing-detail-refined .listing-gallery-arrows,.listing-photo-lightbox .listing-gallery-arrows{pointer-events:none}.listing-detail-refined .listing-gallery-arrows button,.listing-photo-lightbox .listing-gallery-arrows button{pointer-events:auto}
 
 .listing-photo-lightbox .listing-gallery-arrows{top:50%}
+
+/* Short photo collapse: keep content and viewport compensation synchronized. */
+@media(max-width:760px) and (prefers-reduced-motion:no-preference){
+.listing-detail-refined,.listing-detail-refined .listing-detail-shell,.listing-detail-refined .listing-detail-scroll{max-height:calc(min(740px,calc(100dvh - 24px)) - var(--detail-collapse-extra,0px))}
+.listing-detail-refined .listing-detail-info{margin-top:calc(-1 * var(--detail-collapse-extra,0px))}
+.listing-detail-refined .listing-detail-scroll{overflow-anchor:none}
+}
