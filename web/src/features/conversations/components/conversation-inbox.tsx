@@ -43,25 +43,6 @@ function formatActivity(value: string) {
   ).format(date).replace(".", "");
 }
 
-function formatPrice(price: number, currency: string) {
-  try {
-    return new Intl.NumberFormat("es-MX", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 2,
-    }).format(price);
-  } catch {
-    return "$" + price.toFixed(2);
-  }
-}
-
-function availabilityName(status: string) {
-  if (status === "RESERVED") return "Apartado";
-  if (status === "SOLD") return "Vendido";
-  if (status === "ARCHIVED") return "Archivado";
-  return "Publicado";
-}
-
 export function ConversationInbox({
   initialConversations,
   currentUserId,
@@ -110,28 +91,38 @@ export function ConversationInbox({
   }, [refresh]);
 
   const sections = [
-    { id: "received" as const, title: "Ventas", description: "Personas que preguntan por tus productos." },
-    { id: "initiated" as const, title: "Compras", description: "Conversaciones que iniciaste con otros vendedores." },
+    { id: "received" as const, title: "Ventas" },
+    { id: "initiated" as const, title: "Compras" },
   ];
   const visibleConversations = conversations.filter((conversation) => conversation.direction === direction);
   const selected = sections.find((section) => section.id === direction)!;
 
   return (
     <section className="conversation-inbox" aria-label="Tus conversaciones">
-      <div className="conversation-switcher" role="group" aria-label="Tipo de conversación">
-        {sections.map((section) => {
-          const items = conversations.filter((conversation) => conversation.direction === section.id);
-          const unread = items.reduce((total, conversation) => total + conversation.unreadCount, 0);
-          return (
-            <button key={section.id} type="button" aria-pressed={direction === section.id}
-              onClick={() => setDirection(section.id)}>
-              {section.title}<span className="conversation-section-count">{items.length}</span>
-              {unread > 0 ? <span className="conversation-section-unread" aria-label={unread + " mensajes sin leer"}>{unread}</span> : null}
-            </button>
-          );
-        })}
+      <div className="conversation-inbox-header">
+        <h1>Mensajes</h1>
+        <div className="conversation-switcher" role="group" aria-label="Tipo de conversación">
+          {sections.map((section) => {
+            const items = conversations.filter((conversation) => conversation.direction === section.id);
+            const unread = items.reduce((total, conversation) => total + conversation.unreadCount, 0);
+            return (
+              <button
+                key={section.id}
+                type="button"
+                aria-pressed={direction === section.id}
+                onClick={() => setDirection(section.id)}
+              >
+                <span>{section.title}</span>
+                {unread > 0 ? (
+                  <span className="conversation-section-unread" aria-label={unread + " mensajes sin leer"}>
+                    {unread}
+                  </span>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
       </div>
-      <p className="conversation-section-description">{selected.description}</p>
       {error ? <p className="messages-refresh-error" role="status">{error} <button className="text-action" type="button" onClick={() => void refresh()}>Reintentar</button></p> : null}
       {visibleConversations.length === 0 ? (
         <div className="messages-empty">
@@ -146,29 +137,35 @@ export function ConversationInbox({
         <ol className="conversation-product-list" aria-label={selected.title}>
           {visibleConversations.map((conversation) => {
             const lastMessage = conversation.lastMessage;
-            const needsReply = lastMessage && lastMessage.senderId !== currentUserId;
+            const activityTimestamp = lastMessage?.createdAt ?? conversation.updatedAt;
             const preview = lastMessage
               ? (lastMessage.senderId === currentUserId ? "Tú: " : "") + lastMessage.body
               : "Abre la conversación para continuar.";
             return (
               <li key={conversation.id}>
-                <Link className={"conversation-product-row" + (conversation.unreadCount > 0 ? " has-unread" : "")}
-                  href={"/mensajes/" + conversation.id}>
+                <Link
+                  className={"conversation-product-row" + (conversation.unreadCount > 0 ? " has-unread" : "")}
+                  href={"/mensajes/" + conversation.id}
+                >
                   <ProductThumbnail photoUrl={conversation.listing.photoUrl} title={conversation.listing.title} />
                   <span className="conversation-product-content">
-                    <span className="conversation-product-heading">
-                      <strong>{conversation.listing.title}</strong>
-                      <time dateTime={lastMessage?.createdAt ?? conversation.updatedAt}>
-                        {formatActivity(lastMessage?.createdAt ?? conversation.updatedAt)}
-                      </time>
-                    </span>
-                    <span className="conversation-product-person">{conversation.otherStudentName} · {formatPrice(conversation.listing.price, conversation.listing.currency)}</span>
+                    <strong className="conversation-product-title">{conversation.listing.title}</strong>
                     <span className="conversation-product-preview">{preview}</span>
-                    <span className="conversation-product-status">
-                      <span>{availabilityName(conversation.listing.status)}</span>
-                      {needsReply ? <span>Por responder</span> : lastMessage ? <span>Esperando respuesta</span> : null}
-                      {conversation.unreadCount > 0 ? <span className="conversation-unread">{conversation.unreadCount} sin leer</span> : null}
-                    </span>
+                  </span>
+                  <span className="conversation-product-meta">
+                    <time dateTime={activityTimestamp}>
+                      {formatActivity(activityTimestamp)}
+                    </time>
+                    {conversation.unreadCount > 0 ? (
+                      <span
+                        className="conversation-section-unread conversation-row-unread"
+                        aria-label={conversation.unreadCount + " mensajes sin leer"}
+                      >
+                        {conversation.unreadCount}
+                      </span>
+                    ) : (
+                      <span className="conversation-row-unread-placeholder" aria-hidden="true" />
+                    )}
                   </span>
                   <ArrowRight className="conversation-product-arrow" aria-hidden="true" size={18} />
                 </Link>

@@ -35,15 +35,16 @@ body:has(.app-header.is-authenticated) .marketplace-sidebar{scrollbar-color:#b9c
 body:has(.app-header.is-authenticated) .filter-information{margin-top:16px;padding:10px 0;border-top:1px solid var(--rule);}
 body:has(.app-header.is-authenticated) .filter-information summary{min-height:44px;display:flex;align-items:center;font-size:.76rem;color:var(--muted);cursor:pointer;}
 body:has(.app-header.is-authenticated) .filter-information .sort-context,body:has(.app-header.is-authenticated) .filter-information .marketplace-sidebar-disclosure{font-size:.75rem;line-height:1.55;margin:8px 0;}
-/* Inbox: tabs, context and conversations are a single grouped surface. */
+/* Inbox: header, compact segmented switcher and conversations are a single grouped surface. */
 body:has(.app-header.is-authenticated) .conversation-inbox{padding:0;border:1px solid var(--rule);border-radius:var(--session-panel-radius);background:white;overflow:hidden;}
-body:has(.app-header.is-authenticated) .conversation-switcher{margin:16px;width:min(410px,calc(100% - 32px));max-width:none;background:var(--paper);}
-body:has(.app-header.is-authenticated) .conversation-switcher button[aria-pressed="true"]{background:var(--signal-soft);color:var(--signal);}
-body:has(.app-header.is-authenticated) .conversation-section-description{margin:0;padding:12px 20px;border-block:1px solid var(--rule);background:#fbfcfb;font-size:.81rem;}
+body:has(.app-header.is-authenticated) .conversation-inbox-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-bottom:1px solid var(--rule);background:white;}
+body:has(.app-header.is-authenticated) .conversation-inbox-header h1{margin:0;font-size:1.25rem;font-weight:680;line-height:1.2;letter-spacing:-.025em;}
+body:has(.app-header.is-authenticated) .conversation-switcher{margin:0;width:auto;max-width:none;padding:3px;border-radius:10px;background:#eef0ee;}
+body:has(.app-header.is-authenticated) .conversation-switcher button[aria-pressed="true"]{background:white;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08),0 0 0 .5px rgba(0,0,0,.04);}
 body:has(.app-header.is-authenticated) .conversation-product-list{border:0;border-radius:0;}
-body:has(.app-header.is-authenticated) .conversation-product-row{padding:20px;}
-body:has(.app-header.is-authenticated) .conversation-product-preview{font-size:.86rem;line-height:1.45;}
-body:has(.app-header.is-authenticated) .conversation-product-status{margin-top:3px;}
+body:has(.app-header.is-authenticated) .conversation-product-row{grid-template-columns:64px minmax(0,1fr) auto 18px;gap:14px;padding:14px 20px;}
+body:has(.app-header.is-authenticated) .conversation-product-row .product-thumbnail{width:64px;height:64px;}
+body:has(.app-header.is-authenticated) .conversation-product-preview{font-size:.86rem;line-height:1.4;}
 body:has(.app-header.is-authenticated) .conversation-inbox .messages-empty{border:0;border-radius:0;}
 /* Publishing keeps the existing three steps inside one calm form panel. */
 body:has(.app-header.is-authenticated) .listing-flow{padding:24px;border:1px solid var(--rule);border-radius:var(--session-panel-radius);background:white;}
@@ -117,12 +118,18 @@ body:has(.app-header.is-authenticated) .task-page-description{font-size:.84rem;}
  body:has(.app-header.is-authenticated) .product-card-title{font-size:.8rem;}
  body:has(.app-header.is-authenticated) .product-card-meta,body:has(.app-header.is-authenticated) .product-card-seller{font-size:.69rem;}
  body:has(.app-header.is-authenticated) .product-card-price{font-size:1rem;}
- body:has(.app-header.is-authenticated) .conversation-product-row{padding:16px 14px;}
- body:has(.app-header.is-authenticated) .conversation-product-heading{flex-wrap:wrap;gap:3px;}
- body:has(.app-header.is-authenticated) .conversation-product-row .product-thumbnail{width:64px;height:64px;}
- body:has(.app-header.is-authenticated) .conversation-product-row{grid-template-columns:64px minmax(0,1fr);}
- body:has(.app-header.is-authenticated) .conversation-product-person,body:has(.app-header.is-authenticated) .conversation-product-preview{font-size:.77rem;}
- body:has(.app-header.is-authenticated) .conversation-product-status{font-size:.68rem;}
+ body:has(.app-header.is-authenticated) .conversation-inbox-header{padding:12px 14px;gap:8px;}
+ body:has(.app-header.is-authenticated) .conversation-inbox-header h1{font-size:1.08rem;}
+ body:has(.app-header.is-authenticated) .conversation-switcher button{min-height:30px;padding:4px 10px;font-size:.78rem;gap:5px;}
+ body:has(.app-header.is-authenticated) .conversation-section-unread{min-width:18px;height:18px;min-height:18px;padding:0 5px;font-size:.68rem;}
+ body:has(.app-header.is-authenticated) .conversation-row-unread-placeholder{height:18px;}
+ body:has(.app-header.is-authenticated) .conversation-product-row{grid-template-columns:52px minmax(0,1fr) auto;gap:12px;padding:12px 14px;}
+ body:has(.app-header.is-authenticated) .conversation-product-row .product-thumbnail{width:52px;height:52px;}
+ body:has(.app-header.is-authenticated) .conversation-product-title,body:has(.app-header.is-authenticated) .conversation-product-content strong{font-size:.9rem;}
+ body:has(.app-header.is-authenticated) .conversation-product-preview{font-size:.8rem;}
+ body:has(.app-header.is-authenticated) .conversation-product-meta{min-width:34px;gap:5px;}
+ body:has(.app-header.is-authenticated) .conversation-product-meta time{font-size:.72rem;}
+ body:has(.app-header.is-authenticated) .conversation-product-arrow{display:none;}
  body:has(.app-header.is-authenticated) .listing-flow{padding:18px;}
  body:has(.app-header.is-authenticated) .listing-photo-field{padding:14px;}
  body:has(.app-header.is-authenticated) .publish-progress{padding-bottom:16px;margin-bottom:20px;gap:8px;}
