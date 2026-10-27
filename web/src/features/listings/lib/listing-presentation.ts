@@ -14,9 +14,9 @@ export type MarketplaceListing = {
 
 export const conditionNames: Record<string, string> = {
   NEW: "Nuevo",
-  LIKE_NEW: "Como nuevo",
-  GOOD: "Buen estado",
-  FAIR: "Con detalles",
+  LIKE_NEW: "Usado · Como nuevo",
+  GOOD: "Usado · Buen estado",
+  FAIR: "Usado · Con detalles",
 };
 
 export function formatPrice(price: number, currency: string) {

@@ -35,23 +35,22 @@ type MarketplaceProps = {
 
 const categories = [
   { id: "ALL", label: "Todos" },
-  { id: "FOOD", label: "Comida" },
+  { id: "FOOD", label: "Alimentos" },
+  { id: "BOOKS", label: "Libros y material académico" },
+  { id: "TECHNOLOGY", label: "Dispositivos electrónicos" },
+  { id: "HOME", label: "Decoración y artículos de oficina u hogar" },
   { id: "CLOTHING", label: "Ropa" },
-  { id: "TECHNOLOGY", label: "Tecnología" },
-  { id: "HOME", label: "Hogar" },
-  { id: "ACCESSORIES", label: "Accesorios" },
-  { id: "BOOKS", label: "Libros" },
-  { id: "SERVICES", label: "Servicios" },
+  { id: "ACCESSORIES", label: "Accesorios y complementos" },
   { id: "OTHER", label: "Otros" },
 ];
 
 const categoryNames: Record<string, string> = {
-  FOOD: "Comida",
-  BOOKS: "Libros",
-  TECHNOLOGY: "Tecnología",
-  HOME: "Hogar",
+  FOOD: "Alimentos",
+  BOOKS: "Libros y material académico",
+  TECHNOLOGY: "Dispositivos electrónicos",
+  HOME: "Decoración y artículos de oficina u hogar",
   CLOTHING: "Ropa",
-  ACCESSORIES: "Accesorios",
+  ACCESSORIES: "Accesorios y complementos",
   SERVICES: "Servicios",
   OTHER: "Otros",
 };

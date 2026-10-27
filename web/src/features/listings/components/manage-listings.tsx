@@ -29,20 +29,21 @@ const statusLabels: Record<ListingStatus, string> = {
 };
 
 const categoryLabels: Record<string, string> = {
-  BOOKS: "Libros y apuntes",
-  TECHNOLOGY: "Tecnología",
-  HOME: "Hogar",
+  FOOD: "Alimentos",
+  BOOKS: "Libros y material académico",
+  TECHNOLOGY: "Dispositivos electrónicos",
+  HOME: "Decoración y artículos de oficina u hogar",
   CLOTHING: "Ropa",
-  ACCESSORIES: "Accesorios",
+  ACCESSORIES: "Accesorios y complementos",
   SERVICES: "Servicios",
   OTHER: "Otros",
 };
 
 const conditionLabels: Record<string, string> = {
   NEW: "Nuevo",
-  LIKE_NEW: "Como nuevo",
-  GOOD: "Buen estado",
-  FAIR: "Con detalles",
+  LIKE_NEW: "Usado · Como nuevo",
+  GOOD: "Usado · Buen estado",
+  FAIR: "Usado · Con detalles",
 };
 
 const statusActions: Record<ListingStatus, { label: string; status: ListingStatus }[]> = {

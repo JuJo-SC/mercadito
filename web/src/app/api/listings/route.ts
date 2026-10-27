@@ -201,6 +201,12 @@ export async function POST(request: Request) {
       );
     }
     photos = await parseListingPhotos(formData);
+    if (photos.length === 0) {
+      return Response.json(
+        { error: "Sube al menos 1 foto del producto para publicar." },
+        { status: 400, headers: privateNoStore },
+      );
+    }
 
     const { publish, submissionId, ...content } = parsed.data;
     const hash = createHash("sha256")

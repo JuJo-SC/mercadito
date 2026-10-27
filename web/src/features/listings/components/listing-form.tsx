@@ -7,33 +7,82 @@ import {
   MAX_LISTING_PHOTO_BYTES,
   MAX_TOTAL_LISTING_PHOTO_BYTES,
 } from "@/features/listings/lib/listing-photo-limits";
+import { DismissibleDetails } from "@/components/dismissible-details";
 import Link from "next/link";
 import {
   ArrowLeft,
-  Camera,
   ArrowRight,
+  Camera,
   Check,
+  CircleAlert,
   CircleCheck,
+  CircleHelp,
   LoaderCircle,
+  Sparkles,
+  Star,
 } from "lucide-react";
 
 const categories = [
-  { value: "FOOD", label: "Comida" },
-  { value: "BOOKS", label: "Libros y apuntes" },
-  { value: "TECHNOLOGY", label: "Tecnología" },
-  { value: "HOME", label: "Hogar" },
+  { value: "FOOD", label: "Alimentos" },
+  { value: "BOOKS", label: "Libros y material académico" },
+  { value: "TECHNOLOGY", label: "Dispositivos electrónicos" },
+  { value: "HOME", label: "Decoración y artículos de oficina u hogar" },
   { value: "CLOTHING", label: "Ropa" },
-  { value: "ACCESSORIES", label: "Accesorios" },
-  { value: "SERVICES", label: "Servicios" },
+  { value: "ACCESSORIES", label: "Accesorios y complementos" },
   { value: "OTHER", label: "Otros" },
-];
+] as const;
 
 const conditions = [
-  { value: "NEW", label: "Nuevo" },
-  { value: "LIKE_NEW", label: "Como nuevo" },
-  { value: "GOOD", label: "Buen estado" },
-  { value: "FAIR", label: "Con detalles" },
-];
+  { value: "NEW", label: "Nuevo", Icon: Sparkles },
+  { value: "LIKE_NEW", label: "Usado · Como nuevo", Icon: Star },
+  { value: "GOOD", label: "Usado · Buen estado", Icon: Check },
+  { value: "FAIR", label: "Usado · Con detalles", Icon: CircleAlert },
+] as const;
+
+const titleExamplesByCategory: Record<string, readonly string[]> = {
+  FOOD: [
+    "Ej. Pay de queso casero, brownies o galletas",
+    "Ej. Agua de frutas natural o café frío",
+    "Ej. Ensalada fresca, baguettes o fruta picada",
+  ],
+  BOOKS: [
+    "Ej. Libro de cálculo, edición reciente",
+    "Ej. Bata de laboratorio talla M o gafas protectoras",
+    "Ej. Estuche de disección, atlas de anatomía o manual",
+  ],
+  TECHNOLOGY: [
+    "Ej. Audífonos inalámbricos, teclado mecánico o teléfono",
+    "Ej. Bocina portátil, mouse ergonómico o calculadora científica",
+    "Ej. Monitor, tableta gráfica o cargador original",
+  ],
+  HOME: [
+    "Ej. Lámpara de escritorio, maceta pequeña u organizador",
+    "Ej. Silla de oficina, porta lápices o repisa de madera",
+    "Ej. Espejo de mesa, planta decorativa o pizarrón de corcho",
+  ],
+  CLOTHING: [
+    "Ej. Sudadera universitaria talla M o chamarra de mezclilla",
+    "Ej. Camisa casual, tenis deportivos o pantalón en buen estado",
+  ],
+  ACCESSORIES: [
+    "Ej. Mochila impermeable, gorra, reloj o termo de acero",
+    "Ej. Bolsa de tela, lentes de sol, llavero o funda para laptop",
+  ],
+  OTHER: [
+    "Ej. Guitarra acústica, balón de basquetbol o patineta",
+    "Ej. Restirador de dibujo, juego de mesa o maletín deportivo",
+  ],
+};
+
+const generalTitleExamples = [
+  "Ej. Libro de cálculo, bata de laboratorio o kit de disección",
+  "Ej. Audífonos inalámbricos, teclado mecánico o teléfono",
+  "Ej. Pay de queso casero, galletas o agua de frutas natural",
+  "Ej. Lámpara de escritorio, silla de oficina o maceta decorativa",
+  "Ej. Mochila impermeable, termo de acero, gorra o reloj",
+  "Ej. Sudadera universitaria talla M o chamarra de mezclilla",
+  "Ej. Guitarra acústica, balón de basquetbol o restirador",
+] as const;
 
 const steps = ["Publicación", "Detalles", "Revisar"] as const;
 
@@ -88,11 +137,13 @@ export function ListingForm({
   universityName,
   studentId,
   demo = false,
+  testCampus = false,
   listing,
 }: {
   universityName: string;
   studentId?: string;
   demo?: boolean;
+  testCampus?: boolean;
   listing?: EditableListing;
 }) {
   const editing = Boolean(listing);
@@ -108,6 +159,7 @@ export function ListingForm({
       : emptyDraft,
   );
   const [step, setStep] = useState(0);
+  const [exampleIndex, setExampleIndex] = useState(0);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [submissionConflict, setSubmissionConflict] = useState(false);
@@ -120,6 +172,7 @@ export function ListingForm({
   const [publishedPhotoUrls, setPublishedPhotoUrls] = useState<string[] | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const addPhotoButtonRef = useRef<HTMLButtonElement>(null);
   const submissionIdRef = useRef<string | null>(null);
 
   const allocatedPhotoUrls = useRef(new Set<string>());
@@ -131,6 +184,21 @@ export function ListingForm({
       urls.clear();
     };
   }, []);
+
+  useEffect(() => {
+    if (step !== 0 || draft.title.trim()) return;
+    const timer = window.setInterval(() => {
+      setExampleIndex((current) => current + 1);
+    }, 3500);
+    return () => window.clearInterval(timer);
+  }, [step, draft.title, draft.category]);
+
+  const activeTitleExamples =
+    draft.category && titleExamplesByCategory[draft.category]
+      ? titleExamplesByCategory[draft.category]
+      : generalTitleExamples;
+  const activeTitlePlaceholder =
+    activeTitleExamples[exampleIndex % activeTitleExamples.length];
 
   function updatePhotoFiles(files: File[]) {
     const previewUrls = files.map((file) => URL.createObjectURL(file));
@@ -152,6 +220,7 @@ export function ListingForm({
 
   function updateDraft(field: keyof ListingDraft, value: string) {
     setDraft((current) => ({ ...current, [field]: value }));
+    if (field === "category") setExampleIndex(0);
   }
 
   function goToStep(nextStep: number) {
@@ -179,6 +248,12 @@ export function ListingForm({
       }
     }
 
+    if (step === 0 && currentPhotoUrls.length === 0) {
+      setError("Sube al menos 1 foto del producto para continuar.");
+      addPhotoButtonRef.current?.focus();
+      return;
+    }
+
     goToStep(Math.min(step + 1, steps.length - 1));
   }
 
@@ -187,6 +262,12 @@ export function ListingForm({
     if (pending || submissionConflict) return;
     if (step < steps.length - 1) {
       continueStep();
+      return;
+    }
+
+    if (currentPhotoUrls.length === 0) {
+      setError("Sube al menos 1 foto del producto para publicar.");
+      setStep(0);
       return;
     }
 
@@ -296,7 +377,7 @@ export function ListingForm({
 
   const categoryLabel =
     categories.find((category) => category.value === draft.category)?.label ??
-    "Categoría pendiente";
+    (draft.category === "SERVICES" ? "Servicios" : "Categoría pendiente");
   const conditionLabel =
     conditions.find((condition) => condition.value === draft.condition)?.label ??
     "Condición pendiente";
@@ -330,7 +411,7 @@ export function ListingForm({
           <span>{conditionLabel}</span>
         </div>
         <div className="product-preview-heading">
-          <h3>{draft.title || "Nombre del producto o servicio"}</h3>
+          <h3>{draft.title || "Nombre de lo que quieres vender"}</h3>
           <strong>{formatPrice(draft.price)}</strong>
         </div>
         <p className="product-preview-description">
@@ -386,31 +467,69 @@ export function ListingForm({
 
   return (
     <div className="listing-flow">
-      <ol className="publish-progress" aria-label="Pasos para publicar">
-        {steps.map((label, index) => (
-          <li
-            className={
-              index === step
-                ? "publish-progress-step is-current"
-                : index < step
-                  ? "publish-progress-step is-complete"
-                  : "publish-progress-step"
-            }
-            key={label}
-          >
-            <span className="publish-progress-rule" aria-hidden="true" />
-            <span aria-current={index === step ? "step" : undefined}>
-              {index < step ? (
-                <>
-                  <Check className="progress-check" aria-hidden="true" size={14} />
-                  <span className="sr-only">Completado: </span>
-                </>
+      <header className="publish-card-header">
+        <div className="publish-card-title-row">
+          <h1>
+            {demo
+              ? "Probar publicación"
+              : editing
+                ? "Editar publicación"
+                : "Publicar producto"}
+          </h1>
+          <DismissibleDetails className="publish-help">
+            <summary aria-label="Normas de publicación" title="Normas de publicación">
+              <CircleHelp aria-hidden="true" size={17} strokeWidth={2} />
+            </summary>
+            <div className="publish-help-popover">
+              <p className="publish-help-title">Normas de publicación</p>
+              <ul className="publish-help-list">
+                <li>
+                  <strong>Respeta las normas del campus:</strong> solo artículos físicos permitidos (sin tareas, apuntes, servicios ni objetos restringidos).
+                </li>
+                <li>
+                  <strong>Foto obligatoria:</strong> sube al menos 1 foto real de lo que vendes.
+                </li>
+                <li>
+                  <strong>Comunidad universitaria:</strong> visible solo para estudiantes activos de {universityName}.
+                </li>
+              </ul>
+              {testCampus ? (
+                <p className="publish-help-note">Campus de prueba: usa datos ficticios.</p>
               ) : null}
-              {label}
-            </span>
-          </li>
-        ))}
-      </ol>
+              {demo ? (
+                <p className="publish-help-note">Recorrido de demostración: no se guarda.</p>
+              ) : null}
+            </div>
+          </DismissibleDetails>
+        </div>
+
+        <ol className="publish-progress" aria-label="Pasos para publicar">
+          {steps.map((label, index) => (
+            <li
+              className={
+                index === step
+                  ? "publish-progress-step is-current"
+                  : index < step
+                    ? "publish-progress-step is-complete"
+                    : "publish-progress-step"
+              }
+              key={label}
+            >
+              <span className="publish-progress-rule" aria-hidden="true" />
+              <span aria-current={index === step ? "step" : undefined}>
+                {index < step ? (
+                  <>
+                    <Check className="progress-check" aria-hidden="true" size={14} />
+                    <span className="sr-only">Completado: </span>
+                  </>
+                ) : null}
+                {label}
+              </span>
+            </li>
+          ))}
+        </ol>
+      </header>
+
       <p className="sr-only" aria-live="polite" aria-atomic="true">
         Paso {step + 1} de {steps.length}: {steps[step]}.
       </p>
@@ -421,61 +540,63 @@ export function ListingForm({
       >
         <div className="form-section-heading publish-step-heading">
           <h2 id="listing-step-title" ref={headingRef} tabIndex={-1}>
-            {step === 0 ? "Datos del producto" : step === 1 ? "Precio y descripción" : "Revisar publicación"}
+            {step === 0 ? "Detalles del producto" : step === 1 ? "Precio y descripción" : "Revisar publicación"}
           </h2>
-          <p>
-            {step === 0
-              ? editing
-                ? "Corrige el título, la categoría o la condición de la publicación."
-                : "Empieza por lo que alguien necesitaría para reconocerlo."
-              : step === 1
+          {step > 0 ? (
+            <p>
+              {step === 1
                 ? editing
                   ? "Ajusta el precio o añade el contexto que haga falta."
-                  : "Una condición clara y una buena descripción evitan dudas."
+                  : "Un precio claro y una buena descripción evitan dudas."
                 : editing
                   ? "Así se verá la publicación. Su disponibilidad no cambiará."
                   : `Así lo verán los estudiantes activos de ${universityName}.`}
-          </p>
+            </p>
+          ) : null}
         </div>
 
         {step === 0 ? (
           <div className="publish-step-fields">
-            <label className="field" htmlFor="listing-title">
-              <span>Nombre del producto o servicio *</span>
-              <input
-                id="listing-title"
-                name="title"
-                type="text"
-                minLength={4}
-                maxLength={90}
-                placeholder="Ej. Libro de cálculo, edición reciente"
-                value={draft.title}
-                onChange={(event) => updateDraft("title", event.target.value)}
-                required
-              />
-              <small>Usa un nombre que destaque al explorar el mercadito.</small>
-            </label>
+            <div className="publish-primary-row">
+              <label className="field" htmlFor="listing-title">
+                <span>Nombre de lo que quieres vender *</span>
+                <input
+                  id="listing-title"
+                  name="title"
+                  type="text"
+                  minLength={4}
+                  maxLength={90}
+                  placeholder={activeTitlePlaceholder}
+                  value={draft.title}
+                  onChange={(event) => updateDraft("title", event.target.value)}
+                  required
+                />
+              </label>
 
-            <label className="field" htmlFor="listing-category">
-              <span>Categoría *</span>
-              <select
-                id="listing-category"
-                name="category"
-                value={draft.category}
-                onChange={(event) => updateDraft("category", event.target.value)}
-                required
-              >
-                <option value="">Elige una categoría</option>
-                {categories.map(({ value, label }) => (
-                  <option value={value} key={value}>{label}</option>
-                ))}
-              </select>
-            </label>
+              <label className="field" htmlFor="listing-category">
+                <span>Categoría *</span>
+                <select
+                  id="listing-category"
+                  name="category"
+                  value={draft.category}
+                  onChange={(event) => updateDraft("category", event.target.value)}
+                  required
+                >
+                  <option value="">Elige una categoría</option>
+                  {categories.map(({ value, label }) => (
+                    <option value={value} key={value}>{label}</option>
+                  ))}
+                  {editing && draft.category === "SERVICES" ? (
+                    <option value="SERVICES">Servicios</option>
+                  ) : null}
+                </select>
+              </label>
+            </div>
 
             <fieldset className="condition-fieldset">
               <legend>Condición *</legend>
               <div className="condition-options">
-                {conditions.map(({ value, label }, index) => {
+                {conditions.map(({ value, label, Icon }, index) => {
                   const id = `listing-condition-${value.toLowerCase()}`;
                   return (
                     <label
@@ -491,6 +612,7 @@ export function ListingForm({
                         id={id}
                         name="condition"
                         type="radio"
+                        className="condition-radio-input"
                         value={value}
                         checked={draft.condition === value}
                         onChange={(event) =>
@@ -498,7 +620,10 @@ export function ListingForm({
                         }
                         required={index === 0}
                       />
-                      <span>{label}</span>
+                      <span className="condition-option-icon" aria-hidden="true">
+                        <Icon aria-hidden="true" size={15} strokeWidth={2} />
+                      </span>
+                      <span className="condition-option-label">{label}</span>
                     </label>
                   );
                 })}
@@ -506,16 +631,36 @@ export function ListingForm({
             </fieldset>
 
             <div className="listing-photo-field">
-              <div className="listing-photo-heading">
-                <div>
-                  <label>Fotos del producto <span>Opcional</span></label>
-                  <p id="listing-photo-help">
-                    Agrega hasta 5 fotos JPG, PNG o WebP. Cada una puede pesar hasta 8 MB y juntas hasta 20 MB.
-                  </p>
+              <div className="listing-photo-bar">
+                <div className="listing-photo-title-group">
+                  <label htmlFor="listing-photo">
+                    Fotos del producto <span className="required-mark" aria-hidden="true">*</span>
+                  </label>
+                  <span
+                    className={
+                      currentPhotoUrls.length
+                        ? "listing-photo-count has-photos"
+                        : "listing-photo-count"
+                    }
+                    id="listing-photo-state"
+                    aria-live="polite"
+                  >
+                    <Camera aria-hidden="true" size={12} strokeWidth={2} />
+                    <span>{currentPhotoUrls.length}/{MAX_LISTING_PHOTOS}</span>
+                  </span>
                 </div>
-                <span className="listing-photo-count" aria-live="polite">
-                  {currentPhotoUrls.length} / {MAX_LISTING_PHOTOS}
-                </span>
+
+                {currentPhotoUrls.length < MAX_LISTING_PHOTOS ? (
+                  <button
+                    ref={addPhotoButtonRef}
+                    className="listing-photo-add"
+                    type="button"
+                    onClick={() => photoInputRef.current?.click()}
+                  >
+                    <Camera aria-hidden="true" size={16} strokeWidth={1.8} />
+                    {currentPhotoUrls.length ? "Agregar fotos" : "Elegir fotos"}
+                  </button>
+                ) : null}
               </div>
 
               {currentPhotoUrls.length ? (
@@ -574,7 +719,7 @@ export function ListingForm({
                 accept="image/jpeg,image/png,image/webp"
                 multiple
                 aria-label="Elegir fotos del producto"
-                aria-describedby="listing-photo-help listing-photo-state"
+                aria-describedby="listing-photo-state"
                 onChange={(event) => {
                   const selected = Array.from(event.currentTarget.files ?? []);
                   event.currentTarget.value = "";
@@ -598,21 +743,6 @@ export function ListingForm({
                   updatePhotoFiles([...photoFiles, ...selected]);
                 }}
               />
-              {currentPhotoUrls.length < MAX_LISTING_PHOTOS ? (
-                <button
-                  className="listing-photo-add"
-                  type="button"
-                  onClick={() => photoInputRef.current?.click()}
-                >
-                  <Camera aria-hidden="true" size={18} strokeWidth={1.8} />
-                  {currentPhotoUrls.length ? "Agregar fotos" : "Elegir fotos"}
-                </button>
-              ) : null}
-              <span className="listing-photo-state" id="listing-photo-state" aria-live="polite">
-                {currentPhotoUrls.length
-                  ? `${currentPhotoUrls.length} de ${MAX_LISTING_PHOTOS} fotos seleccionadas.`
-                  : "Sin fotos seleccionadas."}
-              </span>
             </div>
           </div>
         ) : null}
@@ -649,7 +779,7 @@ export function ListingForm({
                 aria-describedby="listing-description-help listing-description-limit"
                 minLength={10}
                 maxLength={2000}
-                rows={6}
+                rows={5}
                 placeholder="Anota la edición, medidas, detalles visibles o qué incluye."
                 value={draft.description}
                 onChange={(event) =>
