@@ -4,7 +4,7 @@ import { findConversationForStudent } from "@/features/conversations/lib/convers
 import { getActiveStudent } from "@/features/auth/lib/require-student";
 import { countUnreadMessagesForStudent } from "@/features/conversations/lib/conversations";
 import { MessageThread } from "@/features/conversations/components/message-thread";
-import { SiteFooter, SiteHeader } from "@/components/site-header";
+import { SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";
 
@@ -71,7 +71,6 @@ export default async function ConversationPage({ params }: MessagePageProps) {
           readAt: message.readAt?.toISOString() ?? null,
         }))}
       />
-      <SiteFooter />
     </>
   );
 }

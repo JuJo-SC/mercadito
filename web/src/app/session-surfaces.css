@@ -81,26 +81,33 @@ body:has(.app-header.is-authenticated) .seller-action-menu>button{display:flex;a
 body:has(.app-header.is-authenticated) .seller-action-menu>button:hover{background:var(--signal-soft);}
 body:has(.app-header.is-authenticated) .seller-action-menu>button:disabled{opacity:.5;cursor:wait;}
 body:has(.app-header.is-authenticated) .seller-feedback:not(:empty),body:has(.app-header.is-authenticated) .seller-error{padding:14px 18px;margin:0 0 16px;border-radius:12px;background:var(--signal-soft);color:#126b55;font-size:.85rem;}
-/* Conversation: product context and help stay grouped above the exchange. */
-body:has(.app-header.is-authenticated) .message-thread-page{display:flex;flex-direction:column;gap:16px;height:calc(100dvh - var(--app-header-height) - var(--app-bottom-height) - env(safe-area-inset-bottom));min-height:0;padding-block:20px 24px;max-width:960px;}
-body:has(.app-header.is-authenticated) .thread-overview{flex-shrink:0;padding:18px 22px;border:1px solid var(--rule);border-radius:var(--session-panel-radius);background:white;}
-body:has(.app-header.is-authenticated) .thread-overview>.back-link{min-height:32px;margin:0;font-size:.78rem;}
-body:has(.app-header.is-authenticated) .message-thread-heading{margin:7px 0 12px;}
-body:has(.app-header.is-authenticated) .message-thread-heading h1{font-size:1.3rem;}
-body:has(.app-header.is-authenticated) .message-thread-heading p{font-size:.82rem;color:var(--muted);}
-body:has(.app-header.is-authenticated) .thread-listing{padding:12px 14px;border-radius:12px;background:var(--signal-soft);}
-body:has(.app-header.is-authenticated) .thread-listing h2,body:has(.app-header.is-authenticated) .thread-listing>strong{font-size:.95rem;}
-body:has(.app-header.is-authenticated) .thread-payment-help{margin-top:8px;}
-body:has(.app-header.is-authenticated) .thread-payment-help>summary{font-size:.75rem;color:var(--muted);cursor:pointer;}
-body:has(.app-header.is-authenticated) .thread-payment-note{margin:6px 0 0;font-size:.76rem;}
-body:has(.app-header.is-authenticated) .thread-exchange{display:flex;flex-direction:column;flex:1;min-height:0;border:1px solid var(--rule);border-radius:var(--session-panel-radius);background:white;overflow:hidden;}
-body:has(.app-header.is-authenticated) .thread-messages{flex:1;min-height:90px;max-height:none;margin:0;padding:20px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#bdd0c7 transparent;background:var(--paper);}
-body:has(.app-header.is-authenticated) .thread-composer{flex-shrink:0;padding:12px 18px;border-top:1px solid var(--rule);}
-body:has(.app-header.is-authenticated) .thread-composer label{font-size:.78rem;}
-body:has(.app-header.is-authenticated) .thread-composer textarea{min-height:60px;padding:10px 12px;}
-body:has(.app-header.is-authenticated) .thread-composer-foot{margin-top:8px;}
-body:has(.app-header.is-authenticated) .thread-composer-foot p{font-size:.68rem;}
-body:has(.app-header.is-authenticated) .thread-send{min-height:44px;padding:10px 16px;font-size:.85rem;}
+/* Conversation: unified single-scroll surface with compact header and inline composer. */
+html:has(.message-thread-page),body:has(.message-thread-page){height:100dvh;max-height:100dvh;overflow:hidden;}
+body:has(.app-header.is-authenticated) .message-thread-page{display:flex;flex-direction:column;height:calc(100dvh - var(--app-header-height) - var(--app-bottom-height) - env(safe-area-inset-top) - env(safe-area-inset-bottom));max-height:calc(100dvh - var(--app-header-height) - var(--app-bottom-height) - env(safe-area-inset-top) - env(safe-area-inset-bottom));min-height:0;padding-block:12px 14px;max-width:860px;overflow:hidden;}
+body:has(.app-header.is-authenticated) .thread-exchange{display:flex;flex-direction:column;flex:1;min-height:0;max-width:none;border:1px solid var(--rule);border-radius:var(--session-panel-radius);background:white;overflow:hidden;}
+body:has(.app-header.is-authenticated) .thread-header{position:relative;display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--rule);background:white;flex-shrink:0;}
+body:has(.app-header.is-authenticated) .thread-back-button{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;color:var(--ink);text-decoration:none;flex-shrink:0;transition:background-color 160ms ease,color 160ms ease;}
+body:has(.app-header.is-authenticated) .thread-back-button:hover{background:var(--signal-soft);color:var(--signal);}
+body:has(.app-header.is-authenticated) .thread-header-copy{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px;}
+body:has(.app-header.is-authenticated) .thread-header-title-row{display:flex;align-items:baseline;gap:8px;min-width:0;}
+body:has(.app-header.is-authenticated) .thread-header-title-row h1{margin:0;font-family:var(--font-body);font-size:.96rem;font-weight:650;line-height:1.3;letter-spacing:-.015em;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+body:has(.app-header.is-authenticated) .thread-header-price{flex-shrink:0;padding:2px 8px;border-radius:999px;background:var(--signal-soft);color:var(--signal);font-size:.75rem;font-weight:650;line-height:1.3;font-variant-numeric:tabular-nums;}
+body:has(.app-header.is-authenticated) .thread-header-student{margin:0;color:var(--muted);font-size:.78rem;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+body:has(.app-header.is-authenticated) .thread-help{position:relative;flex-shrink:0;}
+body:has(.app-header.is-authenticated) .thread-help>summary{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid var(--rule);border-radius:10px;background:white;color:var(--muted);list-style:none;cursor:pointer;transition:background-color 160ms ease,color 160ms ease,border-color 160ms ease;}
+body:has(.app-header.is-authenticated) .thread-help>summary::-webkit-details-marker{display:none;}
+body:has(.app-header.is-authenticated) .thread-help[open]>summary,body:has(.app-header.is-authenticated) .thread-help>summary:hover{background:var(--signal-soft);border-color:var(--signal-soft);color:var(--signal);}
+body:has(.app-header.is-authenticated) .thread-help-popover{position:absolute;top:calc(100% + 8px);right:0;z-index:40;width:min(260px,calc(100vw - 40px));padding:12px 14px;border:1px solid var(--rule);border-radius:14px;background:white;box-shadow:0 12px 28px rgba(29,29,31,.12);color:var(--muted);font-size:.78rem;line-height:1.45;}
+body:has(.app-header.is-authenticated) .thread-help-popover p{margin:0;}
+body:has(.app-header.is-authenticated) .thread-help-popover .thread-help-title{margin-bottom:4px;color:var(--ink);font-weight:650;}
+body:has(.app-header.is-authenticated) .thread-campus-note{margin:0;padding:6px 14px;border-bottom:1px solid var(--rule);background:var(--signal-soft);color:var(--signal);font-size:.72rem;flex-shrink:0;}
+body:has(.app-header.is-authenticated) .thread-messages{flex:1;min-height:0;max-height:none;margin:0;padding:16px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#bdd0c7 transparent;background:var(--paper);}
+body:has(.app-header.is-authenticated) .thread-status,body:has(.app-header.is-authenticated) .thread-error{margin:0;padding:8px 14px;border-top:1px solid var(--rule);background:#fff1ef;color:#a3291c;font-size:.78rem;flex-shrink:0;}
+body:has(.app-header.is-authenticated) .thread-composer{display:flex;align-items:center;gap:8px;flex-shrink:0;padding:10px 12px;border-top:1px solid var(--rule);background:white;}
+body:has(.app-header.is-authenticated) .thread-composer textarea{display:block;flex:1;min-width:0;width:100%;height:44px;min-height:44px;max-height:96px;margin:0;padding:11px 14px;border:1px solid var(--rule);border-radius:12px;background:var(--paper);color:var(--ink);font-size:.9rem;line-height:20px;resize:none;}
+body:has(.app-header.is-authenticated) .thread-composer textarea:focus-visible{background:white;border-color:var(--signal);outline:2px solid rgba(22,125,98,.22);outline-offset:0;}
+body:has(.app-header.is-authenticated) .thread-send{display:grid;place-items:center;flex:none;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;border-radius:12px;}
+body:has(.app-header.is-authenticated) .thread-send:disabled{background:var(--signal-soft);border-color:var(--signal-soft);color:#667b71;box-shadow:none;cursor:default;}
 body:has(.app-header.is-authenticated) .thread-message:nth-last-child(2) .thread-message-paper{animation:session-feedback-in 180ms ease-out;}
 @keyframes session-feedback-in{from{transform:translateY(3px);opacity:.65}to{transform:none;opacity:1}}
 @media(hover:hover){body:has(.app-header.is-authenticated) .product-card:hover .product-card-image{transform:scale(1.025);}}
@@ -139,14 +146,14 @@ body:has(.app-header.is-authenticated) .task-page-description{font-size:.84rem;}
  body:has(.app-header.is-authenticated) .seller-product-summary .product-thumbnail{width:72px;height:72px;}
  body:has(.app-header.is-authenticated) .seller-product-content h3{font-size:.9rem;}
  body:has(.app-header.is-authenticated) .seller-product-meta{font-size:.7rem;}
- body:has(.app-header.is-authenticated) .message-thread-page{padding-block:14px 12px;gap:12px;}
-body:has(.app-header.is-authenticated) .thread-overview{padding:12px 16px;}
- body:has(.app-header.is-authenticated) .message-thread-heading{margin:4px 0 8px;}
- body:has(.app-header.is-authenticated) .message-thread-heading h1{font-size:1.1rem;}
- body:has(.app-header.is-authenticated) .message-thread-heading p{display:none;}
- body:has(.app-header.is-authenticated) .thread-messages{padding:14px;}
- body:has(.app-header.is-authenticated) .thread-composer{padding:10px 14px;}
- body:has(.app-header.is-authenticated) .thread-composer textarea{min-height:54px;}
+ body:has(.app-header.is-authenticated) .message-thread-page{padding-block:8px 10px;}
+ body:has(.app-header.is-authenticated) .thread-header{padding:8px 12px;gap:8px;}
+ body:has(.app-header.is-authenticated) .thread-header-title-row h1{font-size:.9rem;}
+ body:has(.app-header.is-authenticated) .thread-header-price{font-size:.72rem;padding:2px 7px;}
+ body:has(.app-header.is-authenticated) .thread-header-student{font-size:.74rem;}
+ body:has(.app-header.is-authenticated) .thread-messages{padding:12px;}
+ body:has(.app-header.is-authenticated) .thread-composer{padding:8px 10px;}
+ body:has(.app-header.is-authenticated) .thread-composer textarea{height:44px;min-height:44px;font-size:16px;}
  body:has(.app-header.is-authenticated) .app-nav-link{font-size:.63rem;}
  body:has(.app-header.is-authenticated) .app-nav-publications-label{white-space:nowrap;font-size:clamp(.52rem,2.4vw,.63rem);}
 }
