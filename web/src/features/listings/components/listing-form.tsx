@@ -839,48 +839,48 @@ export function ListingForm({
         <div className={`publish-step-actions${step === 0 ? " is-first-step" : ""}`}>
           {step > 0 ? (
             <button
-              className="text-action step-back"
+              className="step-back"
               type="button"
               onClick={() => goToStep(step - 1)}
               disabled={pending}
             >
-              <ArrowLeft aria-hidden="true" size={16} />
-              Atrás
+              <ArrowLeft aria-hidden="true" size={15} />
+              <span>Atrás</span>
             </button>
           ) : (
             <span />
           )}
           {step < steps.length - 1 ? (
             <button
-              className="button-ink step-next"
+              className="step-next"
               type="button"
               onClick={(event) => {
                 event.preventDefault();
                 continueStep();
               }}
             >
-              Continuar
-              <ArrowRight aria-hidden="true" size={17} />
+              <span>{step === 1 ? "Revisar publicación" : "Continuar"}</span>
+              <ArrowRight aria-hidden="true" size={16} />
             </button>
           ) : (
             <button
-              className="button-ink form-submit step-next"
+              className="form-submit step-next"
               type="submit"
               disabled={pending || submissionConflict}
             >
               {pending ? (
-                <LoaderCircle className="publish-loading-icon" aria-hidden="true" size={17} />
+                <LoaderCircle className="publish-loading-icon" aria-hidden="true" size={16} />
               ) : null}
-              {pending
-                ? editing
-                  ? "Guardando cambios…"
-                  : "Publicando…"
-                : demo
-                  ? "Terminar demostración"
+              <span>
+                {pending
+                  ? editing
+                    ? "Guardando cambios…"
+                    : "Publicando…"
                   : editing
                     ? "Guardar cambios"
                     : "Publicar en Mercadito"}
-              {!pending ? <ArrowRight aria-hidden="true" size={17} /> : null}
+              </span>
+              {!pending ? <ArrowRight aria-hidden="true" size={16} /> : null}
             </button>
           )}
         </div>
