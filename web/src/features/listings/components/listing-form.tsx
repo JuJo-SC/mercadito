@@ -542,15 +542,11 @@ export function ListingForm({
           <h2 id="listing-step-title" ref={headingRef} tabIndex={-1}>
             {step === 0 ? "Detalles del producto" : step === 1 ? "Precio y descripción" : "Revisar publicación"}
           </h2>
-          {step > 0 ? (
+          {step > 1 ? (
             <p>
-              {step === 1
-                ? editing
-                  ? "Ajusta el precio o añade el contexto que haga falta."
-                  : "Un precio claro y una buena descripción evitan dudas."
-                : editing
-                  ? "Así se verá la publicación. Su disponibilidad no cambiará."
-                  : `Así lo verán los estudiantes activos de ${universityName}.`}
+              {editing
+                ? "Así se verá la publicación. Su disponibilidad no cambiará."
+                : `Así lo verán los estudiantes activos de ${universityName}.`}
             </p>
           ) : null}
         </div>
@@ -750,7 +746,7 @@ export function ListingForm({
         {step === 1 ? (
           <div className="publish-step-fields">
             <label className="field" htmlFor="listing-price">
-              <span>Precio de venta *</span>
+              <span>¿Cuánto costará? *</span>
               <div className="price-input-wrap">
                 <span className="price-input-symbol" aria-hidden="true">$</span>
                 <input
@@ -768,7 +764,6 @@ export function ListingForm({
                 />
                 <span className="price-input-currency" aria-hidden="true">MXN</span>
               </div>
-              <small>El precio que aparecerá junto a la publicación.</small>
             </label>
 
             <div className="field">
@@ -776,25 +771,16 @@ export function ListingForm({
               <textarea
                 id="listing-description"
                 name="description"
-                aria-describedby="listing-description-help listing-description-limit"
                 minLength={10}
                 maxLength={2000}
-                rows={5}
-                placeholder="Anota la edición, medidas, detalles visibles o qué incluye."
+                rows={4}
+                placeholder="Detalles visibles, qué incluye, edición o puntos de entrega en el campus…"
                 value={draft.description}
                 onChange={(event) =>
                   updateDraft("description", event.target.value)
                 }
                 required
               />
-              <div className="listing-description-meta">
-                <small id="listing-description-help">
-                  Incluye solo lo que otra persona necesita saber antes de escribirte.
-                </small>
-                <small id="listing-description-limit" aria-live="polite" aria-atomic="true">
-                  {draft.description.length}/2,000 caracteres
-                </small>
-              </div>
             </div>
           </div>
         ) : null}
