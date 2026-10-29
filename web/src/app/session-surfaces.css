@@ -188,8 +188,8 @@ body:has(.app-header.is-authenticated) .private-profile > section h2 { font-weig
 body:has(.app-header.is-authenticated) .private-profile > section p + p { margin-top: 8px; color: var(--muted); font-size: .9rem; }
 
 /* Compact unified publish card */
-.publish-page.task-page,body:has(.app-header.is-authenticated) .publish-page.task-page{padding-block:16px 24px;max-width:760px;}
-.publish-page .listing-flow,body:has(.app-header.is-authenticated) .publish-page .listing-flow{padding:0;border:1px solid var(--rule);border-radius:var(--session-panel-radius,20px);background:white;overflow:visible;}
+.publish-page.task-page,body .publish-page.task-page,body:has(.app-header) .publish-page,body:has(.app-header.is-authenticated) .publish-page.task-page{padding-block:16px 24px;width:min(calc(100% - 32px), 640px) !important;max-width:640px !important;margin:0 auto !important;margin-inline:auto !important;margin-left:auto !important;margin-right:auto !important;padding-inline:0 !important;box-sizing:border-box !important;display:flex !important;flex-direction:column !important;align-items:stretch !important;}
+.publish-page .listing-flow,body:has(.app-header.is-authenticated) .publish-page .listing-flow{width:100% !important;max-width:100% !important;margin:0 auto !important;padding:0;border:1px solid var(--rule);border-radius:var(--session-panel-radius,20px);background:white;overflow:visible;box-sizing:border-box !important;}
 .publish-card-header{padding:16px 22px 14px;border-bottom:1px solid var(--rule);border-radius:var(--session-panel-radius,20px) var(--session-panel-radius,20px) 0 0;background:white;}
 .publish-card-title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
 .publish-card-title-row h1{margin:0;font-family:var(--font-body);font-size:1.25rem;font-weight:700;line-height:1.2;letter-spacing:-.025em;color:var(--ink);}
@@ -240,7 +240,7 @@ body:has(.app-header.is-authenticated) .private-profile > section p + p { margin
 .publish-page .publish-step-actions .step-next:hover:not(:disabled),body:has(.app-header.is-authenticated) .publish-page .publish-step-actions .step-next:hover:not(:disabled){background:var(--signal);color:#ffffff !important;border-color:var(--signal);opacity:.94;}
 .publish-page .publish-step-actions .step-next svg,body:has(.app-header.is-authenticated) .publish-page .publish-step-actions .step-next svg{color:#ffffff;stroke:#ffffff;}
 @media(max-width:760px){
- .publish-page.task-page,body:has(.app-header.is-authenticated) .publish-page.task-page{padding-block:12px 18px;}
+ .publish-page.task-page,body .publish-page.task-page,body:has(.app-header) .publish-page,body:has(.app-header.is-authenticated) .publish-page.task-page{padding-block:12px 18px;width:calc(100% - 24px) !important;max-width:100% !important;margin:0 auto !important;margin-inline:auto !important;margin-left:auto !important;margin-right:auto !important;padding-inline:0 !important;}
  .publish-page .publish-step-actions,body:has(.app-header.is-authenticated) .publish-page .publish-step-actions{position:static !important;margin:16px 0 0 !important;padding:0 !important;border:0 !important;border-top:0 !important;background:transparent !important;box-shadow:none !important;}
  .publish-card-header{padding:14px 16px 12px;}
  .publish-card-title-row h1{font-size:1.12rem;}
@@ -280,8 +280,8 @@ body:has(.app-header.is-authenticated) .private-profile > section p + p { margin
 }
 
 /* Pantalla final tras publicar: Recuadro único, foto amplia sin cortes y botones libres */
-body .publish-success.form-success{display:flex !important;flex-direction:column !important;gap:14px !important;max-width:600px !important;margin:0 auto !important;padding:0 !important;border:0 !important;background:transparent !important;box-shadow:none !important;}
-body .publish-success-card{background:#ffffff;border:1px solid var(--rule);border-radius:20px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+body .publish-success.form-success{display:flex !important;flex-direction:column !important;gap:14px !important;width:100% !important;max-width:100% !important;margin:0 auto !important;margin-inline:auto !important;padding:0 !important;border:0 !important;background:transparent !important;box-shadow:none !important;box-sizing:border-box !important;}
+body .publish-success-card{width:100% !important;max-width:100% !important;background:#ffffff;border:1px solid var(--rule);border-radius:20px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.05);box-sizing:border-box !important;margin:0 auto !important;}
 body .publish-success-header{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--rule);background:#ffffff;}
 body .publish-success-header .success-registration-mark{width:28px;height:28px;border-radius:999px;background:var(--signal);color:#ffffff;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0;}
 body .publish-success-header h2{font-size:1.18rem;font-weight:700;color:var(--ink);margin:0;letter-spacing:-.02em;}
