@@ -383,40 +383,45 @@ export function ListingForm({
     "Condición pendiente";
 
   const preview = (
-    <article className="product-preview" aria-label="Vista previa de la publicación">
-      <div className="product-preview-media">
+    <article className="publish-preview-card" aria-label="Vista previa de la publicación">
+      <div className="publish-preview-media">
         {currentPhotoUrls[0] ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element -- Fotos con sesión y vistas blob requieren carga directa en el navegador. */}
             <img
-              className="product-preview-photo"
+              className="publish-preview-img"
               src={currentPhotoUrls[0]}
-              alt={"Foto principal de " + (draft.title || "tu producto")}
+              alt={"Foto de " + (draft.title || "tu producto")}
             />
             {currentPhotoUrls.length > 1 ? (
-              <span className="product-preview-photo-count">{currentPhotoUrls.length} fotos</span>
+              <span className="publish-preview-badge">
+                <Camera aria-hidden="true" size={12} strokeWidth={2} />
+                <span>{currentPhotoUrls.length} fotos</span>
+              </span>
             ) : null}
           </>
         ) : (
-          <div className="product-preview-no-photo">
-            <Camera aria-hidden="true" size={27} strokeWidth={1.5} />
-            <span>Sin foto principal</span>
+          <div className="publish-preview-no-photo">
+            <Camera aria-hidden="true" size={24} strokeWidth={1.6} />
+            <span>Sin fotos</span>
           </div>
         )}
       </div>
-      <div className="product-preview-content">
-        <div className="product-preview-meta">
-          <span>{categoryLabel}</span>
-          <span aria-hidden="true">·</span>
-          <span>{conditionLabel}</span>
+      <div className="publish-preview-info">
+        <div className="publish-preview-details">
+          <div className="publish-preview-tags">
+            {categoryLabel ? <span className="publish-tag-category">{categoryLabel}</span> : null}
+            {conditionLabel ? <span className="publish-tag-condition">{conditionLabel}</span> : null}
+          </div>
+          <h4 className="publish-preview-title">{draft.title || "Nombre de lo que quieres vender"}</h4>
+          <div className="publish-preview-price">
+            <span>{formatPrice(draft.price)}</span>
+            <span className="publish-preview-currency">MXN</span>
+          </div>
+          <p className="publish-preview-description">
+            {draft.description || "La descripción de tu producto aparecerá aquí."}
+          </p>
         </div>
-        <div className="product-preview-heading">
-          <h3>{draft.title || "Nombre de lo que quieres vender"}</h3>
-          <strong>{formatPrice(draft.price)}</strong>
-        </div>
-        <p className="product-preview-description">
-          {draft.description || "La descripción aparecerá aquí."}
-        </p>
       </div>
     </article>
   );
@@ -542,13 +547,6 @@ export function ListingForm({
           <h2 id="listing-step-title" ref={headingRef} tabIndex={-1}>
             {step === 0 ? "Detalles del producto" : step === 1 ? "Precio y descripción" : "Revisar publicación"}
           </h2>
-          {step > 1 ? (
-            <p>
-              {editing
-                ? "Así se verá la publicación. Su disponibilidad no cambiará."
-                : `Así lo verán los estudiantes activos de ${universityName}.`}
-            </p>
-          ) : null}
         </div>
 
         {step === 0 ? (
@@ -787,34 +785,11 @@ export function ListingForm({
 
         {step === 2 ? (
           <div className="publish-review">
-            <div className="publish-review-campus">
-              <span>{universityName}</span>
-              {demo ? <span className="notice-demo">Ejemplo</span> : null}
+            <div className="publish-review-header">
+              <h3 className="publish-review-title">Así se verá tu publicación</h3>
+              <span className="publish-review-badge">Vista previa</span>
             </div>
             {preview}
-            <div className="publish-review-edits">
-              <button
-                className="text-action"
-                type="button"
-                onClick={() => goToStep(0)}
-              >
-                Editar publicación
-              </button>
-              <button
-                className="text-action"
-                type="button"
-                onClick={() => goToStep(1)}
-              >
-                Editar precio y descripción
-              </button>
-            </div>
-            <p className="publish-review-note">
-              {demo
-                ? "Al terminar verás la vista previa. No se publicará ni se guardará."
-                : editing && listing
-                  ? `Disponibilidad actual: ${listingStatusLabels[listing.status]}. Al guardar, se conserva este estado.`
-                  : "Lo verán estudiantes activos de tu universidad. Quien se interese puede escribirte por el chat. Mercadito no procesa pagos; el pago se acuerda fuera de la plataforma."}
-            </p>
           </div>
         ) : null}
 
