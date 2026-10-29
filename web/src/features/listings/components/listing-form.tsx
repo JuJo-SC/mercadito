@@ -18,6 +18,7 @@ import {
   CircleCheck,
   CircleHelp,
   LoaderCircle,
+  Plus,
   Sparkles,
   Star,
 } from "lucide-react";
@@ -429,42 +430,31 @@ export function ListingForm({
   if (sent) {
     return (
       <section className="form-success publish-success" role="status">
-        <span className="success-registration-mark" aria-hidden="true">
-          <CircleCheck size={19} strokeWidth={1.8} />
-        </span>
-        <div>
-          <h2>
-            {demo
-              ? "Tu vista previa está lista."
-              : editing
-                ? "Tu publicación se actualizó."
-                : "Tu publicación ya está en el mercadito."}
-          </h2>
-          <p>
-            {demo
-              ? "Este recorrido es una demostración: la publicación no se envió ni se guardó."
-              : editing
-                ? `Guardamos los cambios en ${universityName}. La publicación conserva su estado: ${listing ? listingStatusLabels[listing.status].toLowerCase() : "sin cambios"}.`
-                : `La publicación aparece en el mercadito privado de ${universityName}. Puedes revisar su estado en Mis publicaciones.`}
-          </p>
-          {preview}
-          <div className="publish-success-actions">
-            {demo ? (
-              <button className="text-action" type="button" onClick={startAgain}>
-                Empezar otra publicación
-                <ArrowRight aria-hidden="true" size={16} />
-              </button>
-            ) : (
-              <Link className="text-action" href="/mis-avisos">
-                Gestionar mis publicaciones
-                <ArrowRight aria-hidden="true" size={16} />
-              </Link>
-            )}
-            <Link className="text-action" href="/">
-              {demo ? "Volver al mercadito" : "Explorar el mercadito"}
-              <ArrowRight aria-hidden="true" size={16} />
-            </Link>
+        <div className="publish-success-card">
+          <div className="publish-success-header">
+            <span className="success-registration-mark" aria-hidden="true">
+              <CircleCheck size={18} strokeWidth={2.4} />
+            </span>
+            <h2>{editing ? "Actualizado" : "Publicado"}</h2>
           </div>
+          {preview}
+        </div>
+        <div className="publish-success-actions">
+          <Link className="button-secondary" href="/">
+            <ArrowLeft aria-hidden="true" size={16} />
+            Explorar catálogo
+          </Link>
+          {editing ? (
+            <Link className="button-ink step-next" href="/mis-avisos">
+              Gestionar mis publicaciones
+              <ArrowRight aria-hidden="true" size={16} strokeWidth={2.2} />
+            </Link>
+          ) : (
+            <button className="button-ink step-next" type="button" onClick={startAgain}>
+              <Plus aria-hidden="true" size={16} strokeWidth={2.4} />
+              Publicar otro producto
+            </button>
+          )}
         </div>
       </section>
     );
