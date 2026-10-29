@@ -2024,14 +2024,13 @@ select {
   }
 
   .publish-step-actions {
-    position: sticky;
-    bottom: 0;
-    z-index: 3;
-    min-height: 62px;
-    margin: 1rem -0.55rem 0;
-    padding: 0.55rem 0.55rem calc(0.55rem + env(safe-area-inset-bottom));
-    border-top: 1px solid var(--rule);
-    background: var(--paper);
+    position: static;
+    min-height: 48px;
+    margin: 1rem 0 0;
+    padding: 0;
+    border-top: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   .publish-step-actions .step-next {
