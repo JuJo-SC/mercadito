@@ -115,9 +115,11 @@ export function ListingDetailDialog({
               <p className="listing-detail-price">{price}</p>
             </div>
 
-            <section className="listing-detail-description" aria-label="Descripción">
-              <p>{listing.description}</p>
-            </section>
+            {listing.description?.trim() ? (
+              <section className="listing-detail-description" aria-label="Descripción">
+                <p>{listing.description}</p>
+              </section>
+            ) : null}
 
             <div className="listing-detail-meta-row">
               <div className="listing-detail-seller-info">

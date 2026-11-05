@@ -15,7 +15,7 @@ const updateListingSchema = z.object({
 
 const editListingSchema = z.object({
   title: z.string().trim().min(4).max(90),
-  description: z.string().trim().min(10).max(2000),
+  description: z.string().trim().max(2000).default(""),
   price: z.number().finite().min(0).max(1000000),
   category: z.enum(ListingCategory),
   condition: z.enum(["NEW", "LIKE_NEW", "GOOD", "FAIR"]),

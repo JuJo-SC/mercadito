@@ -13,14 +13,10 @@ import {
   ArrowLeft,
   ArrowRight,
   Camera,
-  Check,
-  CircleAlert,
   CircleCheck,
   CircleHelp,
   LoaderCircle,
   Plus,
-  Sparkles,
-  Star,
 } from "lucide-react";
 
 const categories = [
@@ -34,11 +30,34 @@ const categories = [
 ] as const;
 
 const conditions = [
-  { value: "NEW", label: "Nuevo", Icon: Sparkles },
-  { value: "LIKE_NEW", label: "Usado · Como nuevo", Icon: Star },
-  { value: "GOOD", label: "Usado · Buen estado", Icon: Check },
-  { value: "FAIR", label: "Usado · Con detalles", Icon: CircleAlert },
+  { value: "NEW", label: "Nuevo" },
+  { value: "LIKE_NEW", label: "Usado · Como nuevo" },
+  { value: "GOOD", label: "Usado · Buen estado" },
+  { value: "FAIR", label: "Usado · Con detalles" },
 ] as const;
+
+function inferCategory(title: string): (typeof categories)[number]["value"] | null {
+  const t = title.toLowerCase();
+  if (t.includes("libro") || t.includes("calculo") || t.includes("cálculo") || t.includes("bata") || t.includes("atlas") || t.includes("manual") || t.includes("apuntes")) {
+    return "BOOKS";
+  }
+  if (t.includes("audifono") || t.includes("audífono") || t.includes("telefono") || t.includes("teléfono") || t.includes("mouse") || t.includes("teclado") || t.includes("calculadora") || t.includes("laptop") || t.includes("monitor") || t.includes("cargador") || t.includes("pantalla")) {
+    return "TECHNOLOGY";
+  }
+  if (t.includes("pay") || t.includes("galleta") || t.includes("brownie") || t.includes("cafe") || t.includes("café") || t.includes("comida") || t.includes("snack") || t.includes("agua") || t.includes("pastel")) {
+    return "FOOD";
+  }
+  if (t.includes("mochila") || t.includes("termo") || t.includes("gorra") || t.includes("lentes") || t.includes("reloj") || t.includes("funda") || t.includes("estuche")) {
+    return "ACCESSORIES";
+  }
+  if (t.includes("sudadera") || t.includes("camisa") || t.includes("pantalon") || t.includes("pantalón") || t.includes("chamarra") || t.includes("tenis") || t.includes("playera") || t.includes("sueter") || t.includes("suéter")) {
+    return "CLOTHING";
+  }
+  if (t.includes("lampara") || t.includes("lámpara") || t.includes("silla") || t.includes("escritorio") || t.includes("maceta") || t.includes("organizador") || t.includes("espejo")) {
+    return "HOME";
+  }
+  return null;
+}
 
 const titleExamplesByCategory: Record<string, readonly string[]> = {
   FOOD: [
@@ -85,8 +104,6 @@ const generalTitleExamples = [
   "Ej. Guitarra acústica, balón de basquetbol o restirador",
 ] as const;
 
-const steps = ["Publicación", "Detalles", "Revisar"] as const;
-
 type ListingDraft = {
   title: string;
   category: string;
@@ -106,18 +123,10 @@ type EditableListing = {
   imageUrls: string[];
 };
 
-const listingStatusLabels = {
-  DRAFT: "Borrador",
-  PUBLISHED: "Publicado",
-  RESERVED: "Apartado",
-  SOLD: "Vendido",
-  ARCHIVED: "Archivado",
-} as const;
-
 const emptyDraft: ListingDraft = {
   title: "",
   category: "",
-  condition: "",
+  condition: "GOOD",
   price: "",
   description: "",
 };
@@ -159,7 +168,7 @@ export function ListingForm({
         }
       : emptyDraft,
   );
-  const [step, setStep] = useState(0);
+  const [categoryManuallySelected, setCategoryManuallySelected] = useState(Boolean(listing?.category));
   const [exampleIndex, setExampleIndex] = useState(0);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -171,7 +180,6 @@ export function ListingForm({
   );
   const [photoPreviewUrls, setPhotoPreviewUrls] = useState<string[]>([]);
   const [publishedPhotoUrls, setPublishedPhotoUrls] = useState<string[] | null>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const addPhotoButtonRef = useRef<HTMLButtonElement>(null);
   const submissionIdRef = useRef<string | null>(null);
@@ -187,12 +195,12 @@ export function ListingForm({
   }, []);
 
   useEffect(() => {
-    if (step !== 0 || draft.title.trim()) return;
+    if (draft.title.trim()) return;
     const timer = window.setInterval(() => {
       setExampleIndex((current) => current + 1);
     }, 3500);
     return () => window.clearInterval(timer);
-  }, [step, draft.title, draft.category]);
+  }, [draft.title, draft.category]);
 
   const activeTitleExamples =
     draft.category && titleExamplesByCategory[draft.category]
@@ -221,54 +229,41 @@ export function ListingForm({
 
   function updateDraft(field: keyof ListingDraft, value: string) {
     setDraft((current) => ({ ...current, [field]: value }));
-    if (field === "category") setExampleIndex(0);
   }
 
-  function goToStep(nextStep: number) {
-    setStep(nextStep);
-    setError("");
-    window.requestAnimationFrame(() => headingRef.current?.focus());
-  }
-
-  function continueStep() {
-    const requiredIds =
-      step === 0
-        ? ["listing-title", "listing-category", "listing-condition-new"]
-        : ["listing-price", "listing-description"];
-
-    for (const id of requiredIds) {
-      const field = document.getElementById(id) as
-        | HTMLInputElement
-        | HTMLSelectElement
-        | HTMLTextAreaElement
-        | null;
-      if (field && !field.checkValidity()) {
-        field.reportValidity();
-        field.focus();
-        return;
+  function handleTitleChange(value: string) {
+    setDraft((current) => {
+      let category = current.category;
+      if (!categoryManuallySelected && (!category || category === "OTHER")) {
+        const detected = inferCategory(value);
+        if (detected) category = detected;
       }
-    }
-
-    if (step === 0 && currentPhotoUrls.length === 0) {
-      setError("Sube al menos 1 foto del producto para continuar.");
-      addPhotoButtonRef.current?.focus();
-      return;
-    }
-
-    goToStep(Math.min(step + 1, steps.length - 1));
+      return { ...current, title: value, category };
+    });
   }
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>, publishStatus = true) {
     event.preventDefault();
     if (pending || submissionConflict) return;
-    if (step < steps.length - 1) {
-      continueStep();
-      return;
-    }
 
     if (currentPhotoUrls.length === 0) {
       setError("Sube al menos 1 foto del producto para publicar.");
-      setStep(0);
+      return;
+    }
+
+    if (!draft.title.trim() || draft.title.trim().length < 4) {
+      setError("El nombre de lo que vendes debe tener al menos 4 caracteres.");
+      return;
+    }
+
+    if (!draft.category) {
+      setError("Elige una categoría para el producto.");
+      return;
+    }
+
+    const priceNum = Number(draft.price);
+    if (!Number.isFinite(priceNum) || priceNum < 0) {
+      setError("Ingresa un precio válido en MXN.");
       return;
     }
 
@@ -283,12 +278,12 @@ export function ListingForm({
 
     try {
       const formData = new FormData();
-      formData.set("title", draft.title);
-      formData.set("description", draft.description);
-      formData.set("price", String(Number(draft.price)));
+      formData.set("title", draft.title.trim());
+      formData.set("description", draft.description.trim());
+      formData.set("price", String(priceNum));
       formData.set("category", draft.category);
-      formData.set("condition", draft.condition);
-      formData.set("publish", "true");
+      formData.set("condition", draft.condition || "GOOD");
+      formData.set("publish", publishStatus ? "true" : "false");
       if (!editing && studentId) {
         const storageKey = "mercadito:publish-attempt:" + studentId;
         let submissionId = submissionIdRef.current;
@@ -307,7 +302,7 @@ export function ListingForm({
         try {
           sessionStorage.setItem(storageKey, submissionId);
         } catch {
-          // Keep the key in memory so a retry in this form remains idempotent.
+          // Keep key in memory
         }
       }
       if (listing) formData.set("keepPhotoPositions", JSON.stringify(keptPhotoPositions));
@@ -334,7 +329,7 @@ export function ListingForm({
         try {
           sessionStorage.removeItem("mercadito:publish-attempt:" + studentId);
         } catch {
-          // The completed flow is still usable when browser storage is unavailable.
+          // storage fallback
         }
       }
       setSent(true);
@@ -357,7 +352,7 @@ export function ListingForm({
           crypto.randomUUID(),
         );
       } catch {
-        // The next form can create an in-memory key when storage is unavailable.
+        // memory key
       }
     }
     submissionIdRef.current = null;
@@ -367,7 +362,7 @@ export function ListingForm({
 
   function startAgain() {
     setDraft(emptyDraft);
-    setStep(0);
+    setCategoryManuallySelected(false);
     setError("");
     setSubmissionConflict(false);
     setSent(false);
@@ -388,7 +383,7 @@ export function ListingForm({
       <div className="publish-preview-media">
         {currentPhotoUrls[0] ? (
           <>
-            {/* eslint-disable-next-line @next/next/no-img-element -- Fotos con sesión y vistas blob requieren carga directa en el navegador. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="publish-preview-img"
               src={currentPhotoUrls[0]}
@@ -419,9 +414,11 @@ export function ListingForm({
             <span>{formatPrice(draft.price)}</span>
             <span className="publish-preview-currency">MXN</span>
           </div>
-          <p className="publish-preview-description">
-            {draft.description || "La descripción de tu producto aparecerá aquí."}
-          </p>
+          {draft.description ? (
+            <p className="publish-preview-description">
+              {draft.description}
+            </p>
+          ) : null}
         </div>
       </div>
     </article>
@@ -497,242 +494,171 @@ export function ListingForm({
             </div>
           </DismissibleDetails>
         </div>
-
-        <ol className="publish-progress" aria-label="Pasos para publicar">
-          {steps.map((label, index) => (
-            <li
-              className={
-                index === step
-                  ? "publish-progress-step is-current"
-                  : index < step
-                    ? "publish-progress-step is-complete"
-                    : "publish-progress-step"
-              }
-              key={label}
-            >
-              <span className="publish-progress-rule" aria-hidden="true" />
-              <span aria-current={index === step ? "step" : undefined}>
-                {index < step ? (
-                  <>
-                    <Check className="progress-check" aria-hidden="true" size={14} />
-                    <span className="sr-only">Completado: </span>
-                  </>
-                ) : null}
-                {label}
-              </span>
-            </li>
-          ))}
-        </ol>
       </header>
-
-      <p className="sr-only" aria-live="polite" aria-atomic="true">
-        Paso {step + 1} de {steps.length}: {steps[step]}.
-      </p>
 
       <form
         className="university-form listing-form publish-form"
-        onSubmit={submit}
+        onSubmit={(event) => submit(event, true)}
       >
-        <div className="form-section-heading publish-step-heading">
-          <h2 id="listing-step-title" ref={headingRef} tabIndex={-1}>
-            {step === 0 ? "Detalles del producto" : step === 1 ? "Precio y descripción" : "Revisar publicación"}
-          </h2>
-        </div>
-
-        {step === 0 ? (
-          <div className="publish-step-fields">
-            <div className="publish-primary-row">
-              <label className="field" htmlFor="listing-title">
-                <span>Nombre de lo que quieres vender *</span>
-                <input
-                  id="listing-title"
-                  name="title"
-                  type="text"
-                  minLength={4}
-                  maxLength={90}
-                  placeholder={activeTitlePlaceholder}
-                  value={draft.title}
-                  onChange={(event) => updateDraft("title", event.target.value)}
-                  required
-                />
-              </label>
-
-              <label className="field" htmlFor="listing-category">
-                <span>Categoría *</span>
-                <select
-                  id="listing-category"
-                  name="category"
-                  value={draft.category}
-                  onChange={(event) => updateDraft("category", event.target.value)}
-                  required
+        <div className="publish-step-fields">
+          {/* 1. FOTOS ARRIBA EN PRIMER PLANO */}
+          <div className="listing-photo-field">
+            <div className="listing-photo-bar">
+              <div className="listing-photo-title-group">
+                <label htmlFor="listing-photo">
+                  Fotos del producto <span className="required-mark" aria-hidden="true">*</span>
+                </label>
+                <span
+                  className={
+                    currentPhotoUrls.length
+                      ? "listing-photo-count has-photos"
+                      : "listing-photo-count"
+                  }
+                  id="listing-photo-state"
+                  aria-live="polite"
                 >
-                  <option value="">Elige una categoría</option>
-                  {categories.map(({ value, label }) => (
-                    <option value={value} key={value}>{label}</option>
-                  ))}
-                  {editing && draft.category === "SERVICES" ? (
-                    <option value="SERVICES">Servicios</option>
-                  ) : null}
-                </select>
-              </label>
-            </div>
-
-            <fieldset className="condition-fieldset">
-              <legend>Condición *</legend>
-              <div className="condition-options">
-                {conditions.map(({ value, label, Icon }, index) => {
-                  const id = `listing-condition-${value.toLowerCase()}`;
-                  return (
-                    <label
-                      className={
-                        draft.condition === value
-                          ? "condition-option is-selected"
-                          : "condition-option"
-                      }
-                      htmlFor={id}
-                      key={value}
-                    >
-                      <input
-                        id={id}
-                        name="condition"
-                        type="radio"
-                        className="condition-radio-input"
-                        value={value}
-                        checked={draft.condition === value}
-                        onChange={(event) =>
-                          updateDraft("condition", event.target.value)
-                        }
-                        required={index === 0}
-                      />
-                      <span className="condition-option-icon" aria-hidden="true">
-                        <Icon aria-hidden="true" size={15} strokeWidth={2} />
-                      </span>
-                      <span className="condition-option-label">{label}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </fieldset>
-
-            <div className="listing-photo-field">
-              <div className="listing-photo-bar">
-                <div className="listing-photo-title-group">
-                  <label htmlFor="listing-photo">
-                    Fotos del producto <span className="required-mark" aria-hidden="true">*</span>
-                  </label>
-                  <span
-                    className={
-                      currentPhotoUrls.length
-                        ? "listing-photo-count has-photos"
-                        : "listing-photo-count"
-                    }
-                    id="listing-photo-state"
-                    aria-live="polite"
-                  >
-                    <Camera aria-hidden="true" size={12} strokeWidth={2} />
-                    <span>{currentPhotoUrls.length}/{MAX_LISTING_PHOTOS}</span>
-                  </span>
-                </div>
-
-                {currentPhotoUrls.length < MAX_LISTING_PHOTOS ? (
-                  <button
-                    ref={addPhotoButtonRef}
-                    className="listing-photo-add"
-                    type="button"
-                    onClick={() => photoInputRef.current?.click()}
-                  >
-                    <Camera aria-hidden="true" size={16} strokeWidth={1.8} />
-                    {currentPhotoUrls.length ? "Agregar fotos" : "Elegir fotos"}
-                  </button>
-                ) : null}
+                  <Camera aria-hidden="true" size={12} strokeWidth={2} />
+                  <span>{currentPhotoUrls.length}/{MAX_LISTING_PHOTOS}</span>
+                </span>
               </div>
 
-              {currentPhotoUrls.length ? (
-                <div className="listing-photo-thumbnails" aria-label="Fotos de la publicación">
-                  {visibleStoredPhotos.map(({ url, position }, index) => (
-                    <div className="listing-photo-thumb" key={`stored-${position}`}>
-                      {/* eslint-disable-next-line @next/next/no-img-element -- Fotos con sesión y vistas blob requieren carga directa en el navegador. */}
-                      <img
-                        src={url}
-                        alt={`Foto ${index + 1} de ${draft.title || "tu producto"}`}
-                      />
-                      <button
-                        className="listing-photo-remove"
-                        type="button"
-                        aria-label={`Quitar foto ${index + 1}`}
-                        onClick={() => setKeptPhotoPositions((current) =>
-                          current.filter((currentPosition) => currentPosition !== position),
-                        )}
-                      >
-                        <span aria-hidden="true">×</span>
-                      </button>
-                      {index === 0 ? <span className="listing-photo-primary">Principal</span> : null}
-                    </div>
-                  ))}
-                  {photoPreviewUrls.map((url, index) => (
-                    <div className="listing-photo-thumb" key={`${url}-${index}`}>
-                      {/* eslint-disable-next-line @next/next/no-img-element -- Fotos con sesión y vistas blob requieren carga directa en el navegador. */}
-                      <img
-                        src={url}
-                        alt={`Nueva foto ${index + 1} de ${draft.title || "tu producto"}`}
-                      />
-                      <button
-                        className="listing-photo-remove"
-                        type="button"
-                        aria-label={`Quitar foto ${visibleStoredPhotos.length + index + 1}`}
-                        onClick={() => updatePhotoFiles(
-                          photoFiles.filter((_, currentIndex) => currentIndex !== index),
-                        )}
-                      >
-                        <span aria-hidden="true">×</span>
-                      </button>
-                      {visibleStoredPhotos.length + index === 0 ? (
-                        <span className="listing-photo-primary">Principal</span>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
+              {currentPhotoUrls.length < MAX_LISTING_PHOTOS ? (
+                <button
+                  ref={addPhotoButtonRef}
+                  className="listing-photo-add"
+                  type="button"
+                  onClick={() => photoInputRef.current?.click()}
+                >
+                  <Camera aria-hidden="true" size={16} strokeWidth={1.8} />
+                  {currentPhotoUrls.length ? "Agregar fotos" : "Elegir fotos"}
+                </button>
               ) : null}
-
-              <input
-                ref={photoInputRef}
-                className="listing-photo-input"
-                id="listing-photo"
-                name="photo"
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                multiple
-                aria-label="Elegir fotos del producto"
-                aria-describedby="listing-photo-state"
-                onChange={(event) => {
-                  const selected = Array.from(event.currentTarget.files ?? []);
-                  event.currentTarget.value = "";
-                  if (!selected.length) return;
-                  if (selected.some((file) => file.size > MAX_LISTING_PHOTO_BYTES)) {
-                    setError("Cada foto puede pesar hasta 8 MB. Elige archivos más ligeros.");
-                    return;
-                  }
-                  const remainingSlots = MAX_LISTING_PHOTOS - visibleStoredPhotos.length - photoFiles.length;
-                  if (selected.length > remainingSlots) {
-                    setError("Una publicación puede tener hasta 5 fotos. Quita alguna para agregar otras.");
-                    return;
-                  }
-                  const combinedBytes = [...photoFiles, ...selected]
-                    .reduce((sum, file) => sum + file.size, 0);
-                  if (combinedBytes > MAX_TOTAL_LISTING_PHOTO_BYTES) {
-                    setError("Las fotos pueden sumar hasta 20 MB. Elige archivos más ligeros.");
-                    return;
-                  }
-                  setError("");
-                  updatePhotoFiles([...photoFiles, ...selected]);
-                }}
-              />
             </div>
-          </div>
-        ) : null}
 
-        {step === 1 ? (
-          <div className="publish-step-fields">
+            {currentPhotoUrls.length ? (
+              <div className="listing-photo-thumbnails" aria-label="Fotos de la publicación">
+                {visibleStoredPhotos.map(({ url, position }, index) => (
+                  <div className="listing-photo-thumb" key={`stored-${position}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={url}
+                      alt={`Foto ${index + 1} de ${draft.title || "tu producto"}`}
+                    />
+                    <button
+                      className="listing-photo-remove"
+                      type="button"
+                      aria-label={`Quitar foto ${index + 1}`}
+                      onClick={() => setKeptPhotoPositions((current) =>
+                        current.filter((currentPosition) => currentPosition !== position),
+                      )}
+                    >
+                      <span aria-hidden="true">×</span>
+                    </button>
+                    {index === 0 ? <span className="listing-photo-primary">Principal</span> : null}
+                  </div>
+                ))}
+                {photoPreviewUrls.map((url, index) => (
+                  <div className="listing-photo-thumb" key={`${url}-${index}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={url}
+                      alt={`Nueva foto ${index + 1} de ${draft.title || "tu producto"}`}
+                    />
+                    <button
+                      className="listing-photo-remove"
+                      type="button"
+                      aria-label={`Quitar foto ${visibleStoredPhotos.length + index + 1}`}
+                      onClick={() => updatePhotoFiles(
+                        photoFiles.filter((_, currentIndex) => currentIndex !== index),
+                      )}
+                    >
+                      <span aria-hidden="true">×</span>
+                    </button>
+                    {visibleStoredPhotos.length + index === 0 ? (
+                      <span className="listing-photo-primary">Principal</span>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
+            <input
+              ref={photoInputRef}
+              className="listing-photo-input"
+              id="listing-photo"
+              name="photo"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              aria-label="Elegir fotos del producto"
+              aria-describedby="listing-photo-state"
+              onChange={(event) => {
+                const selected = Array.from(event.currentTarget.files ?? []);
+                event.currentTarget.value = "";
+                if (!selected.length) return;
+                if (selected.some((file) => file.size > MAX_LISTING_PHOTO_BYTES)) {
+                  setError("Cada foto puede pesar hasta 8 MB. Elige archivos más ligeros.");
+                  return;
+                }
+                const remainingSlots = MAX_LISTING_PHOTOS - visibleStoredPhotos.length - photoFiles.length;
+                if (selected.length > remainingSlots) {
+                  setError("Una publicación puede tener hasta 5 fotos. Quita alguna para agregar otras.");
+                  return;
+                }
+                const combinedBytes = [...photoFiles, ...selected]
+                  .reduce((sum, file) => sum + file.size, 0);
+                if (combinedBytes > MAX_TOTAL_LISTING_PHOTO_BYTES) {
+                  setError("Las fotos pueden sumar hasta 20 MB. Elige archivos más ligeros.");
+                  return;
+                }
+                setError("");
+                updatePhotoFiles([...photoFiles, ...selected]);
+              }}
+            />
+          </div>
+
+          {/* 2. TÍTULO Y CATEGORÍA */}
+          <div className="publish-primary-row">
+            <label className="field" htmlFor="listing-title">
+              <span>¿Qué vendes? *</span>
+              <input
+                id="listing-title"
+                name="title"
+                type="text"
+                minLength={4}
+                maxLength={90}
+                placeholder={activeTitlePlaceholder}
+                value={draft.title}
+                onChange={(event) => handleTitleChange(event.target.value)}
+                required
+              />
+            </label>
+
+            <label className="field" htmlFor="listing-category">
+              <span>Categoría *</span>
+              <select
+                id="listing-category"
+                name="category"
+                value={draft.category}
+                onChange={(event) => {
+                  setCategoryManuallySelected(true);
+                  updateDraft("category", event.target.value);
+                }}
+                required
+              >
+                <option value="">Elige una categoría</option>
+                {categories.map(({ value, label }) => (
+                  <option value={value} key={value}>{label}</option>
+                ))}
+                {editing && draft.category === "SERVICES" ? (
+                  <option value="SERVICES">Servicios</option>
+                ) : null}
+              </select>
+            </label>
+          </div>
+
+          {/* 3. PRECIO Y CONDICIÓN */}
+          <div className="publish-primary-row">
             <label className="field" htmlFor="listing-price">
               <span>¿Cuánto costará? *</span>
               <div className="price-input-wrap">
@@ -754,34 +680,41 @@ export function ListingForm({
               </div>
             </label>
 
-            <div className="field">
-              <label htmlFor="listing-description">Descripción *</label>
-              <textarea
-                id="listing-description"
-                name="description"
-                minLength={10}
-                maxLength={2000}
-                rows={4}
-                placeholder="Detalles visibles, qué incluye, edición o puntos de entrega en el campus…"
-                value={draft.description}
-                onChange={(event) =>
-                  updateDraft("description", event.target.value)
-                }
+            <label className="field" htmlFor="listing-condition-select">
+              <span>Condición *</span>
+              <select
+                id="listing-condition-select"
+                name="condition"
+                value={draft.condition}
+                onChange={(event) => updateDraft("condition", event.target.value)}
                 required
-              />
-            </div>
+              >
+                {conditions.map(({ value, label }) => (
+                  <option value={value} key={value}>{label}</option>
+                ))}
+              </select>
+            </label>
           </div>
-        ) : null}
 
-        {step === 2 ? (
-          <div className="publish-review">
-            <div className="publish-review-header">
-              <h3 className="publish-review-title">Así se verá tu publicación</h3>
-              <span className="publish-review-badge">Vista previa</span>
-            </div>
-            {preview}
+          {/* 4. DESCRIPCIÓN INTEGRADA (OPCIONAL) */}
+          <div className="field">
+            <label htmlFor="listing-description">
+              <span>Descripción </span>
+              <span style={{ color: "var(--muted)", fontWeight: "normal", fontSize: "0.8rem" }}>(opcional)</span>
+            </label>
+            <textarea
+              id="listing-description"
+              name="description"
+              maxLength={2000}
+              rows={3}
+              placeholder="Detalles sobre el estado, talla, punto de entrega en el campus…"
+              value={draft.description}
+              onChange={(event) =>
+                updateDraft("description", event.target.value)
+              }
+            />
           </div>
-        ) : null}
+        </div>
 
         {submissionConflict ? (
           <>
@@ -801,55 +734,44 @@ export function ListingForm({
           </>
         ) : error ? <p className="form-error" role="alert">{error}</p> : null}
 
-        <div className={`publish-step-actions${step === 0 ? " is-first-step" : ""}`}>
-          {step > 0 ? (
+        <div className="publish-step-actions" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          {!editing ? (
             <button
               className="step-back"
               type="button"
-              onClick={() => goToStep(step - 1)}
-              disabled={pending}
-            >
-              <ArrowLeft aria-hidden="true" size={15} />
-              <span>Atrás</span>
-            </button>
-          ) : (
-            <span />
-          )}
-          {step < steps.length - 1 ? (
-            <button
-              className="step-next"
-              type="button"
-              onClick={(event) => {
-                event.preventDefault();
-                continueStep();
-              }}
-            >
-              <span>{step === 1 ? "Revisar publicación" : "Continuar"}</span>
-              <ArrowRight aria-hidden="true" size={16} />
-            </button>
-          ) : (
-            <button
-              className="form-submit step-next"
-              type="submit"
+              onClick={(e) => submit(e as unknown as FormEvent<HTMLFormElement>, false)}
               disabled={pending || submissionConflict}
             >
-              {pending ? (
-                <LoaderCircle className="publish-loading-icon" aria-hidden="true" size={16} />
-              ) : null}
-              <span>
-                {pending
-                  ? editing
-                    ? "Guardando cambios…"
-                    : "Publicando…"
-                  : editing
-                    ? "Guardar cambios"
-                    : "Publicar en Mercadito"}
-              </span>
-              {!pending ? <ArrowRight aria-hidden="true" size={16} /> : null}
+              Guardar borrador
             </button>
+          ) : (
+            <Link className="step-back" href="/mis-avisos">
+              Cancelar
+            </Link>
           )}
+
+          <button
+            className="form-submit step-next"
+            type="submit"
+            disabled={pending || submissionConflict}
+          >
+            {pending ? (
+              <LoaderCircle className="publish-loading-icon" aria-hidden="true" size={16} />
+            ) : null}
+            <span>
+              {pending
+                ? editing
+                  ? "Guardando cambios…"
+                  : "Publicando…"
+                : editing
+                  ? "Guardar cambios"
+                  : "Publicar en Mercadito"}
+            </span>
+            {!pending ? <ArrowRight aria-hidden="true" size={16} /> : null}
+          </button>
         </div>
       </form>
     </div>
   );
 }
+
