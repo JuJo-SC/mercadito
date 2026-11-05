@@ -7,6 +7,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Send } from "lucide-react";
 
+const quickPrompts = [
+  { label: "¿Sigue disponible?", text: "¡Hola! ¿Aún la tienes disponible?" },
+  { label: "¿Dónde entregas?", text: "Hola, ¿en qué facultad o edificio entregas?" },
+  { label: "Trato hoy", text: "¡Hola! Me interesa para entrega hoy en el campus." },
+] as const;
+
 export function StartConversationForm({
   listingId,
   sellerId,
@@ -26,6 +32,7 @@ export function StartConversationForm({
 }) {
   const router = useRouter();
   const [body, setBody] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const messageRequestRef = useRef<{ body: string; id: string } | null>(null);
@@ -98,6 +105,7 @@ export function StartConversationForm({
   const errorId = "first-message-error-" + listingId;
   const messageInput = (
     <textarea
+      ref={textareaRef}
       id={"first-message-" + listingId}
       aria-describedby={compact ? (error ? errorId : undefined) : limitId + " " + keyboardHelpId}
       value={body}
@@ -132,6 +140,21 @@ export function StartConversationForm({
     <form className={"notice-contact-form" + (compact ? " is-inline" : "")} onSubmit={startConversation}>
       {!compact ? <h3>Pregunta por esta publicación</h3> : null}
       <label htmlFor={"first-message-" + listingId}>{compact ? "Escribir a " : "Primer mensaje para "}{sellerName}</label>
+      <div className="notice-contact-chips" role="group" aria-label="Mensajes rápidos">
+        {quickPrompts.map((prompt) => (
+          <button
+            key={prompt.label}
+            className="notice-contact-chip"
+            type="button"
+            onClick={() => {
+              setBody(prompt.text);
+              textareaRef.current?.focus();
+            }}
+          >
+            {prompt.label}
+          </button>
+        ))}
+      </div>
       {compact ? (
         <div className="notice-contact-compose">
           {messageInput}
