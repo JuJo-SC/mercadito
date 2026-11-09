@@ -2,9 +2,16 @@
 
 import { useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { submitMessageOnEnter } from "@/features/conversations/lib/submit-message-on-enter";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Send } from "lucide-react";
+
+const quickPrompts = [
+  { label: "¿Sigue disponible?", text: "¡Hola! ¿Aún la tienes disponible?" },
+  { label: "¿Dónde entregas?", text: "Hola, ¿en qué facultad o edificio entregas?" },
+  { label: "Trato hoy", text: "¡Hola! Me interesa para entrega hoy en el campus." },
+] as const;
 
 export function StartConversationForm({
   listingId,
@@ -13,6 +20,7 @@ export function StartConversationForm({
   currentUserId,
   signedIn,
   isDemo,
+  compact = false,
 }: {
   listingId: string;
   sellerId: string;
@@ -20,9 +28,11 @@ export function StartConversationForm({
   currentUserId: string | null;
   signedIn: boolean;
   isDemo: boolean;
+  compact?: boolean;
 }) {
   const router = useRouter();
   const [body, setBody] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const messageRequestRef = useRef<{ body: string; id: string } | null>(null);
@@ -90,32 +100,82 @@ export function StartConversationForm({
   }
 
   const limitId = `first-message-limit-${listingId}`;
+  const keyboardHelpId = `first-message-keyboard-help-${listingId}`;
 
-  return (
-    <form className="notice-contact-form" onSubmit={startConversation}>
-      <h3>Pregunta por esta publicación</h3>
-      <label htmlFor={`first-message-${listingId}`}>Primer mensaje para {sellerName}</label>
-      <textarea
-        id={`first-message-${listingId}`}
-        aria-describedby={limitId}
-        value={body}
-        onChange={(event) => setBody(event.target.value)}
-        placeholder="¿Sigue disponible? ¿Podemos acordar un lugar para el intercambio?"
-        maxLength={2000}
-        rows={2}
-        required
-      />
-      <div className="notice-contact-foot">
-        <div className="notice-contact-meta">
-          <p id={limitId}>{body.length}/2,000 caracteres</p>
-          <p>Solo texto · pagos fuera de Mercadito</p>
-        </div>
-        <button className="button-ink" type="submit" disabled={sending || !body.trim()}>
+  const errorId = "first-message-error-" + listingId;
+  const messageInput = (
+    <textarea
+      ref={textareaRef}
+      id={"first-message-" + listingId}
+      aria-describedby={compact ? (error ? errorId : undefined) : limitId + " " + keyboardHelpId}
+      value={body}
+      onChange={(event) => setBody(event.target.value)}
+      onKeyDown={(event) => submitMessageOnEnter(event, sending)}
+      placeholder={compact ? "Hola, ¿sigue disponible?" : "¿Sigue disponible? ¿Podemos acordar un lugar para el intercambio?"}
+      maxLength={2000}
+      rows={compact ? 1 : 2}
+      required
+    />
+  );
+  const submitButton = (
+    <button
+      className={compact ? "notice-contact-send" : "button-ink"}
+      type="submit"
+      aria-label={compact ? (sending ? "Enviando mensaje" : "Enviar mensaje") : undefined}
+      aria-busy={sending}
+      disabled={sending || !body.trim()}
+    >
+      {compact ? (
+        <Send aria-hidden="true" size={19} strokeWidth={1.8} />
+      ) : (
+        <>
           {sending ? "Enviando…" : "Enviar pregunta"}
           {sending ? null : <Send aria-hidden="true" size={16} strokeWidth={1.8} />}
-        </button>
+        </>
+      )}
+    </button>
+  );
+
+  return (
+    <form className={"notice-contact-form" + (compact ? " is-inline" : "")} onSubmit={startConversation}>
+      {!compact ? <h3>Pregunta por esta publicación</h3> : null}
+      <label htmlFor={"first-message-" + listingId}>{compact ? "Escribir a " : "Primer mensaje para "}{sellerName}</label>
+      <div className="notice-contact-chips" role="group" aria-label="Mensajes rápidos">
+        {quickPrompts.map((prompt) => (
+          <button
+            key={prompt.label}
+            className="notice-contact-chip"
+            type="button"
+            onClick={() => {
+              setBody(prompt.text);
+              textareaRef.current?.focus();
+            }}
+          >
+            {prompt.label}
+          </button>
+        ))}
       </div>
-      {error ? <p className="thread-error" role="alert">{error}</p> : null}
+      {compact ? (
+        <div className="notice-contact-compose">
+          {messageInput}
+          {submitButton}
+        </div>
+      ) : (
+        <>
+          {messageInput}
+          <p className="message-keyboard-hint" id={keyboardHelpId}>
+            Enter para enviar · Shift+Enter para otra línea
+          </p>
+          <div className="notice-contact-foot">
+            <div className="notice-contact-meta">
+              <p id={limitId}>{body.length}/2,000 caracteres</p>
+              <p>Solo texto · pagos fuera de Mercadito</p>
+            </div>
+            {submitButton}
+          </div>
+        </>
+      )}
+      {error ? <p className="thread-error" id={errorId} role="alert">{error}</p> : null}
     </form>
   );
 }

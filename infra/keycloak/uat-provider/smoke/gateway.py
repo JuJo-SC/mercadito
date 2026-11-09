@@ -21,7 +21,7 @@ class Handler(BaseHTTPRequestHandler):
         else:
             status = 200
             payload = {"source": "UAT", "authenticated": True, "login": {"exito": True, "cambiaPass": False},
-                       "programs": [{"raw": {"Num_Matricula": username, "Txt_Nombre": "MARÍA ISABEL", "Txt_Apellido_Paterno": "LÓPEZ", "Txt_Apellido_Materno": "GARCÍA", "Situacion": "regulares" if username == "000123" else "INACTIVO"}}]}
+                       "programs": [{"raw": {"Num_Matricula": username, "Txt_DES": "Facultad de Ingeniería", "Txt_Nombre": "MARÍA ISABEL", "Txt_Apellido_Paterno": "LÓPEZ", "Txt_Apellido_Materno": "GARCÍA", "Situacion": "regulares" if username == "000123" else "INACTIVO"}}]}
         data = json.dumps(payload).encode()
         self.send_response(status)
         self.send_header("Content-Type", "application/json")

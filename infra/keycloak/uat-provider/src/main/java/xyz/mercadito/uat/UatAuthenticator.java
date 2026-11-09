@@ -144,6 +144,9 @@ public final class UatAuthenticator implements Authenticator {
             if (identity.fullName() != null) {
                 context.getAuthenticationSession().setUserSessionNote("uat_private_name", identity.fullName());
             }
+            if (identity.facultyName() != null) {
+                context.getAuthenticationSession().setUserSessionNote("uat_faculty_name", identity.facultyName());
+            }
             context.success(PasswordCredentialModel.TYPE);
         } catch (UatVerificationException error) {
             if (existing != null) context.getEvent().user(existing);

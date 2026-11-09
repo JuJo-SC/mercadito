@@ -106,7 +106,11 @@ public final class PortalResultValidator {
                             schemaNames(raw), schemaNames(parameters),
                             raw.path("_name_fields").asText(""), parameters.path("_name_fields").asText(""));
                 }
-                return new VerifiedStudent(matricula, email, displayName, fullName);
+                String facultyName = PortalFaculty.from(raw);
+                if (facultyName == null) {
+                    LOG.warnf("UAT_CHECK faculty_name_missing fields=%s", raw.path("_faculty_fields").asText(""));
+                }
+                return new VerifiedStudent(matricula, email, displayName, fullName, facultyName);
             }
             if (!situations.isEmpty() && Set.of("INACTIVO", "BAJA", "EGRESADO").containsAll(situations)) {
                 inactivePlan = true;

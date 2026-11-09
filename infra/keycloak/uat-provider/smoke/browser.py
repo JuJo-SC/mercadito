@@ -112,6 +112,7 @@ else:
         assert identity["uat_student_verified"] is True
         assert identity["uat_display_name"] == "María Isabel L."
         assert identity["uat_private_name"] == "María Isabel López García"
+        assert identity["uat_faculty_name"] == "Facultad de Ingeniería"
         assert "uat_private_name" not in claims(tokens["access_token"])
         assert "name" not in identity and "given_name" not in identity and "family_name" not in identity
         assert "preferred_username" not in identity and "email" not in identity

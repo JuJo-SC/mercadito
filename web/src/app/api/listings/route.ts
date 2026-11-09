@@ -12,7 +12,7 @@ import {
 
 export const runtime = "nodejs";
 
-const privateNoStore = { "Cache-Control": "private, no-store" };
+const privateNoStore = { "Cache-Control": "private, no-store", Vary: "Cookie" };
 
 function listingPhotoUrl(id: string, position: number) {
   return `/api/listings/${encodeURIComponent(id)}/photo?position=${position}`;
@@ -20,7 +20,7 @@ function listingPhotoUrl(id: string, position: number) {
 
 const createListingSchema = z.object({
   title: z.string().trim().min(4).max(90),
-  description: z.string().trim().min(10).max(2000),
+  description: z.string().trim().max(2000).default(""),
   price: z.number().finite().min(0).max(1000000),
   category: z.enum(ListingCategory),
   condition: z.enum(["NEW", "LIKE_NEW", "GOOD", "FAIR"]),
@@ -58,6 +58,7 @@ export async function GET(request: Request) {
   const where = {
     universityId: university.id,
     status: "PUBLISHED" as const,
+    ...(university.isTest ? {} : { isDemo: false }),
     ...(validCategory ? { category: category as ListingCategory } : {}),
     ...(query
       ? {
@@ -134,11 +135,10 @@ export async function GET(request: Request) {
       currency: true,
       category: true,
       condition: true,
-      imageUrl: true,
       photos: { select: { position: true }, orderBy: { position: "asc" } },
       isDemo: true,
       createdAt: true,
-      seller: { select: { id: true, name: true } },
+      seller: { select: { id: true, name: true, facultyName: true } },
     },
   });
 
@@ -201,6 +201,12 @@ export async function POST(request: Request) {
       );
     }
     photos = await parseListingPhotos(formData);
+    if (photos.length === 0) {
+      return Response.json(
+        { error: "Sube al menos 1 foto del producto para publicar." },
+        { status: 400, headers: privateNoStore },
+      );
+    }
 
     const { publish, submissionId, ...content } = parsed.data;
     const hash = createHash("sha256")

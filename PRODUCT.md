@@ -42,11 +42,11 @@ La pertenencia a una universidad define el acceso al mercadito de esa comunidad.
 - Apartar retira temporalmente el artículo del catálogo e impide iniciar nuevas conversaciones; los hilos existentes continúan abiertos. No reserva para una persona ni registra pagos. Quitar apartado vuelve al estado publicado.
 - Mensajes separa Ventas y Compras por el papel del estudiante como vendedor o comprador, aunque cambie el último emisor. La foto y el título del producto preceden al nombre de la otra persona; se conservan actividad, disponibilidad, Por responder/Esperando respuesta y mensajes sin leer.
 - El chat del MVP permite mensajes de texto entre estudiantes del mismo campus; no admite adjuntos.
-- Cada aviso puede incluir hasta cinco fotos JPG, PNG o WebP. Cada archivo de entrada pesa como máximo 8 MB; la suma de la carga no supera 20 MB. Las fotos se convierten a WebP de hasta 1280 px, con un objetivo de 700 KB y un límite de 1.2 MB por imagen, se guardan como filas vinculadas al aviso y sus originales solo se entregan a estudiantes activos del mismo campus; la portada puede mostrar miniaturas reducidas de anuncios publicados. El recorrido de demostración previsualiza las fotos, pero no guarda publicaciones.
+- Cada aviso puede incluir hasta cinco fotos JPG, PNG o WebP. Cada archivo de entrada pesa como máximo 8 MB; la suma de la carga no supera 20 MB. Las fotos se convierten a WebP de hasta 1280 px, con un objetivo de 700 KB y un límite de 1.2 MB por imagen, se guardan como filas vinculadas al aviso y sus originales solo se entregan a estudiantes activos del mismo campus; las miniaturas y los originales requieren sesión y autorización del mismo campus. El recorrido de demostración previsualiza las fotos, pero no guarda publicaciones.
 - Las fotos privadas requieren una sesión estudiantil activa del mismo campus. El vendedor puede ver las fotos de sus publicaciones en cualquier estado; un comprador con un hilo existente conserva la referencia visual cuando el artículo está apartado, vendido o archivado. Los resúmenes de conversaciones y publicaciones seleccionan solo la posición de la primera foto y construyen su URL; los bytes se solicitan al endpoint privado y no se envían en el resumen.
 - Si una navegación falla por red o disponibilidad, la PWA muestra una página estática; no almacena ni reenvía publicaciones, mensajes o datos privados.
 
-- Actualizado por petición del usuario: sin sesión se muestran nombre, precio y miniatura de hasta ocho productos publicados de la comunidad activa. Las tarjetas llevan al acceso; no se exponen vendedores, conversaciones ni fotos originales. Una cuenta estudiantil activa solo puede acceder si pertenece a la única universidad configurada. Los antiguos registros de demostración se conservan, pero no se exponen en el catálogo público.
+- Actualizado por petición del usuario: la portada pública conserva bienvenida y acceso, sin consultar ni mostrar publicaciones, fotos, títulos o precios. Toda publicación y sus fotos requieren una sesión estudiantil activa del campus configurado, incluso en comunidades y artículos de prueba.
 
 ## Evidence on Hand
 
@@ -58,7 +58,7 @@ Aún se necesita el aviso de privacidad aprobado por quien operará el servicio,
 
 ## Flujo del estudiante
 
-1. La portada pública presenta el mercadito de la universidad configurada y su condición de prueba cuando corresponde. Muestra una cuadrícula estática de hasta ocho productos publicados, con foto, precio y nombre. No ofrece integrar otras comunidades.
+1. La portada pública presenta el mercadito de la universidad configurada y su condición de prueba cuando corresponde. No consulta ni presenta publicaciones; invita a iniciar sesión. No ofrece integrar otras comunidades.
 2. Al iniciar sesión, Keycloak entrega los claims que permiten asociar la cuenta con la universidad activa configurada. Otra universidad se rechaza, incluso con claims válidos. El correo por sí solo no determina el campus.
 3. El alumno entra a /mercadito, donde ve el catálogo de su universidad, busca por texto o categoría y compara publicaciones.
 4. El catálogo empieza por publicaciones con más conversaciones iniciadas cuando hay actividad suficiente; si no, muestra las más recientes. Mercadito no procesa pagos.
@@ -83,9 +83,24 @@ Confirmado por el propietario: conservar una página web con apariencia y navega
 
 ## Orientación pública
 
-Corregido por petición del propietario: el lateral de la portada debe conservarse compacto. Las explicaciones y ejemplos visuales aparecen al pulsar Mensajes, Publicar y Mis publicaciones, en la pantalla de cada apartado antes de iniciar sesión. El chat se presenta para compradores y vendedores, sin exigir compartir teléfono. Publicar presenta artículos sin uso, ropa y emprendimientos sujetos al reglamento. Mis publicaciones presenta la administración de los artículos propios. Cada introducción conserva el acceso al login y su destino; con sesión se muestra la función real.
+Corregido por petición del propietario: el lateral de la portada debe conservarse compacto. Las explicaciones y ejemplos visuales aparecen al pulsar Mensajes, Publicar y Mis publicaciones, en la pantalla de cada apartado antes de iniciar sesión. El chat se presenta para compradores y vendedores, sin exigir compartir teléfono. Publicar presenta artículos sin uso, ropa y emprendimientos sujetos al reglamento. Mis publicaciones presenta la administración de los artículos propios. El acceso principal se concentra en Explorar y en la cabecera compartida; las otras introducciones no tienen botones de acceso. Con sesión se muestra la función real.
 
 
 ## Nombres y perfil propio
 
 Por petición del propietario, cada estudiante UAT muestra sus propios nombres de pila e inicial del primer apellido en publicaciones y conversaciones cuando el portal separa esos campos. Al pulsar su nombre o icono de cuenta abre Mi perfil, donde puede consultar su nombre completo en un desplegable privado. El nombre completo se almacena por separado y no se envía a otros estudiantes. Las cuentas existentes actualizan los datos al volver a verificar el acceso UAT.
+
+
+## Facultad en publicaciones
+
+Cada publicación muestra la facultad del vendedor obtenida de su programa UAT verificado. Es un dato público dentro de la comunidad, actualizado al revalidar la cuenta, y orienta a compradores sin fijar automáticamente el lugar de entrega. Ante ausencia de información aparece Por confirmar.
+
+
+## Envío de mensajes con teclado
+
+Desde una publicación y dentro de una conversación, Enter envía el mensaje y Shift+Enter inserta otra línea. Los campos muestran esta ayuda. Se conservan el botón de envío, el límite de 2,000 caracteres y la protección de reintentos.
+
+
+## Pantalla de acceso institucional
+
+Por petición del propietario, /ingresar usa una explicación breve y genérica: iniciar sesión con la cuenta institucional para explorar, publicar y conversar. El título y el botón no mencionan una universidad específica. Conserva el acceso configurado, el aviso de privacidad, la condición de prueba cuando corresponda y los destinos de navegación validados.

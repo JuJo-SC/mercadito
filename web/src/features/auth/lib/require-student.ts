@@ -21,6 +21,7 @@ export async function getActiveStudent() {
     select: {
       id: true,
       name: true,
+      facultyName: true,
       universityId: true,
       role: true,
       status: true,

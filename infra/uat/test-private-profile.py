@@ -28,8 +28,8 @@ try:
     url='postgresql://fixture:fixture-password@database:5432/mercadito'
     docker('run', '--rm', '--network', network, '-e', 'DATABASE_URL='+url, 'mercadito-migrator:profile-candidate')
     sql('''INSERT INTO "University" (id,name,slug,status,"isDemo","isTest","updatedAt") VALUES ('uat','UAT','uat','ACTIVE',false,true,now());
-    INSERT INTO "User" (id,name,"universityId",role,status,"isDemo","updatedAt") VALUES
-    ('maria','María Isabel L.','uat','STUDENT','ACTIVE',false,now()),('carlos','Carlos Alberto M.','uat','STUDENT','ACTIVE',false,now());
+    INSERT INTO "User" (id,name,"facultyName","universityId",role,status,"isDemo","updatedAt") VALUES
+    ('maria','María Isabel L.','Facultad de Enfermería','uat','STUDENT','ACTIVE',false,now()),('carlos','Carlos Alberto M.','Facultad de Ingeniería','uat','STUDENT','ACTIVE',false,now());
     INSERT INTO "StudentPrivateProfile" ("userId","fullName","updatedAt") VALUES
     ('maria','María Isabel López García',now()),('carlos','Carlos Alberto Méndez Ruiz',now());
     INSERT INTO "Session" (id,"sessionToken","userId",expires) VALUES
@@ -61,6 +61,9 @@ try:
         const publicPage=await get('/mercadito',person);assert.equal(publicPage.status,200);
         const session=await get('/api/auth/session',person);const sessionText=await session.text();
         assert.ok(!sessionText.includes(own));assert.ok(!sessionText.includes(other));assert.ok(!sessionText.includes('uat_private_name'));
+        const api=await get('/api/listings?university=uat',person);assert.equal(api.status,200);
+        const payload=await api.json();assert.equal(payload.listings.find(x=>x.seller.id==='maria').seller.facultyName,'Facultad de Enfermería');
+        assert.equal(payload.listings.find(x=>x.seller.id==='carlos').seller.facultyName,'Facultad de Ingeniería');
         const listings=await publicPage.text();assert.ok(listings.includes('María Isabel L.'));assert.ok(listings.includes('Carlos Alberto M.'));
         assert.ok(!listings.includes(own));assert.ok(!listings.includes(other));
       }

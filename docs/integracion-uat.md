@@ -131,3 +131,14 @@ El nombre completo del portal se emite como uat_private_name hacia ID token y us
 La ruta /perfil obtiene la identidad exclusivamente de la sesión activa y no acepta identificadores de otros estudiantes. Su respuesta es privada, sin almacenamiento en caché ni indexación. La cabecera enlaza a esa ruta desde el nombre en escritorio y el icono de cuenta en móvil; «Ver mi nombre completo» revela el dato solo dentro del perfil propio. El catálogo, las publicaciones y los mensajes siguen seleccionando únicamente User.name; nunca incluyen StudentPrivateProfile.
 
 La migración 20261014010000_add_private_student_profile solo crea una tabla y una relación: no elimina ni transforma datos existentes. El aviso de la prueba informa del nombre público y privado. Se verifican identidades distintas, sincronización del vínculo local, aislamiento por sesión, rechazo anónimo, respuestas privadas, nombres públicos de ambos vendedores y ausencia del nombre completo en catálogo mediante pruebas HTTP con dos cuentas ficticias y PostgreSQL temporal, además de las pruebas del autenticador y el flujo OIDC aislado.
+
+
+## Facultad del vendedor
+
+Por petición del propietario, la ficha de publicación muestra Facultad en la segunda columna, debajo de Publicado por y a la derecha de la fecha. El dato público se guarda en User.facultyName y se selecciona del vendedor tanto en la carga inicial como en /api/listings; no depende de quien abre el artículo. Las publicaciones existentes reflejan el valor del autor sin recrearlas.
+
+PortalFaculty solo acepta nombres explícitos de facultad/dependencia/unidad académica del mismo programa cuya matrícula y situación fueron verificadas. No convierte Id_DES en texto, no usa la carrera como facultad y rechaza valores contradictorios o con marcado. uat_faculty_name viaja por una nota de sesión específica hasta Auth.js. La ausencia de facultad permite el ingreso, conserva un dato verificado previo y muestra Por confirmar cuando nunca se obtuvo. La comprobación de la etiqueta exacta devuelta por una cuenta real requiere un nuevo ingreso de su titular; el diagnóstico de datos ausentes solo registra nombres de campos, nunca la respuesta completa.
+
+La migración 20261015001000_add_student_faculty añade una columna nullable y no transforma datos existentes. El perfil propio permite consultar el mismo dato; el aviso explica su visibilidad en publicaciones. Las cuentas existentes deben cerrar sesión y volver a verificar UAT para obtenerlo. El dato orienta sobre el vendedor y no define por sí mismo el lugar de entrega.
+
+Se prueban facultades distintas para dos vendedores, carreras ajenas, ID numérico, marcado, contradicciones, campo ausente, actualización de una cuenta existente y DTO del catálogo con dos sesiones ficticias. El nombre completo permanece fuera del catálogo.

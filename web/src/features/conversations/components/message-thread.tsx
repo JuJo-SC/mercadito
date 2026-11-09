@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { submitMessageOnEnter } from "@/features/conversations/lib/submit-message-on-enter";
+import { DismissibleDetails } from "@/components/dismissible-details";
 import Link from "next/link";
-import { ArrowRight, Send } from "lucide-react";
+import { ChevronLeft, CircleHelp, Send } from "lucide-react";
 
 type ThreadMessage = {
   id: string;
@@ -35,19 +37,13 @@ function formatPrice(price: number, currency: string) {
   }
 }
 
-function availabilityName(status: string) {
-  if (status === "RESERVED") return "Apartado";
-  if (status === "SOLD") return "Vendido";
-  if (status === "ARCHIVED") return "Archivado";
-  return "Publicado";
-}
-
 export function MessageThread({
   conversationId,
   currentUserId,
   otherStudentName,
   listing,
   initialMessages,
+  testCampusName,
 }: {
   conversationId: string;
   currentUserId: string;
@@ -61,6 +57,7 @@ export function MessageThread({
     status: string;
   };
   initialMessages: ThreadMessage[];
+  testCampusName?: string;
 }) {
   const [messages, setMessages] = useState(initialMessages);
   const [draft, setDraft] = useState("");
@@ -181,29 +178,37 @@ export function MessageThread({
 
   return (
     <main className="message-thread-page page-width">
-      <Link className="back-link" href="/mensajes">
-        <ArrowRight aria-hidden="true" size={16} />
-        Volver a mensajes
-      </Link>
-      <div className="message-thread-heading">
-        <h1>Con {otherStudentName}</h1>
-        <p>Coordinen aquí los detalles del intercambio.</p>
-      </div>
+      <section className="thread-exchange" aria-label={`Conversación con ${otherStudentName}`}>
+        <header className="thread-header">
+          <Link className="thread-back-button" href="/mensajes" aria-label="Volver a mensajes" title="Volver a mensajes">
+            <ChevronLeft aria-hidden="true" size={20} strokeWidth={2.1} />
+          </Link>
 
-      <section className="thread-listing" aria-label="Producto de esta conversación">
-        <div className="thread-listing-copy">
-          <h2>{listing.title}</h2>
-          <p>{listing.condition} · {availabilityName(listing.status)}</p>
-        </div>
-        <strong>{formatPrice(listing.price, listing.currency)}</strong>
-      </section>
+          <div className="thread-header-copy">
+            <div className="thread-header-title-row">
+              <h1>{listing.title}</h1>
+              <span className="thread-header-price">{formatPrice(listing.price, listing.currency)}</span>
+            </div>
+            <p className="thread-header-student">{otherStudentName}</p>
+          </div>
 
-      <p className="thread-payment-note">
-        Mercadito facilita la coordinación, no recibe ni procesa pagos. Si ambas
-        personas lo deciden, pueden continuar por otro medio.
-      </p>
+          <DismissibleDetails className="thread-help">
+            <summary aria-label="Información del intercambio" title="Información del intercambio">
+              <CircleHelp aria-hidden="true" size={18} strokeWidth={2} />
+            </summary>
+            <div className="thread-help-popover">
+              <p className="thread-help-title">Entrega en el campus</p>
+              <p>Acuerden aquí el lugar y la hora. El pago se realiza en persona al revisar el artículo.</p>
+            </div>
+          </DismissibleDetails>
+        </header>
 
-      <section className="thread-exchange" aria-label={`Mensajes con ${otherStudentName}`}>
+        {testCampusName ? (
+          <p className="thread-campus-note" role="note">
+            Campus de prueba {testCampusName} · Usa solo mensajes ficticios.
+          </p>
+        ) : null}
+
         <ol className="thread-messages" ref={messageListRef} aria-live="polite" aria-relevant="additions">
           {messages.map((message) => {
             const mine = message.senderId === currentUserId;
@@ -220,31 +225,32 @@ export function MessageThread({
         </ol>
 
         {connectionNotice ? <p className="thread-status" role="status">{connectionNotice}</p> : null}
-        {error ? <p className="thread-error" role="alert">{error}</p> : null}
+        {error ? <p className="thread-error" id="thread-message-error" role="alert">{error}</p> : null}
         <form className="thread-composer" onSubmit={sendMessage}>
-          <label htmlFor="thread-message">Tu mensaje</label>
           <textarea
             id="thread-message"
             name="body"
+            aria-label="Escribe un mensaje"
+            aria-describedby={error ? "thread-message-error" : undefined}
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            placeholder="Escribe una pregunta o acuerda dónde encontrarse…"
+            onKeyDown={(event) => submitMessageOnEnter(event, sending)}
+            placeholder="Escribe un mensaje…"
             maxLength={2000}
-            rows={2}
+            rows={1}
             required
           />
-          <div className="thread-composer-foot">
-            <p>Solo texto · {draft.length}/2,000</p>
-            <button className="button-ink thread-send" type="submit" disabled={sending || !draft.trim()}>
-              {sending ? "Enviando…" : "Enviar"}
-              {sending ? null : <Send aria-hidden="true" size={16} strokeWidth={1.8} />}
-            </button>
-          </div>
+          <button
+            className="button-ink thread-send"
+            type="submit"
+            aria-label={sending ? "Enviando mensaje" : "Enviar mensaje"}
+            title={sending ? "Enviando mensaje" : "Enviar mensaje"}
+            aria-busy={sending}
+            disabled={sending || !draft.trim()}
+          >
+            <Send aria-hidden="true" size={18} strokeWidth={2} />
+          </button>
         </form>
-        <Link className="thread-index-link" href="/mensajes">
-          Ir a la bandeja
-          <ArrowRight aria-hidden="true" size={16} />
-        </Link>
       </section>
     </main>
   );

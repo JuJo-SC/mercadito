@@ -86,3 +86,46 @@ features/auth/lib/uat-access.ts centraliza el cierre por defecto del acceso UAT;
 
 
 `StudentPrivateProfile` conserva el nombre completo separado de `User.name`, que sigue siendo la presentación pública. `features/auth/lib/private-profile.ts` obtiene solo el perfil propio mediante la sesión; `/perfil` muestra el nombre público y permite desplegar el completo. Las consultas de vendedores y conversaciones no seleccionan la relación privada. `infra/uat/test-private-profile.py` comprueba aislamiento y presentación con dos sesiones ficticias, migraciones y contenedores temporales.
+
+
+`PortalFaculty` extrae la facultad del programa validado; el claim `uat_faculty_name` se valida en `features/auth/lib/uat-faculty.ts` y se sincroniza en `User.facultyName`. Las consultas del catálogo seleccionan la facultad del vendedor para la ficha de publicación. El nombre completo sigue aislado en `StudentPrivateProfile`.
+
+
+`features/conversations/lib/submit-message-on-enter.ts` comparte el manejo de teclado entre `start-conversation-form.tsx` y `message-thread.tsx`. Usa `requestSubmit()` para conservar validación y el flujo de envío existente; ignora composición, repetición, texto vacío y solicitudes pendientes. Ver [verificacion-envio-enter.md](verificacion-envio-enter.md).
+
+
+## Pantalla de acceso
+
+`app/ingresar/page.tsx` conserva la acción de autenticación, la validación de returnTo y las condiciones de sesión, disponibilidad y privacidad. `app/ingresar/sign-in.css`, importado por esa ruta, centra la tarjeta de acceso y limita sus estilos a las clases sign-in. Ver [verificacion-acceso-centrado.md](verificacion-acceso-centrado.md).
+
+## Publicaciones con sesión
+
+La portada pública solo consulta la configuración de comunidad, sin consultar publicaciones ni generar miniaturas. Se retiraron el componente y la consulta de vista previa. El catálogo y sus API conservan la validación de estudiante activo y campus; el detalle valida la sesión antes de consultar el artículo y no admite excepciones públicas por ser un campus de demostración. No se devuelve el campo heredado imageUrl: las fotos y miniaturas usan exclusivamente la ruta privada de fotos.
+
+Las respuestas de publicaciones usan private, no-store y Vary: Cookie. Next.js sirve las páginas dinámicas sin caché compartida. El service worker solo almacena offline.html, sin publicaciones ni imágenes privadas. Ver [verificacion-publicaciones-privadas.md](verificacion-publicaciones-privadas.md).
+
+
+## Presentación autenticada
+
+`web/src/app/session-surfaces.css` extiende el sistema de superficies después del acceso. `components/task-page-heading.tsx` comparte título, descripción, ayuda y avisos; `components/dismissible-details.tsx` añade cierre por Escape y pulsación exterior al desplegable nativo. Los módulos de publicaciones y conversaciones conservan sus solicitudes y estado. Las pruebas aisladas y su ejecución están en [verificacion-vistas-con-sesion.md](verificacion-vistas-con-sesion.md).
+
+
+## Ficha y presentación de publicaciones
+
+features/listings/lib/listing-presentation.ts reúne el tipo de resumen, los nombres de condición y el formato de precio y fechas del catálogo. features/listings/components/listing-detail-dialog.tsx contiene la ficha, la galería y la ampliación de fotos; marketplace.tsx conserva búsqueda, paginación y selección. app/listing-detail.css, cargado después del sistema de sesión, limita los nuevos estilos a las tarjetas del catálogo y al detalle refinado.
+
+La foto y los datos siguen el flujo normal en móvil, dentro de listing-detail-shell con desplazamiento nativo. El cierre es hermano de esa región y permanece disponible. No hay listeners de scroll, espacios reservados ni medidas animadas. La variante compact del formulario inicial cambia solo la presentación del contacto en la ficha. Las consultas, rutas de fotos, autorización y envío permanecen en sus módulos originales.
+
+La prueba aislada infra/uat/check-listing-details.cjs reutiliza el entorno sintético de test-session-surfaces.py; las opciones MERCADITO_TEST_IMAGE, MERCADITO_TEST_OUTPUT y MERCADITO_CHECK_LISTING_DETAILS permiten seleccionar la imagen candidata, la carpeta de resultados y las fotos de prueba sin acceder a producción.
+
+### Catálogo compacto
+
+marketplace.tsx presenta únicamente foto, precio y título en las tarjetas. El título de página permanece accesible sin panel visual, y el catálogo no muestra contadores; la paginación mantiene initialTotal, hasMore y nextCursor. listing-detail.css reúne el contorno de la foto y los espacios del catálogo; no se cambian consultas, API ni el componente de ficha. Ver [verificación del catálogo compacto](verificacion-catalogo-compacto.md).
+
+### Ficha amplia y contacto compacto
+
+listing-detail-dialog.tsx dispone descripción, fecha, contacto y datos del vendedor en ese orden. start-conversation-form.tsx conserva el envío y la idempotencia y presenta su variante compact como campo y botón lateral con nombre accesible. La galería y los límites de la hoja se ajustan en listing-detail.css; no cambian API, permisos ni almacenamiento de fotos. Ver [verificación de ficha amplia](verificacion-ficha-amplia.md).
+
+### Foto estática y desplazamiento natural
+
+La ficha móvil ajusta su altura al contenido hasta calc(100dvh - 24px). listing-detail-shell es una región accesible que desplaza toda la ficha cuando hace falta; listing-detail-scroll conserva su desplazamiento independiente solo en escritorio. La galería mantiene posición relativa para anclar flechas y contador sin alterar el flujo. La foto cuadrada conserva su tamaño; el botón de cerrar queda fuera del área desplazable. Ver [verificación de ficha estática](verificacion-ficha-estatica.md).

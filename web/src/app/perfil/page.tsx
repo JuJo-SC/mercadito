@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TaskPageHeading } from "@/components/task-page-heading";
 import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { getOwnPrivateProfile } from "@/features/auth/lib/private-profile";
@@ -15,14 +16,20 @@ export default async function ProfilePage() {
   const unread = await countUnreadMessagesForStudent(student.id, student.universityId);
   return <>
     <SiteHeader signedIn userName={student.name} universityName={student.university.name} unreadMessageCount={unread} />
-    <main className="private-profile page-width">
-      <Link className="text-action" href="/mercadito">Volver al mercadito</Link>
-      <h1>Mi perfil</h1>
-      <p className="profile-intro">Tu identidad en {student.university.name}.</p>
+    <main className="private-profile page-width task-page">
+      <TaskPageHeading title="Mi perfil" description="Tu información, con la privacidad clara.">
+        <p>Tu identidad en {student.university.name}. Tu nombre público identifica tus publicaciones y conversaciones; tu nombre completo solo aparece para ti.</p>
+        <Link className="text-action" href="/mercadito">Volver al mercadito</Link>
+      </TaskPageHeading>
       <section aria-labelledby="profile-public-name">
         <h2 id="profile-public-name">Así te ven los demás</h2>
         <p className="profile-display-name">{student.name ?? "Estudiante"}</p>
         <p>Este nombre identifica tus publicaciones y tus conversaciones.</p>
+      </section>
+      <section aria-labelledby="profile-faculty">
+        <h2 id="profile-faculty">Facultad</h2>
+        <p>{student.facultyName ?? "Pendiente de actualizar desde UAT. Cierra sesión y vuelve a entrar para consultar este dato."}</p>
+        <p>Se muestra junto a tus publicaciones para orientar a los compradores.</p>
       </section>
       <section aria-labelledby="profile-private-name">
         <h2 id="profile-private-name">Solo para ti</h2>

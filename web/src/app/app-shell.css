@@ -128,14 +128,6 @@ body:has(.app-header) .landing-intro { display: block; padding-block: 0; }
 body:has(.app-header) .landing-home .landing-hero { flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 16px; padding-block: 24px; }
 body:has(.app-header) .landing-copy h1 { max-width: none; font-size: clamp(1.55rem, 2.5vw, 2.15rem); line-height: 1.2; }
 body:has(.app-header) .landing-description { font-size: 0.95rem; }
-.landing-product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 12px; }
-.landing-product-grid .landing-product { width: 100%; min-width: 0; background: transparent; border-radius: 12px; }
-.landing-product-grid .landing-product-photo { aspect-ratio: 1; border-radius: 12px; overflow: hidden; }
-.landing-product-grid .landing-product-info { padding: 10px 2px 0; }
-.landing-product-grid .landing-product-info p { margin: 0 0 4px; font-size: 1.12rem; line-height: 1.4; }
-.landing-product-grid .landing-product-info h3 { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: 0.88rem; line-height: 1.4; font-weight: 500; }
-.landing-product-grid .landing-product-info p span { color: #595960; }
-body:has(.app-header) .landing-products { padding-bottom: 16px; }
 body:has(.app-header) .landing-home .landing-how { padding-block: 24px; }
 ::selection { background: var(--signal); color: white; }
 @media (hover: hover) {
@@ -217,8 +209,7 @@ body:has(.app-header) .landing-home .landing-how { padding-block: 24px; }
   body:has(.app-header) .campus-marketplace .mobile-campus-note { display: inline; color: var(--signal); }
   body:has(.app-header) .campus-marketplace .listing-meta { display: flex; gap: 12px; }
   body:has(.app-header) .campus-marketplace .campus-test-banner-top { display: none; }
-  body:has(.app-header) .marketplace-results .product-grid,
-  .landing-product-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px 18px; }
+  body:has(.app-header) .marketplace-results .product-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px 18px; }
   body:has(.app-header) .campus-marketplace { padding-top: 28px; }
   body:has(.app-header) .campus-marketplace .listing-heading h1 { font-size: 1.65rem; }
   body:has(.app-header) .landing-home .landing-hero { flex-direction: row; align-items: center; padding-block: 28px; }
@@ -232,8 +223,7 @@ body:has(.app-header) .landing-home .landing-how { padding-block: 24px; }
   .app-header .app-section-title { padding-inline: 16px; font-size: 1rem; }
   .app-header .header-actions { margin-right: max(16px, env(safe-area-inset-right)); }
   body:has(.app-header) .page-width { width: calc(100% - 32px); }
-  body:has(.app-header) .marketplace-results .product-grid,
-  .landing-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }
+  body:has(.app-header) .marketplace-results .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }
   body:has(.app-header) .landing-home .landing-hero { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 360px) {

@@ -4,7 +4,7 @@ import { findConversationForStudent } from "@/features/conversations/lib/convers
 import { getActiveStudent } from "@/features/auth/lib/require-student";
 import { countUnreadMessagesForStudent } from "@/features/conversations/lib/conversations";
 import { MessageThread } from "@/features/conversations/components/message-thread";
-import { SiteFooter, SiteHeader } from "@/components/site-header";
+import { SiteHeader } from "@/components/site-header";
 
 export const dynamic = "force-dynamic";
 
@@ -52,13 +52,8 @@ export default async function ConversationPage({ params }: MessagePageProps) {
   return (
     <>
       <SiteHeader signedIn userName={student.name} universityName={student.university.name} unreadMessageCount={unreadMessageCount} excludeUnreadConversationId={conversation.id} />
-      {university?.isTest ? (
-        <p className="demo-banner page-width thread-test-note" role="note">
-          <span className="demo-mark" aria-hidden="true">P</span>
-          Campus de prueba {university.name}. Usa solo mensajes ficticios.
-        </p>
-      ) : null}
       <MessageThread
+        testCampusName={university?.isTest ? university.name : undefined}
         conversationId={conversation.id}
         currentUserId={student.id}
         otherStudentName={otherStudentName}
@@ -76,7 +71,6 @@ export default async function ConversationPage({ params }: MessagePageProps) {
           readAt: message.readAt?.toISOString() ?? null,
         }))}
       />
-      <SiteFooter />
     </>
   );
 }

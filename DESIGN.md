@@ -111,7 +111,7 @@ La pila del sistema usa SF Pro en dispositivos Apple y sus equivalentes nativos 
 
 ## Catálogo
 
-La portada pública muestra una introducción compacta y una cuadrícula estática de hasta ocho productos: foto, precio y nombre. Mantiene las etiquetas de ejemplo y el acceso protegido; no muestra vendedores ni fotos originales. Las tarjetas llevan al inicio de sesión. El catálogo autenticado conserva búsqueda, categorías, orden y fichas completas. El precio precede visualmente al título, y la fotografía ocupa una superficie cuadrada con radio de 12px.
+La portada pública conserva la bienvenida, la explicación de uso y los botones de acceso, sin tarjetas, fotografías, títulos ni precios de publicaciones. El catálogo autenticado conserva búsqueda, categorías, orden y fichas completas. El precio precede visualmente al título, y la fotografía ocupa una superficie cuadrada con radio de 12px.
 
 En móvil, un botón verde de «Filtros» permanece fijo en el costado inferior derecho, incluso después de recorrer el catálogo. Abre un panel desde la derecha con búsqueda, categorías, orden y avisos completos. El panel tiene desplazamiento independiente y protege el foco mediante un diálogo nativo. Cerrar o Escape recupera la posición del catálogo; buscar o elegir «Ver productos» vuelve al inicio de los resultados. El contador indica filtros activos. El catálogo conserva una indicación breve de campus de prueba junto al total. En escritorio, los filtros se integran debajo de las cuatro tareas principales en el mismo lateral fijo de 280px (248px en tablet). Tienen desplazamiento independiente y dejan libre la identificación de comunidad al pie.
 
@@ -141,9 +141,11 @@ Mensajes, Mis publicaciones y Publicar usan títulos breves en una línea, con u
 
 ## Introducciones antes del acceso
 
-El lateral y la barra inferior permanecen compactos, con los cuatro enlaces habituales. Al pulsar Mensajes, Publicar o Mis publicaciones sin sesión, la ruta muestra una presentación propia: título, explicación breve, acceso al login y una muestra visual amplia. En escritorio, texto y ejemplo comparten dos columnas; en tablet y móvil se apilan, con el botón de acceso antes del ejemplo.
+La vista publica aprobada conserva el marco compartido y agrupa texto e ilustracion en un panel blanco con borde tenue. En escritorio, las dos columnas separan la explicacion de una superficie verde suave con interfaz ilustrada; en movil se apilan. Explorar conserva el unico boton principal Entrar al mercadito y un recorrido Asi funciona que integra Entra, Encuentra o publica y Conversa. No se repite la explicacion en otro panel inferior.
 
-Mensajes ilustra una conversación sobre un producto y explica el contacto con compradores y vendedores sin exigir teléfono. Publicar muestra ropa, libros y emprendimientos sujetos al reglamento, y permite abrir el recorrido de demostración. Mis publicaciones ilustra los estados En venta, Apartado y Vendido. Las muestras se identifican como datos ilustrativos; no contienen controles falsamente interactivos. Con sesión, cada apartado conserva la interfaz operativa.
+Mensajes, Publicar y Mis publicaciones conservan titulo, descripcion, nota agrupada e ilustracion, sin botones introductorios. Publicar ilustra fotos y campos reales; Mensajes presenta contexto del producto y burbujas; Mis publicaciones presenta filas con estados. Las ilustraciones son estaticas, usan contenido sintetico, no consultan publicaciones ni fotos privadas y no llevan las etiquetas visibles de ejemplo o datos ilustrativos que el propietario pidio retirar. Los articulos ficticios del catalogo autenticado conservan sus indicaciones existentes.
+
+Las animaciones son una mejora progresiva: resaltado breve y finito del recorrido, aparicion de burbujas y ensamblado de la publicacion. El contenido se entrega visible desde el servidor y permanece estatico con movimiento reducido. Los estilos quedan limitados a .public-preview y al marco que contiene .public-page; las funciones y superficies autenticadas no cambian.
 
 ## Mensajes y Mis publicaciones
 
@@ -151,9 +153,9 @@ Estas superficies extienden el mismo sistema claro, con superficies blancas, tip
 
 Mensajes abre en Ventas y permite cambiar a Compras mediante dos controles de al menos 44px, con selección y contadores visibles. Ventas reúne conversaciones donde el estudiante es vendedor; Compras, donde es comprador. El último emisor modifica «Por responder» o «Esperando respuesta», sin cambiar esa pertenencia. Cada sección conserva el orden por actividad reciente. La fila presenta foto y título antes del nombre de la otra persona, además de precio, último mensaje, actividad, disponibilidad y mensajes sin leer. En móvil la miniatura se reduce a 72px y la flecha se oculta para dar espacio al contenido.
 
-Mis publicaciones presenta la foto propia junto a estado, fecha, título, precio, categoría y condición. Las secciones aparecen en este orden: En venta (publicadas y apartadas), Borradores, Archivadas y Vendidas; las vacías se omiten. Las tarjetas forman una columna y pasan a dos desde 1200px. Editar y las acciones disponibles para cada estado se distribuyen en una cuadrícula de dos columnas, con controles de al menos 44px. Una respuesta correcta mueve la publicación a su grupo sin recargar; durante el guardado se indica actividad y un fallo conserva el estado anterior con su explicación.
+Mis publicaciones presenta la foto propia junto a estado, fecha, título, precio, categoría y condición. Las secciones aparecen en este orden: En venta (publicadas y apartadas), Borradores, Archivadas y Vendidas; las vacías se omiten. Cada grupo ocupa un panel blanco con filas separadas. Editar queda visible y Más acciones reúne los cambios de disponibilidad, con controles de al menos 44px. Una respuesta correcta mueve la publicación a su grupo sin recargar; durante el guardado se indica actividad y un fallo conserva el estado anterior con su explicación.
 
-Apartar pausa el catálogo y la apertura de nuevos hilos, mientras las conversaciones existentes continúan. No implica reserva para una persona ni pago. «Quitar apartado» vuelve a publicar el artículo. La explicación completa permanece en «Información» y el índice conserva una ayuda breve junto a las acciones.
+Apartar pausa el catálogo y la apertura de nuevos hilos, mientras las conversaciones existentes continúan. No implica reserva para una persona ni pago. «Quitar apartado» vuelve a publicar el artículo. La explicación completa permanece en «Información».
 
 ## Accesibilidad y adaptación
 
@@ -167,3 +169,54 @@ Mercadito pertenece a una universidad activa. Las cuentas UMAN son sintéticas p
 ## Mi perfil
 
 La cuenta de la cabecera es un enlace a /perfil: muestra el nombre público en escritorio y conserva un icono con etiqueta accesible en móvil. La página sigue el marco compartido y separa «Así te ven los demás» de «Solo para ti». Un desplegable nativo permite consultar el nombre completo sin añadir un modal. La página usa el mismo verde, foco azul, tipografía y controles de al menos 44px; los nombres largos ajustan líneas dentro del contenido.
+
+
+## Facultad del vendedor
+
+La cuadrícula de datos de la ficha conserva Condición y Publicado por en su primera fila. Fecha de publicación y Facultad ocupan la segunda fila. Se reutilizan tipografía, espaciado y adaptación existentes; la facultad pertenece al autor y muestra Por confirmar cuando falta el dato.
+
+
+## Teclado de mensajes
+
+El primer mensaje de una publicación y el compositor del hilo comparten Enter para enviar y Shift+Enter para otra línea. Una ayuda breve debajo del campo, enlazada mediante aria-describedby, comunica el atajo sin cambiar los botones ni el contador. La composición de caracteres conserva su comportamiento nativo.
+
+
+## Acceso institucional
+
+/ingresar centra una tarjeta blanca de hasta 480px en el área disponible del marco de aplicación. Icono de candado, título, frase breve, botón de ancho completo y enlace de privacidad comparten el eje central. Se elimina la explicación repetida y el pie promocional de esta pantalla. Conserva colores, foco visible, navegación y áreas táctiles de al menos 44px. El contenido habla de cuenta institucional sin nombrar una universidad; el marco compartido conserva la comunidad configurada. En móvil, la tarjeta se adapta al ancho disponible y queda sobre la barra inferior.
+
+
+## Superficies con sesión aprobadas
+
+El diseño privado aprobado el 21 de octubre de 2026 prolonga el verde, los paneles blancos y el orden de la portada. `web/src/app/session-surfaces.css` se limita al marco autenticado. Los títulos y una descripción breve ocupan un panel; Información agrupa las explicaciones completas, con un icono de ayuda en móvil. Los avisos de prueba permanecen visibles. Los desplegables de ayuda y acciones cierran con Escape o al pulsar fuera.
+
+Explorar agrupa título y resultados; cada producto tiene una tarjeta y la explicación extensa de los filtros queda en Información del mercadito. Mensajes reúne selector y conversaciones en un panel. Publicar conserva sus tres pasos dentro de una superficie alineada con el título. Mis publicaciones conserva todos los estados y acciones en grupos de filas, sin repetir la descripción del producto. El perfil separa nombre público, facultad y nombre privado en paneles.
+
+El hilo agrupa producto, ayuda y aviso de pruebas sobre el intercambio; los mensajes desplazan dentro de su área y el compositor queda sobre la navegación móvil. La fotografía responde al cursor en 180 ms y la última burbuja aparece una vez en 180 ms. `prefers-reduced-motion` desactiva estos efectos. Las consultas, API, autorización y almacenamiento siguen usando la aplicación real, sin datos ni servicios de la maqueta.
+
+
+## Tarjetas y ficha de publicación simplificadas
+
+La tarjeta ordena precio, título y condición; autor y fecha corta comparten una fila. Se omiten la categoría repetida, el texto Ver detalles y el contador si solo hay una foto. La categoría se conserva en los filtros y en Más información del detalle.
+
+La ficha agrupa título, precio y condición, conserva la descripción completa y reúne autor y fecha abreviada con la fecha completa disponible en el atributo title. Más información contiene categoría, facultad y la explicación de entrega y pagos. El contacto utiliza su variante compacta sin duplicar instrucciones; mantiene el límite y los atajos del formulario.
+
+En móvil la ficha mantiene una foto cuadrada de tamaño constante y flujo normal. La superficie completa se desplaza solo si excede la altura visible; el cierre queda fuera de esa región y siempre disponible. Sin fotos se conserva una zona de 144px.
+
+Pulsar la foto abre una ampliación mediante otro diálogo nativo; conserva la selección, flechas y cierre por Escape sin cerrar la ficha inferior. La foto conserva object-fit: contain y las rutas privadas originales. No se alteran permisos, almacenamiento ni caché. Ver [verificación de fichas](docs/verificacion-fichas-publicaciones.md).
+
+## Catálogo compacto aprobado el 22 de octubre de 2026
+
+Esta especificación sustituye la presentación anterior de la tarjeta del catálogo. La foto cuadrada define el contorno con un borde de 1px en el token rule y radio de 12px, sin padding ni marco exterior de tarjeta. Precio y título comparten una única línea debajo; el precio no se comprime y un título largo termina en puntos suspensivos. El nombre completo del artículo sigue en la etiqueta accesible del botón y en la ficha.
+
+El catálogo omite vendedor, fecha y condición en las tarjetas; la ficha conserva esos datos. No hay panel visible de Explorar publicaciones ni contadores de resultados. El h1 se conserva únicamente para lectores de pantalla. Cargar más publicaciones conserva su función y los avisos del campus de prueba permanecen cuando corresponden.
+
+Las publicaciones empiezan después de 12px de padding superior en escritorio y 10px en móvil, sin margen superior adicional de cuadrícula. La separación entre filas es 10px; entre columnas, 8px en escritorio y 6px en móvil. La franja de precio y título conserva 7px de padding superior en escritorio y 6px en móvil. Foco, filtros, fotos privadas y ficha mantienen sus funciones. Ver [verificación del catálogo compacto](docs/verificacion-catalogo-compacto.md).
+
+## Ficha con fotografía amplia y contacto en línea, 22 de octubre de 2026
+
+La fotografía móvil usa un marco cuadrado de hasta 406px, con 12px alrededor, sin deformar ni recortar el archivo. La ficha conserva el estilo y su posición centrada y ajusta su altura al contenido, limitada por el viewport menos 24px. En escritorio admite 74rem y amplía la columna de galería, con 16px de padding.
+
+Se conservan título, precio, condición y descripción. La fecha discreta aparece después de la descripción; el contacto sigue inmediatamente con etiqueta próxima, campo de una línea de 44px y botón lateral de solo icono, con nombre accesible. El contador y la ayuda de teclado no se muestran en esta variante; el límite interno, los atajos, los estados de envío, el error y la protección de reintentos se conservan. Estudiante, categoría y facultad quedan visibles debajo del contacto, seguidos de la nota de entrega y pagos.
+
+El propietario aprobó sustituir la reducción de la imagen por desplazamiento normal. La foto conserva su tamaño con cualquier preferencia de movimiento, sin espacios reservados ni compensaciones de altura. Se compactan los márgenes de título, precio, contacto y datos del vendedor. Ver [verificación de la ficha estática](docs/verificacion-ficha-estatica.md).

@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { ArrowRight, LockKeyhole } from "lucide-react";
 import { signIn, signOut } from "@/features/auth/auth";
-import { activeUniversityName, activeUniversitySlug, getActiveCommunity } from "@/features/community/lib/active-community";
+import { activeUniversitySlug, getActiveCommunity } from "@/features/community/lib/active-community";
 import { getActiveStudent } from "@/features/auth/lib/require-student";
 import { countUnreadMessagesForStudent } from "@/features/conversations/lib/conversations";
-import { SiteFooter, SiteHeader } from "@/components/site-header";
+import { SiteHeader } from "@/components/site-header";
 
 import { getUatPrivacyUrl, isUatLoginEnabled } from "@/features/auth/lib/uat-access";
+import "./sign-in.css";
 
 export const dynamic = "force-dynamic";
 
@@ -51,75 +52,52 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   return (
     <>
       <SiteHeader signedIn={Boolean(student)} userName={student?.name} universityName={student?.university.name} unreadMessageCount={unreadMessageCount} />
-      <main className="form-page page-width">
+      <main className="form-page page-width sign-in-page">
         <Link className="back-link" href="/">
           <ArrowRight aria-hidden="true" size={16} />
           Volver al mercadito
         </Link>
-        <div className="form-intro">
-          <h1>Entra al mercadito de {activeUniversityName}.</h1>
-          <p>
-            Publica, explora y conversa dentro de la comunidad de {activeUniversityName}.
-            Solo las cuentas autorizadas pueden acceder al catálogo.
-          </p>
+        <div className="sign-in-content">
+          <section className="sign-in-card" aria-labelledby="sign-in-title">
+            <span className="sign-in-symbol" aria-hidden="true">
+              <LockKeyhole size={25} strokeWidth={1.7} />
+            </span>
+            {student ? (
+              <>
+                <h1 id="sign-in-title">Tu sesión está activa</h1>
+                <p>Ya puedes explorar, publicar y conversar con tu comunidad.</p>
+                <Link className="button-ink" href="/mercadito">
+                  Ir al mercadito
+                  <ArrowRight aria-hidden="true" size={17} />
+                </Link>
+              </>
+            ) : community && accessReady ? (
+              <>
+                <h1 id="sign-in-title">Entra al mercadito</h1>
+                <p>Inicia sesión con tu cuenta institucional para explorar, publicar y conversar con tu comunidad.</p>
+                {community.isTest ? (
+                  <p className="sign-in-test-note" role="note">Entorno de prueba: usa una cuenta de prueba y datos ficticios.</p>
+                ) : null}
+                <form action={startInstitutionalLogin}>
+                  <input type="hidden" name="returnTo" value={returnTo} />
+                  <button className="button-ink" type="submit">
+                    Iniciar sesión
+                    <ArrowRight aria-hidden="true" size={17} />
+                  </button>
+                </form>
+                {privacyUrl ? (
+                  <p className="sign-in-privacy"><a href={privacyUrl}>Aviso de privacidad</a></p>
+                ) : null}
+              </>
+            ) : (
+              <>
+                <h1 id="sign-in-title">Acceso en preparación</h1>
+                <p>Vuelve más tarde para iniciar sesión con tu cuenta institucional.</p>
+              </>
+            )}
+          </section>
         </div>
-
-        {community?.isTest ? (
-          <p className="demo-banner auth-test-note" role="note">
-            <span className="demo-mark" aria-hidden="true">P</span>
-            {activeUniversityName} es un campus de prueba. Usa una cuenta de
-            prueba y datos ficticios; no hay un proveedor institucional conectado.
-          </p>
-        ) : null}
-
-        {student ? (
-          <section className="auth-notice" role="status">
-            <p className="auth-notice-title">Tu sesión está activa.</p>
-            <p>Tu cuenta pertenece a la comunidad de {activeUniversityName}.</p>
-            <Link className="button-ink" href="/mercadito">
-              Ir a mi mercadito
-              <ArrowRight aria-hidden="true" size={17} />
-            </Link>
-          </section>
-        ) : community && accessReady ? (
-          <section className="auth-panel">
-            <div className="auth-panel-heading">
-              <LockKeyhole aria-hidden="true" size={22} strokeWidth={1.7} />
-              <h2>{community.isTest ? "Usa tu cuenta de prueba" : "Usa tu cuenta institucional"}</h2>
-            </div>
-            <p>
-              {community.isTest
-                ? `Se abrirá el acceso de ${activeUniversityName} con las cuentas de prueba proporcionadas para este recorrido.`
-                : isUat
-                  ? "En el siguiente paso usaremos tu cuenta del portal de alumnos UAT para comprobar tu matrícula y situación académica. Tu contraseña no se guarda."
-                  : `Se abrirá el acceso institucional de ${activeUniversityName}. Mercadito no recibe tu contraseña.`}
-            </p>
-            {isUat ? (
-              <p>Mercadito es independiente de la UAT. La verificación no guarda tus horarios ni calificaciones.</p>
-            ) : null}
-            {privacyUrl ? (
-              <p><a href={privacyUrl}>Consulta el aviso de privacidad</a> antes de continuar.</p>
-            ) : null}
-            <form action={startInstitutionalLogin}>
-              <input type="hidden" name="returnTo" value={returnTo} />
-              <button className="button-ink form-submit" type="submit">
-                Continuar con {activeUniversityName}
-                <ArrowRight aria-hidden="true" size={17} />
-              </button>
-            </form>
-          </section>
-        ) : (
-          <section className="auth-notice">
-            <p className="auth-notice-title">El acceso a {activeUniversityName} está en preparación.</p>
-            <p>Vuelve más tarde. El catálogo estará disponible cuando se habilite el acceso de esta comunidad.</p>
-          </section>
-        )}
-
-        <p className="form-footnote">
-          Los productos y las conversaciones de {activeUniversityName} solo están disponibles para las cuentas autorizadas de esta comunidad.
-        </p>
       </main>
-      <SiteFooter />
     </>
   );
 }
