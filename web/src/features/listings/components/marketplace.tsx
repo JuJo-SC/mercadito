@@ -32,6 +32,7 @@ type MarketplaceProps = {
   initialSort: SortMode;
   hasInterestSignals: boolean;
   currentUserId: string;
+  loginSessionId?: string;
 };
 
 const categories = [
@@ -63,6 +64,7 @@ export function Marketplace({
   initialSort,
   hasInterestSignals: initialHasInterestSignals,
   currentUserId,
+  loginSessionId,
 }: MarketplaceProps) {
   const [listings, setListings] = useState(initialListings);
   const [hasMore, setHasMore] = useState(initialTotal > initialListings.length);
@@ -551,6 +553,7 @@ export function Marketplace({
       <WelcomeOnboardingDialog
         universityName={university.name}
         studentId={currentUserId}
+        loginSessionId={loginSessionId}
       />
     </section>
   );

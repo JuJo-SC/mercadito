@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/features/auth/auth";
 import { getActiveStudent } from "@/features/auth/lib/require-student";
 import { countUnreadMessagesForStudent } from "@/features/conversations/lib/conversations";
 import { Marketplace } from "@/features/listings/components/marketplace";
@@ -8,6 +9,7 @@ import { SiteFooter, SiteHeader } from "@/components/site-header";
 export const dynamic = "force-dynamic";
 
 export default async function MarketplacePage() {
+  const sessionPromise = auth();
   const student = await getActiveStudent();
   if (!student) redirect("/ingresar?returnTo=%2Fmercadito");
 
@@ -33,7 +35,7 @@ export default async function MarketplacePage() {
     _count: { select: { conversations: true } },
   };
 
-  const [total, recentListings, interestListings, unreadMessageCount] = await Promise.all([
+  const [total, recentListings, interestListings, unreadMessageCount, session] = await Promise.all([
     prisma.listing.count({ where }),
     prisma.listing.findMany({
       where,
@@ -52,6 +54,7 @@ export default async function MarketplacePage() {
       select: listingSelect,
     }),
     countUnreadMessagesForStudent(student.id, student.universityId),
+    sessionPromise,
   ]);
 
   const hasInterestSignals = interestListings.some((listing) => listing._count.conversations > 0);
@@ -88,9 +91,11 @@ export default async function MarketplacePage() {
           initialSort={initialSort}
           hasInterestSignals={hasInterestSignals}
           currentUserId={student.id}
+          loginSessionId={session?.expires ?? student.id}
         />
       </main>
       <SiteFooter />
     </>
   );
 }
+

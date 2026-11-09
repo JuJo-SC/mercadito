@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, LogOut, Store, UserRound } from "lucide-react";
+import { ArrowRight, Store, UserRound } from "lucide-react";
 import { signOut } from "@/features/auth/auth";
 import { activeUniversityName } from "@/features/community/lib/active-community";
 import { InstallButton } from "@/features/pwa/components/install-button";
@@ -7,6 +7,7 @@ import {
   DashboardNavigationLink,
   SiteHeaderFrame,
   AppSectionTitle,
+  SignOutButton,
 } from "@/components/site-header-interactions";
 import { AppNavigation } from "@/components/app-navigation";
 import {
@@ -72,16 +73,7 @@ export function SiteHeader({
                     <span className="account-name">{userName}</span>
                   </Link>
                 ) : null}
-                <form action={leaveAccount}>
-                  <button
-                    className="signout-button"
-                    type="submit"
-                    aria-label="Cerrar sesión"
-                    title="Cerrar sesión"
-                  >
-                    <LogOut aria-hidden="true" size={17} strokeWidth={1.8} />
-                  </button>
-                </form>
+                <SignOutButton action={leaveAccount} />
               </>
             ) : (
               <Link className="header-login" href="/ingresar?returnTo=%2Fmercadito">
@@ -107,11 +99,12 @@ export function SiteFooter() {
         </Link>
         <p>Compra y vende entre estudiantes de {activeUniversityName}.</p>
         <nav aria-label="Enlaces al pie">
-          <Link href="/#como-funciona">Cómo funciona</Link>
+          <Link href="/#como-funciona">C??mo funciona</Link>
           <Link href="/ingresar?returnTo=%2Fmercadito">Entrar a {activeUniversityName}</Link>
         </nav>
-        <span className="footer-mark">M · MX</span>
+        <span className="footer-mark">M ?? MX</span>
       </div>
     </footer>
   );
 }
+

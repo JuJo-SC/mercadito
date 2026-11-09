@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ComponentProps, ReactNode } from "react";
+import { LogOut } from "lucide-react";
 
 type DashboardNavigationLinkProps = Omit<ComponentProps<typeof Link>, "onNavigate" | "scroll"> & {
   activePath?: string;
@@ -29,3 +30,28 @@ export function AppSectionTitle() {
     : "Explorar";
   return <span className="app-section-title">{title}</span>;
 }
+
+export function SignOutButton({ action }: { action: () => Promise<void> }) {
+  function handleClearSession() {
+    try {
+      sessionStorage.clear();
+    } catch {
+      // Storage unavailable
+    }
+  }
+
+  return (
+    <form action={action} onSubmit={handleClearSession}>
+      <button
+        className="signout-button"
+        type="submit"
+        aria-label="Cerrar sesi??n"
+        title="Cerrar sesi??n"
+        onClick={handleClearSession}
+      >
+        <LogOut aria-hidden="true" size={17} strokeWidth={1.8} />
+      </button>
+    </form>
+  );
+}
+
