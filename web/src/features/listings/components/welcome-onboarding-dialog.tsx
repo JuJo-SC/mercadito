@@ -85,15 +85,15 @@ export function WelcomeOnboardingDialog({
 
         <header className="welcome-dialog-header">
           <div className="welcome-dialog-badge">
-            <span aria-hidden="true">????</span>
-            <span>??Bienvenido a Mercadito {universityName}!</span>
+            <span aria-hidden="true">👋</span>
+            <span>¡Bienvenido a Mercadito {universityName}!</span>
           </div>
-          <h2 id="welcome-dialog-title">??Qu?? te gustar??a hacer hoy?</h2>
+          <h2 id="welcome-dialog-title">¿Qué te gustaría hacer hoy?</h2>
           <p>Compra y vende de forma segura entre estudiantes de tu misma universidad.</p>
         </header>
 
         <div className="welcome-dialog-choices">
-          {/* Opci??n 1: Vender o Emprender */}
+          {/* Opción 1: Vender o Emprender */}
           <div className="welcome-choice-card">
             <div className="welcome-choice-body">
               <div className="welcome-choice-title-row">
@@ -116,7 +116,7 @@ export function WelcomeOnboardingDialog({
             </Link>
           </div>
 
-          {/* Opci??n 2: Comprar o Explorar */}
+          {/* Opción 2: Comprar o Explorar */}
           <div className="welcome-choice-card">
             <div className="welcome-choice-body">
               <div className="welcome-choice-title-row">
@@ -126,7 +126,7 @@ export function WelcomeOnboardingDialog({
                 <h3>Comprar o Explorar</h3>
               </div>
               <p>
-                Encuentra material para tus clases, tecnolog??a, accesorios o antojos de comida preparados por compa??eros de tu facultad.
+                Encuentra material para tus clases, tecnología, accesorios o antojos de comida preparados por compañeros de tu facultad.
               </p>
             </div>
             <button
@@ -134,7 +134,7 @@ export function WelcomeOnboardingDialog({
               className="welcome-choice-btn is-secondary"
               onClick={() => handleDismiss()}
             >
-              <span>Ver cosas de mi inter??s</span>
+              <span>Ver cosas de mi interés</span>
               <ArrowRight aria-hidden="true" size={15} strokeWidth={2} />
             </button>
           </div>
@@ -171,4 +171,3 @@ export function WelcomeOnboardingDialog({
     </div>
   );
 }
-

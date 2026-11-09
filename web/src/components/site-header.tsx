@@ -99,12 +99,11 @@ export function SiteFooter() {
         </Link>
         <p>Compra y vende entre estudiantes de {activeUniversityName}.</p>
         <nav aria-label="Enlaces al pie">
-          <Link href="/#como-funciona">C??mo funciona</Link>
+          <Link href="/#como-funciona">Cómo funciona</Link>
           <Link href="/ingresar?returnTo=%2Fmercadito">Entrar a {activeUniversityName}</Link>
         </nav>
-        <span className="footer-mark">M ?? MX</span>
+        <span className="footer-mark">M · MX</span>
       </div>
     </footer>
   );
 }
-

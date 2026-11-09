@@ -66,7 +66,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             </span>
             {student ? (
               <>
-                <h1 id="sign-in-title">Tu sesi??n est?? activa</h1>
+                <h1 id="sign-in-title">Tu sesión está activa</h1>
                 <p>Ya puedes explorar, publicar y conversar con tu comunidad.</p>
                 <Link className="button-ink" href="/mercadito">
                   Ir al mercadito
@@ -76,14 +76,14 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             ) : community && accessReady ? (
               <>
                 <h1 id="sign-in-title">Entra al mercadito</h1>
-                <p>Inicia sesi??n con tu cuenta institucional para explorar, publicar y conversar con tu comunidad.</p>
+                <p>Inicia sesión con tu cuenta institucional para explorar, publicar y conversar con tu comunidad.</p>
                 {community.isTest ? (
                   <p className="sign-in-test-note" role="note">Entorno de prueba: usa una cuenta de prueba y datos ficticios.</p>
                 ) : null}
                 <form action={startInstitutionalLogin}>
                   <input type="hidden" name="returnTo" value={returnTo} />
                   <button className="button-ink" type="submit">
-                    Iniciar sesi??n
+                    Iniciar sesión
                     <ArrowRight aria-hidden="true" size={17} />
                   </button>
                 </form>
@@ -93,8 +93,8 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
               </>
             ) : (
               <>
-                <h1 id="sign-in-title">Acceso en preparaci??n</h1>
-                <p>Vuelve m??s tarde para iniciar sesi??n con tu cuenta institucional.</p>
+                <h1 id="sign-in-title">Acceso en preparación</h1>
+                <p>Vuelve más tarde para iniciar sesión con tu cuenta institucional.</p>
               </>
             )}
           </section>
@@ -103,4 +103,3 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
     </>
   );
 }
-

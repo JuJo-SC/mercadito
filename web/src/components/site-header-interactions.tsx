@@ -45,8 +45,8 @@ export function SignOutButton({ action }: { action: () => Promise<void> }) {
       <button
         className="signout-button"
         type="submit"
-        aria-label="Cerrar sesi??n"
-        title="Cerrar sesi??n"
+        aria-label="Cerrar sesión"
+        title="Cerrar sesión"
         onClick={handleClearSession}
       >
         <LogOut aria-hidden="true" size={17} strokeWidth={1.8} />
@@ -54,4 +54,3 @@ export function SignOutButton({ action }: { action: () => Promise<void> }) {
     </form>
   );
 }
-
