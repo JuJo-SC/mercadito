@@ -19,11 +19,17 @@ export function WelcomeOnboardingDialog({
 
   const dismissedKey = "mercadito:onboarding:dismissed:" + studentId;
   const visitsKey = "mercadito:onboarding:visits:" + studentId;
+  const sessionSeenKey = "mercadito:onboarding:session_seen:" + studentId;
 
   useEffect(() => {
     try {
       const dismissed = localStorage.getItem(dismissedKey);
       if (dismissed === "true") return;
+
+      const alreadySeenThisSession = sessionStorage.getItem(sessionSeenKey);
+      if (alreadySeenThisSession === "true") return;
+
+      sessionStorage.setItem(sessionSeenKey, "true");
 
       const rawVisits = localStorage.getItem(visitsKey);
       const visits = rawVisits ? parseInt(rawVisits, 10) : 0;
@@ -37,7 +43,7 @@ export function WelcomeOnboardingDialog({
     } catch {
       // Storage unavailable
     }
-  }, [dismissedKey, visitsKey]);
+  }, [dismissedKey, visitsKey, sessionSeenKey]);
 
   function handleDismiss() {
     setOpen(false);
