@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ListingDetailDialog } from "@/features/listings/components/listing-detail-dialog";
+import { WelcomeOnboardingDialog } from "@/features/listings/components/welcome-onboarding-dialog";
 import { formatPrice, type MarketplaceListing } from "@/features/listings/lib/listing-presentation";
 import type { FormEvent } from "react";
 import Link from "next/link";
@@ -546,6 +547,11 @@ export function Marketplace({
           onDismiss={() => setSelectedListing(null)}
         />
       ) : null}
+
+      <WelcomeOnboardingDialog
+        universityName={university.name}
+        studentId={currentUserId}
+      />
     </section>
   );
 }
