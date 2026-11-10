@@ -70,6 +70,7 @@ services:
     restart: unless-stopped
     env_file:
       - /srv/secrets/mercadito/app.env
+      - /srv/secrets/mercadito/uat-auth.env
     depends_on:
       migrate:
         condition: service_completed_successfully
