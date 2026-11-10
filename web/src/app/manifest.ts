@@ -6,11 +6,17 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Mercadito universitario",
     short_name: "Mercadito",
     description: "Compra y vende entre estudiantes de tu universidad.",
-    start_url: "/",
+    start_url: "/?mode=standalone",
     scope: "/",
     display: "standalone",
     background_color: "#f5f5f7",
     theme_color: "#f5f5f7",
+    related_applications: [
+      {
+        platform: "webapp",
+        url: "/manifest.webmanifest",
+      },
+    ],
     shortcuts: [
       {
         name: "Crear publicación",
