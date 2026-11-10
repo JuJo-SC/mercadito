@@ -1,4 +1,4 @@
-import { PublicFeatureIntro } from "@/components/public-feature-guide";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, LockKeyhole } from "lucide-react";
 import { prisma } from "@/lib/prisma";
@@ -19,7 +19,7 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
   const editId = typeof params.editar === "string" ? params.editar.trim() : "";
   const demoMode = params.demo === "1" && !editRequested;
   const student = demoMode ? null : await getActiveStudent();
-  if (!student && !demoMode && !editRequested) return <PublicFeatureIntro feature="publish" />;
+  if (!student && !demoMode && !editRequested) redirect("/ingresar?returnTo=%2Fpublicar");
   const unreadMessageCountPromise = student
     ? countUnreadMessagesForStudent(student.id, student.universityId)
     : Promise.resolve(0);
@@ -52,7 +52,7 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
     : null;
   const editLoginHref = editRequested && editId
     ? `/ingresar?returnTo=${encodeURIComponent(`/publicar?editar=${encodeURIComponent(editId)}`)}`
-    : "/ingresar";
+    : "/ingresar?returnTo=%2Fpublicar";
   const loginAvailable = demoMode
     ? false
     : university
@@ -132,7 +132,7 @@ export default async function PublishPage({ searchParams }: PublishPageProps) {
                 Probar el flujo
                 <ArrowRight aria-hidden="true" size={17} />
               </Link>
-              <Link className="text-action" href="/ingresar">
+              <Link className="text-action" href="/ingresar?returnTo=%2Fpublicar">
                 Acceso institucional
                 <ArrowRight aria-hidden="true" size={16} />
               </Link>

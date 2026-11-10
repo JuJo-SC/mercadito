@@ -84,7 +84,7 @@ export function SiteHeader({
           </div>
         </div>
       </SiteHeaderFrame>
-      <AppNavigation signedIn={signedIn} universityName={universityName} />
+      {signedIn ? <AppNavigation signedIn={signedIn} universityName={universityName} /> : null}
     </UnreadMessagesProvider>
   );
 }

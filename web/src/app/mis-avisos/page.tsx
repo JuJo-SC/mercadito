@@ -1,4 +1,4 @@
-import { PublicFeatureIntro } from "@/components/public-feature-guide";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
@@ -11,10 +11,12 @@ export const dynamic = "force-dynamic";
 
 export default async function MyListingsPage() {
   const student = await getActiveStudent();
-  if (!student) return <PublicFeatureIntro feature="listings" />;
+  if (!student) redirect("/ingresar?returnTo=%2Fmis-avisos");
+
   const unreadMessageCountPromise = student
     ? countUnreadMessagesForStudent(student.id, student.universityId)
     : Promise.resolve(0);
+
   const listings = student
     ? await prisma.listing.findMany({
         where: {
@@ -57,7 +59,7 @@ export default async function MyListingsPage() {
           <section className="auth-notice">
             <p className="auth-notice-title">Tus publicaciones pertenecen a tu cuenta.</p>
             <p>Inicia sesión con la cuenta institucional para consultar lo que publicaste.</p>
-            <Link className="button-ink" href="/ingresar">
+            <Link className="button-ink" href="/ingresar?returnTo=%2Fmis-avisos">
               Acceso institucional
               <ArrowRight aria-hidden="true" size={17} />
             </Link>

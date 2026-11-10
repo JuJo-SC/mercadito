@@ -1,4 +1,4 @@
-import { PublicFeatureIntro } from "@/components/public-feature-guide";
+import { redirect } from "next/navigation";
 import { listConversationsForStudent } from "@/features/conversations/lib/conversations";
 import { getActiveStudent } from "@/features/auth/lib/require-student";
 import { ConversationInbox } from "@/features/conversations/components/conversation-inbox";
@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function MessagesPage() {
   const student = await getActiveStudent();
-  if (!student) return <PublicFeatureIntro feature="messages" />;
+  if (!student) redirect("/ingresar?returnTo=%2Fmensajes");
 
   const conversations = await listConversationsForStudent(
     student.id,
