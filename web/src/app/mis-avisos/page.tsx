@@ -1,7 +1,6 @@
 import { PublicFeatureIntro } from "@/components/public-feature-guide";
 import Link from "next/link";
-import { TaskPageHeading } from "@/components/task-page-heading";
-import { ArrowRight, Plus } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getActiveStudent } from "@/features/auth/lib/require-student";
 import { countUnreadMessagesForStudent } from "@/features/conversations/lib/conversations";
@@ -16,12 +15,6 @@ export default async function MyListingsPage() {
   const unreadMessageCountPromise = student
     ? countUnreadMessagesForStudent(student.id, student.universityId)
     : Promise.resolve(0);
-  const university = student
-    ? await prisma.university.findUnique({
-        where: { id: student.universityId },
-        select: { name: true, isTest: true },
-      })
-    : null;
   const listings = student
     ? await prisma.listing.findMany({
         where: {
@@ -55,23 +48,7 @@ export default async function MyListingsPage() {
   return (
     <>
       <SiteHeader signedIn={Boolean(student)} userName={student?.name} universityName={student?.university.name} unreadMessageCount={unreadMessageCount} />
-      <main className="form-page page-width seller-page task-page">
-        <TaskPageHeading
-          title="Mis publicaciones"
-          description="Administra lo que ofreces y mantén su disponibilidad al día."
-          testCampus={Boolean(student && university?.isTest)}
-          actions={student ? (
-            <Link className="button-ink task-page-new-listing" href="/publicar">
-              <Plus aria-hidden="true" size={16} /> Publicar
-            </Link>
-          ) : undefined}
-        >
-          <p>Solo estudiantes activos de tu campus pueden ver tus publicaciones. Actualiza su estado desde aquí.</p>
-          <p>Apartar retira temporalmente el producto del catálogo mientras coordinas una entrega. Las conversaciones existentes continúan abiertas y puedes volver a publicarlo. No reserva para una persona ni registra pagos.</p>
-          {student && university?.isTest ? <p>Campus de prueba {university.name}. Usa datos ficticios.</p> : null}
-          <Link className="back-link" href="/mercadito"><ArrowRight aria-hidden="true" size={16} />Volver al mercadito</Link>
-        </TaskPageHeading>
-
+      <main className="seller-page page-width task-page">
         {student ? (
           <section className="seller-inventory" aria-label="Publicaciones propias">
             <ManageListings initialListings={serializedListings} />
