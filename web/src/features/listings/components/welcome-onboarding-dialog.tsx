@@ -10,6 +10,13 @@ type WelcomeOnboardingDialogProps = {
   loginSessionId?: string;
 };
 
+function formatUniversityShortName(name: string) {
+  if (/aut[oó]noma de tamaulipas/i.test(name) || /tamaulipas/i.test(name)) {
+    return "UAT";
+  }
+  return name;
+}
+
 export function WelcomeOnboardingDialog({
   universityName,
   studentId,
@@ -63,6 +70,8 @@ export function WelcomeOnboardingDialog({
 
   if (!open) return null;
 
+  const shortUniversity = formatUniversityShortName(universityName);
+
   return (
     <div
       className="welcome-dialog-backdrop"
@@ -86,24 +95,23 @@ export function WelcomeOnboardingDialog({
         <header className="welcome-dialog-header">
           <div className="welcome-dialog-badge">
             <span aria-hidden="true">👋</span>
-            <span>¡Bienvenido a Mercadito {universityName}!</span>
+            <span>¡Bienvenido a Mercadito {shortUniversity}!</span>
           </div>
           <h2 id="welcome-dialog-title">¿Qué te gustaría hacer hoy?</h2>
-          <p>Compra y vende de forma segura entre estudiantes de tu misma universidad.</p>
         </header>
 
         <div className="welcome-dialog-choices">
-          {/* Opción 1: Vender o Emprender */}
+          {/* Opción 1: Publicar y vender */}
           <div className="welcome-choice-card">
             <div className="welcome-choice-body">
               <div className="welcome-choice-title-row">
                 <span className="welcome-choice-icon is-sell" aria-hidden="true">
                   <Package size={17} strokeWidth={2.2} />
                 </span>
-                <h3>Vender o Emprender</h3>
+                <h3>Publicar y vender</h3>
               </div>
               <p>
-                Publica cosas que ya no uses (libros, ropa, calculadoras) para que otro alumno las aproveche, o impulsa tu emprendimiento en el campus.
+                Ofrece libros, calculadoras, material de clases, tecnología, ropa o snacks y comida de tu emprendimiento para tus compañeros de campus.
               </p>
             </div>
             <Link
@@ -116,17 +124,17 @@ export function WelcomeOnboardingDialog({
             </Link>
           </div>
 
-          {/* Opción 2: Comprar o Explorar */}
+          {/* Opción 2: Explorar y comprar */}
           <div className="welcome-choice-card">
             <div className="welcome-choice-body">
               <div className="welcome-choice-title-row">
                 <span className="welcome-choice-icon is-buy" aria-hidden="true">
                   <ShoppingBag size={17} strokeWidth={2.2} />
                 </span>
-                <h3>Comprar o Explorar</h3>
+                <h3>Explorar y comprar</h3>
               </div>
               <p>
-                Encuentra material para tus clases, tecnología, accesorios o antojos de comida preparados por compañeros de tu facultad.
+                Encuentra libros de materias, útiles escolares, tecnología, uniformes, accesorios o antojitos preparados por estudiantes de tu universidad.
               </p>
             </div>
             <button
