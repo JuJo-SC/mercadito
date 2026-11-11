@@ -79,9 +79,11 @@ export function ListingDetailDialog({
                 aria-label="Ampliar foto del producto"
                 onClick={() => photoDialogRef.current?.showModal()}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element -- Las fotos privadas conservan la sesión y no pasan por un proxy. */}
+                {/* eslint-disable-next-line @next/next/no-img-element -- Las fotos privadas conservan la sesión y se optimizan para móvil y escritorio. */}
                 <img
                   src={listing.imageUrls[photoIndex]}
+                  srcSet={`${listing.imageUrls[photoIndex]}&variant=thumb 480w, ${listing.imageUrls[photoIndex]} 1280w`}
+                  sizes="(max-width: 640px) 100vw, 680px"
                   alt={"Foto " + (photoIndex + 1) + " de " + listing.title}
                   decoding="async"
                 />

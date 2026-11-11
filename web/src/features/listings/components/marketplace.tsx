@@ -445,47 +445,59 @@ export function Marketplace({
           ) : listings.length ? (
             <>
               <div className="product-grid" aria-live="polite">
-                {listings.map((listing) => (
-                  <button
-                    className="product-card"
-                    key={listing.id}
-                    type="button"
-                    aria-haspopup="dialog"
-                    aria-label={`Ver publicación: ${listing.title}, ${formatPrice(listing.price, listing.currency)}`}
-                    onClick={() => openListing(listing)}
-                  >
-                    <span className="product-card-media">
-                      {listing.imageUrls[0] ? (
-                        // eslint-disable-next-line @next/next/no-img-element -- Fotos privadas requieren la sesión del navegador, sin proxy de optimización.
-                        <img
-                          className="product-card-image"
-                          src={listing.imageUrls[0]}
-                          alt={"Foto de " + listing.title}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : (
-                        <span className="product-card-no-image">
-                          <Camera aria-hidden="true" size={28} strokeWidth={1.6} />
-                          <span>Sin foto</span>
-                        </span>
-                      )}
-                      {listing.imageUrls.length > 1 ? (
-                        <span className="product-card-photo-count">
-                          <Camera aria-hidden="true" size={13} strokeWidth={2} />
-                          {listing.imageUrls.length} {listing.imageUrls.length === 1 ? "foto" : "fotos"}
-                        </span>
-                      ) : null}
-                      {listing.isDemo ? (
-                        <span className="product-card-demo">Ejemplo</span>
-                      ) : null}
-                    </span>
-                    <span className="product-card-copy">
-                      <span className="product-card-price">{formatPrice(listing.price, listing.currency)}</span>
-                      <span className="product-card-title" title={listing.title}>{listing.title}</span>
-                    </span>
-                  </button>
-                ))}
+                {listings.map((listing, index) => {
+                  const firstPhoto = listing.imageUrls[0];
+                  const thumbPhoto = firstPhoto
+                    ? firstPhoto.includes("variant=")
+                      ? firstPhoto
+                      : `${firstPhoto}&variant=thumb`
+                    : null;
+
+                  return (
+                    <button
+                      className="product-card"
+                      key={listing.id}
+                      type="button"
+                      aria-haspopup="dialog"
+                      aria-label={`Ver publicación: ${listing.title}, ${formatPrice(listing.price, listing.currency)}`}
+                      onClick={() => openListing(listing)}
+                    >
+                      <span className="product-card-media">
+                        {firstPhoto && thumbPhoto ? (
+                          // eslint-disable-next-line @next/next/no-img-element -- Fotos privadas optimizadas para móvil y escritorio.
+                          <img
+                            className="product-card-image"
+                            src={thumbPhoto}
+                            srcSet={`${thumbPhoto} 480w, ${firstPhoto} 1280w`}
+                            sizes="(max-width: 640px) 48vw, (max-width: 1024px) 31vw, 280px"
+                            alt={"Foto de " + listing.title}
+                            loading={index < 4 ? "eager" : "lazy"}
+                            fetchPriority={index < 2 ? "high" : "auto"}
+                            decoding="async"
+                          />
+                        ) : (
+                          <span className="product-card-no-image">
+                            <Camera aria-hidden="true" size={28} strokeWidth={1.6} />
+                            <span>Sin foto</span>
+                          </span>
+                        )}
+                        {listing.imageUrls.length > 1 ? (
+                          <span className="product-card-photo-count">
+                            <Camera aria-hidden="true" size={13} strokeWidth={2} />
+                            {listing.imageUrls.length} {listing.imageUrls.length === 1 ? "foto" : "fotos"}
+                          </span>
+                        ) : null}
+                        {listing.isDemo ? (
+                          <span className="product-card-demo">Ejemplo</span>
+                        ) : null}
+                      </span>
+                      <span className="product-card-copy">
+                        <span className="product-card-price">{formatPrice(listing.price, listing.currency)}</span>
+                        <span className="product-card-title" title={listing.title}>{listing.title}</span>
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
               {hasMore ? (
                 <div className="product-pagination" aria-busy={loadingMore}>
