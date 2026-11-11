@@ -1,7 +1,12 @@
-import Link from "next/link";
 import { ArrowRight, Check, Lock, Tag } from "lucide-react";
+import { startInstitutionalLogin } from "@/features/auth/actions";
 
 export function PublicLandingPanel({ universityName }: { universityName: string }) {
+  async function handleLogin() {
+    "use server";
+    await startInstitutionalLogin("/mercadito");
+  }
+
   return (
     <div className="public-landing-clean">
       {/* Hero principal */}
@@ -15,13 +20,15 @@ export function PublicLandingPanel({ universityName }: { universityName: string 
             Compra y vende entre estudiantes de {universityName}.
           </p>
           <div className="hero-actions">
-            <Link
-              className="button-primary hero-cta"
-              href="/ingresar?returnTo=%2Fmercadito"
-            >
-              <span>Entrar al mercadito</span>
-              <ArrowRight aria-hidden="true" size={18} strokeWidth={2.2} />
-            </Link>
+            <form action={handleLogin}>
+              <button
+                type="submit"
+                className="button-primary hero-cta cursor-pointer"
+              >
+                <span>Entrar al mercadito</span>
+                <ArrowRight aria-hidden="true" size={18} strokeWidth={2.2} />
+              </button>
+            </form>
           </div>
           <p className="hero-note">
             <Lock aria-hidden="true" size={14} strokeWidth={2} />
@@ -97,6 +104,10 @@ export function PublicLandingPanel({ universityName }: { universityName: string 
 }
 
 export function PublicFeaturePanel({ feature }: { feature: "messages" | "publish" | "listings" }) {
+  async function handleLogin() {
+    "use server";
+    await startInstitutionalLogin(`/mercadito`);
+  }
   const titles = {
     messages: "Mensajes entre estudiantes",
     publish: "Publicar en el mercadito",
@@ -113,10 +124,12 @@ export function PublicFeaturePanel({ feature }: { feature: "messages" | "publish
             Inicia sesión con tu cuenta institucional para acceder a esta sección.
           </p>
           <div className="hero-actions">
-            <Link className="button-primary hero-cta" href={`/ingresar?returnTo=%2F${feature === "listings" ? "mis-avisos" : feature}`}>
-              <span>Entrar al mercadito</span>
-              <ArrowRight aria-hidden="true" size={18} strokeWidth={2.2} />
-            </Link>
+            <form action={handleLogin}>
+              <button type="submit" className="button-primary hero-cta cursor-pointer">
+                <span>Entrar al mercadito</span>
+                <ArrowRight aria-hidden="true" size={18} strokeWidth={2.2} />
+              </button>
+            </form>
           </div>
         </div>
       </section>

@@ -3,6 +3,7 @@ import { ArrowRight, Store, UserRound } from "lucide-react";
 import { signOut } from "@/features/auth/auth";
 import { activeUniversityName } from "@/features/community/lib/active-community";
 import { InstallButton } from "@/features/pwa/components/install-button";
+import { startInstitutionalLogin } from "@/features/auth/actions";
 import {
   DashboardNavigationLink,
   SiteHeaderFrame,
@@ -34,6 +35,11 @@ export function SiteHeader({
   unreadMessageCount = 0,
   excludeUnreadConversationId,
 }: SiteHeaderProps) {
+  async function handleLogin() {
+    "use server";
+    await startInstitutionalLogin("/mercadito");
+  }
+
   return (
     <UnreadMessagesProvider
       active={signedIn}
@@ -76,10 +82,12 @@ export function SiteHeader({
                 <SignOutButton action={leaveAccount} />
               </>
             ) : (
-              <Link className="header-login" href="/ingresar?returnTo=%2Fmercadito">
-                <span>Entrar</span>
-                <ArrowRight aria-hidden="true" size={16} strokeWidth={1.8} />
-              </Link>
+              <form action={handleLogin}>
+                <button type="submit" className="header-login cursor-pointer">
+                  <span>Entrar</span>
+                  <ArrowRight aria-hidden="true" size={16} strokeWidth={1.8} />
+                </button>
+              </form>
             )}
           </div>
         </div>

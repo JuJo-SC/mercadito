@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, LockKeyhole } from "lucide-react";
-import { signIn } from "@/features/auth/auth";
-import { activeUniversitySlug, getActiveCommunity } from "@/features/community/lib/active-community";
 import { getActiveStudent } from "@/features/auth/lib/require-student";
+import { activeUniversitySlug, getActiveCommunity } from "@/features/community/lib/active-community";
+import { isUatLoginEnabled } from "@/features/auth/lib/uat-access";
 import { SiteHeader } from "@/components/site-header";
 import { SignInSessionCleaner } from "./sign-in-cleaner";
-
-import { isUatLoginEnabled } from "@/features/auth/lib/uat-access";
+import { AutoSignInForm } from "./auto-sign-in-form";
 import "./sign-in.css";
 
 export const dynamic = "force-dynamic";
@@ -43,10 +42,6 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   const isUat = activeUniversitySlug === "uat";
   const accessReady = !isUat || isUatLoginEnabled();
 
-  if (community && accessReady) {
-    await signIn("keycloak", { redirectTo: returnTo });
-  }
-
   return (
     <>
       <SignInSessionCleaner />
@@ -61,8 +56,18 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             <span className="sign-in-symbol" aria-hidden="true">
               <LockKeyhole size={25} strokeWidth={1.7} />
             </span>
-            <h1 id="sign-in-title">Acceso en preparación</h1>
-            <p>Vuelve más tarde para iniciar sesión con tu cuenta institucional.</p>
+            {accessReady && community ? (
+              <>
+                <h1 id="sign-in-title">Conectando con tu cuenta institucional...</h1>
+                <p>Te estamos dirigiendo a la pantalla de acceso de la universidad.</p>
+                <AutoSignInForm returnTo={returnTo} />
+              </>
+            ) : (
+              <>
+                <h1 id="sign-in-title">Acceso en preparación</h1>
+                <p>Vuelve más tarde para iniciar sesión con tu cuenta institucional.</p>
+              </>
+            )}
           </section>
         </div>
       </main>
