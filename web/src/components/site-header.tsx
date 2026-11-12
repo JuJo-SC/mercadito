@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Store, UserRound } from "lucide-react";
+import { ArrowRight, Store } from "lucide-react";
 import { signOut } from "@/features/auth/auth";
 import { activeUniversityName } from "@/features/community/lib/active-community";
 import { InstallButton } from "@/features/pwa/components/install-button";
@@ -8,8 +8,8 @@ import {
   DashboardNavigationLink,
   SiteHeaderFrame,
   AppSectionTitle,
-  SignOutButton,
 } from "@/components/site-header-interactions";
+import { UserProfileMenu } from "@/components/user-profile-menu";
 import { AppNavigation } from "@/components/app-navigation";
 import {
   UnreadMessagesProvider,
@@ -18,6 +18,7 @@ import {
 type SiteHeaderProps = {
   signedIn?: boolean;
   userName?: string | null;
+  facultyName?: string | null;
   universityName?: string | null;
   unreadMessageCount?: number;
   excludeUnreadConversationId?: string;
@@ -31,6 +32,7 @@ async function leaveAccount() {
 export function SiteHeader({
   signedIn = false,
   userName,
+  facultyName,
   universityName = activeUniversityName,
   unreadMessageCount = 0,
   excludeUnreadConversationId,
@@ -72,15 +74,12 @@ export function SiteHeader({
           <div className="header-actions">
             <InstallButton />
             {signedIn ? (
-              <>
-                {userName ? (
-                  <Link className="app-account" href="/perfil" title="Ver mi perfil" aria-label="Ver mi perfil">
-                    <span className="app-avatar" aria-hidden="true"><UserRound size={18} strokeWidth={1.8} /></span>
-                    <span className="account-name">{userName}</span>
-                  </Link>
-                ) : null}
-                <SignOutButton action={leaveAccount} />
-              </>
+              <UserProfileMenu
+                userName={userName}
+                facultyName={facultyName}
+                universityName={universityName}
+                action={leaveAccount}
+              />
             ) : (
               <form action={handleLogin}>
                 <button type="submit" className="header-login cursor-pointer">

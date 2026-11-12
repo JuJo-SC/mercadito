@@ -51,7 +51,7 @@ export default async function ConversationPage({ params }: MessagePageProps) {
 
   return (
     <>
-      <SiteHeader signedIn userName={student.name} universityName={student.university.name} unreadMessageCount={unreadMessageCount} excludeUnreadConversationId={conversation.id} />
+      <SiteHeader signedIn userName={student.name} facultyName={student.facultyName} universityName={student.university.name} unreadMessageCount={unreadMessageCount} excludeUnreadConversationId={conversation.id} />
       <MessageThread
         testCampusName={university?.isTest ? university.name : undefined}
         conversationId={conversation.id}

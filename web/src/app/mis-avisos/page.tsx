@@ -49,7 +49,7 @@ export default async function MyListingsPage() {
 
   return (
     <>
-      <SiteHeader signedIn={Boolean(student)} userName={student?.name} universityName={student?.university.name} unreadMessageCount={unreadMessageCount} />
+      <SiteHeader signedIn={Boolean(student)} userName={student?.name} facultyName={student?.facultyName} universityName={student?.university.name} unreadMessageCount={unreadMessageCount} />
       <main className="seller-page page-width task-page">
         {student ? (
           <section className="seller-inventory" aria-label="Publicaciones propias">

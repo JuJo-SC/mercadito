@@ -22,7 +22,7 @@ export default async function MessagesPage() {
 
   return (
     <>
-      <SiteHeader signedIn userName={student.name} universityName={student.university.name} unreadMessageCount={unreadMessageCount} />
+      <SiteHeader signedIn userName={student.name} facultyName={student.facultyName} universityName={student.university.name} unreadMessageCount={unreadMessageCount} />
       <main className="messages-page page-width task-page">
         <ConversationInbox
           initialConversations={conversations}
